@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>イントロクイズ - Blue Archive OST</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 2em;
+            background: #f4f4f4;
+        }
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 1em;
+        }
+        button {
+            margin: 0.5em;
+            padding: 1em 2em;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #player {
+            margin: 1em auto;
+        }
+        #choices {
+            margin-top: 1.5em;
+        }
+        #result {
+            font-size: 1.2em;
+            margin: 1em 0;
+        }
+        #score {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 1em;
+        }
+        #control-buttons {
+            margin-top: 2em;
+        }
+        #replayBtn {
+            background-color: #6c757d;
+        }
+        #replayBtn:hover {
+            background-color: #5a6268;
+        }
+        #pauseBtn {
+            background-color: #28a745;
+        }
+        #pauseBtn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 Blue Archive OST - イントロクイズ</h1>
+
+    <!-- スコア表示 -->
+    <p id="score">スコア: 0 / 0</p>
+
+    <!-- YouTube プレイヤー（非表示） -->
+    <div id="player"></div>
+
+    <!-- 選択肢ボタン -->
+    <div id="choices"></div>
+
+    <!-- 結果表示 -->
+    <p id="result"></p>
+
+    <!-- ボタン配置エリア（次へ・再生・一時停止） -->
+    <div id="control-buttons">
+        <button onclick="loadNextQuiz()">▶️ 次のクイズへ</button>
+    </div>
+
+    <!-- YouTube IFrame API 読み込み -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <!-- メイン処理スクリプト -->
+    <script src="main.js"></script>
+</body>
+</html>
