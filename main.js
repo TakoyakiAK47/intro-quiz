@@ -19,6 +19,7 @@ function onYouTubeIframeAPIReady() {
 }
 
 function showModeSelection() {
+  document.getElementById('control-buttons').style.display = 'none';
   const container = document.getElementById('choices');
   container.innerHTML = '';
   document.getElementById('result').innerText = '';
