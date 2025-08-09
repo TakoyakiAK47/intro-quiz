@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -10,34 +9,103 @@
       h1 { font-size: 1.5em; }
       button { font-size: 0.9em; padding: 0.8em 1.2em; }
     }
-    body { font-family: sans-serif; text-align: center; background: #f9f9f9; margin: 0; padding: 2em; }
+    body { font-family: sans-serif; text-align: center; background: #f9f9f9; margin: 0; padding: 2em; box-sizing: border-box; }
     h1 { font-size: 2em; margin-bottom: 0.5em; }
     button { margin: 0.5em; padding: 1em 2em; font-size: 1em; cursor: pointer; border-radius: 8px; border: none; }
-    #choices button { background-color: #007bff; color: white; }
+    
+    /* --- Choices Buttons --- */
+    #choices {
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* stretchからcenterに変更 */
+    }
+    #choices button {
+      background-color: #007bff;
+      color: white;
+      width: 90%; /* 横幅を調整 */
+      max-width: 450px; /* 最大幅を設定 */
+      white-space: normal;
+    }
     #choices button:hover { background-color: #0056b3; }
+    
+    /* Encyclopedia button custom color */
+    #choices .encyclopedia-btn {
+      background-color: #6c757d;
+    }
+    #choices .encyclopedia-btn:hover {
+      background-color: #5a6268;
+    }
+
+    /* --- Control Buttons --- */
     #control-buttons button {
       background-color: #28a745;
       color: white;
     }
     #replayBtn { background-color: #17a2b8; }
-    #pauseBtn { background-color: #ffc107; }
+    #pauseBtn { background-color: #ffc107; font-size: 1.5em; }
     #nextBtn { background-color: #6c757d; }
+    
     #score, #result { font-size: 1.2em; margin: 1em 0; }
     footer { margin-top: 3em; font-size: 0.9em; color: #555; }
     a.takoyaki { text-decoration: none; color: #0077cc; font-weight: bold; }
-  
-    #choices {
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
+
+    /* ===== Encyclopedia Styles (START) ===== */
+    #encyclopedia {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: left;
     }
-    #choices button {
+    #now-playing-container {
+      margin-bottom: 1em;
+      padding: 0.7em;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      text-align: center;
+      min-height: 1.5em;
+      font-weight: 500;
+    }
+    #encyclopedia-search {
       width: 100%;
+      padding: 0.8em;
+      font-size: 1em;
+      margin-bottom: 1em;
+      box-sizing: border-box;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    #song-list {
+      max-height: 60vh;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 0.5em;
+      border-radius: 5px;
+    }
+    .song-item {
+      display: block;
+      width: 100%;
+      padding: 0.8em 1em;
+      margin-bottom: 0.5em;
+      text-align: left;
+      background-color: #e9ecef;
+      color: #333;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
       white-space: normal;
+      transition: background-color 0.2s;
     }
-    #pauseBtn {
-      font-size: 1.5em;
+    .song-item:hover {
+      background-color: #007bff;
+      color: white;
     }
+    .song-item.playing {
+      background-color: #17a2b8;
+      color: white;
+      font-weight: bold;
+    }
+    /* ===== Encyclopedia Styles (END) ===== */
 
 </style>
 </head>
@@ -57,6 +125,10 @@
     <button id="replayBtn">もう一度聞く</button>
     <button id="pauseBtn">⏯️</button>
   </div>
+  
+  <div id="encyclopedia" style="display: none;">
+    </div>
+
   <footer>
   
     <div style="border: 2px solid #ccc; padding: 1em; margin-top: 2em; background-color: #fefefe;">

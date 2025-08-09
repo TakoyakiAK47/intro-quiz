@@ -1,38 +1,36 @@
-// main.js - clean implementation with proper Timed Mode (60.00s), millisecond display, skip disabled during timed mode
+// main.js - v2 with bug fixes and new features
 let player;
 let correctAnswer = '';
 let currentVideoId = '';
 let score = 0;
 let totalQuestions = 0;
-const maxQuestions = 9999; // not used in timed mode, but keep safe guard
+const maxQuestions = 10;
 let answeredVideos = [];
-let mode = 'normal'; // 'normal' or 'timed'
+let mode = 'normal'; // 'normal', 'timed', or 'encyclopedia'
 
-// Timed mode timers (milliseconds)
+// Timed mode timer
 let gameTimer = null;
-let timeLeftMs = 0; // remaining milliseconds in timed mode (e.g. 60000)
+let timeLeftMs = 0;
 
-// YouTube IFrame API ready
+// --- YouTube IFrame API ---
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
     height: '0',
     width: '0',
     videoId: '',
     events: {
-      'onReady': (event) => {
+      'onReady': () => {
         player.setVolume(20);
         document.getElementById('volumeSlider').value = 20;
-        // Ensure mode selection is visible when API is ready
         showModeSelection();
       }
     }
   });
 }
 
-// --- UI helpers ---
+// --- UI Helpers ---
 function setSkipEnabled(enabled) {
-  // Find the Skip button (onclick="loadNextQuiz()")
-  const skipBtn = Array.from(document.querySelectorAll('#control-buttons button')).find(b => b.getAttribute('onclick') === 'loadNextQuiz()' || b.textContent.trim().toLowerCase().includes('スキップ'));
+  const skipBtn = Array.from(document.querySelectorAll('#control-buttons button')).find(b => b.textContent.trim().toLowerCase().includes('スキップ'));
   if (skipBtn) skipBtn.disabled = !enabled;
 }
 
@@ -49,58 +47,85 @@ function updateScore() {
   document.getElementById('score').innerText = `スコア: ${score} / ${totalQuestions}`;
 }
 
-// --- Mode selection & initialization ---
+// --- Game State & Mode Selection ---
 function showModeSelection() {
   document.getElementById('control-buttons').style.display = 'none';
+  document.getElementById('encyclopedia').style.display = 'none';
   const container = document.getElementById('choices');
   container.innerHTML = '';
   document.getElementById('result').innerText = '';
   document.getElementById('score').innerText = '';
   document.getElementById('time-display').innerText = '';
+  if (player && player.stopVideo) player.stopVideo();
 
   const modes = [
     { label: 'ノーマルモード', value: 'normal' },
-    { label: 'タイムアタックモード', value: 'timed' }
+    { label: 'タイムアタックモード', value: 'timed' },
+    { label: 'ブルアカBGM図鑑', value: 'encyclopedia' }
   ];
+
   modes.forEach(({ label, value }) => {
     const btn = document.createElement('button');
     btn.textContent = label;
-    btn.onclick = () => {
-      mode = value;
-      if (mode === 'timed') {
-        startTimedMode();
-      } else {
-        // normal mode init
-        score = 0;
-        totalQuestions = 0;
-        answeredVideos = [];
-        setSkipEnabled(true);
-        loadNextQuiz();
-      }
-    };
+    if (value === 'normal') {
+      btn.onclick = startNormalMode;
+    } else if (value === 'timed') {
+      btn.onclick = startTimedMode;
+    } else if (value === 'encyclopedia') {
+      btn.className = 'encyclopedia-btn';
+      btn.onclick = showEncyclopedia;
+    }
     container.appendChild(btn);
   });
 }
 
 function initGame() {
   mode = 'normal';
-  score = 0;
-  totalQuestions = 0;
-  answeredVideos = [];
-  document.getElementById('score').innerText = 'スコア: 0 / 0';
-  document.getElementById('result').innerText = '';
-  document.getElementById('time-display').innerText = '';
-  document.getElementById('choices').innerHTML = '';
-  document.getElementById('control-buttons').style.display = 'none';
   setSkipEnabled(true);
   showModeSelection();
 }
 
-// --- Quiz flow ---
+function startNormalMode() {
+  mode = 'normal';
+  score = 0;
+  totalQuestions = 0;
+  answeredVideos = [];
+  setSkipEnabled(true);
+  loadNextQuiz();
+}
+
+function startTimedMode() {
+  mode = 'timed';
+  score = 0;
+  totalQuestions = 0;
+  answeredVideos = [];
+  timeLeftMs = 60000;
+  
+  updateTimeDisplay(timeLeftMs);
+  document.getElementById('result').innerText = '';
+  updateScore();
+  setSkipEnabled(false);
+
+  if (gameTimer) clearInterval(gameTimer);
+
+  gameTimer = setInterval(() => {
+    timeLeftMs -= 10;
+    if (timeLeftMs <= 0) {
+      timeLeftMs = 0;
+      updateTimeDisplay(timeLeftMs);
+      endGame();
+    } else {
+      updateTimeDisplay(timeLeftMs);
+    }
+  }, 10);
+
+  loadNextQuiz();
+}
+
+// --- Quiz Flow ---
 function loadNextQuiz() {
-  // If in timed mode and no time left, end game
   if (mode === 'timed' && timeLeftMs <= 0) {
-    endGame();
+    if (gameTimer) endGame();
     return;
   }
 
@@ -108,17 +133,15 @@ function loadNextQuiz() {
   document.getElementById('choices').innerHTML = '';
   document.getElementById('control-buttons').style.display = 'flex';
 
-  // choose random unused video
   let available = playlist.filter(p => !answeredVideos.includes(p.videoId));
-  if (available.length === 0) available = playlist.slice(); // reset if exhausted
+  if (available.length === 0) available = playlist.slice();
 
   const random = available[Math.floor(Math.random() * available.length)];
   correctAnswer = random.title;
   currentVideoId = random.videoId;
   answeredVideos.push(currentVideoId);
 
-  const choices = generateChoices(correctAnswer);
-  displayChoices(choices);
+  displayChoices(generateChoices(correctAnswer));
   playIntroClip();
   updateScore();
 }
@@ -140,69 +163,36 @@ function displayChoices(choices) {
   });
 }
 
-// Play the intro clip from start (short preview)
 function playIntroClip() {
   if (!player || !player.loadVideoById) return;
-  // play from 0 seconds; you can tweak startSeconds and endSeconds if desired
   player.loadVideoById({ videoId: currentVideoId, startSeconds: 0 });
 }
 
-// Replay and pause button handlers
-document.addEventListener('DOMContentLoaded', () => {
-  const replayBtn = document.getElementById('replayBtn');
-  const pauseBtn = document.getElementById('pauseBtn');
-  replayBtn.onclick = () => {
-    if (player && player.seekTo) {
-      player.seekTo(0);
-      player.playVideo();
-    }
-  };
-  pauseBtn.onclick = () => {
-    if (!player || !player.getPlayerState) return;
-    const state = player.getPlayerState();
-    if (state === 1) player.pauseVideo();
-    else player.playVideo();
-  };
-
-  // volume slider
-  const vol = document.getElementById('volumeSlider');
-  vol.addEventListener('input', (e) => {
-    const v = parseInt(e.target.value, 10);
-    if (player && player.setVolume) player.setVolume(v);
-  });
-});
-
-// --- Answer checking ---
+// --- Answer Checking ---
 function checkAnswer(choice) {
-  // If no choice (shouldn't happen) ignore
   if (!choice) return;
 
-  // timed mode behavior: correct -> next question, incorrect -> immediate end
+  document.querySelectorAll('#choices button').forEach(b => b.disabled = true);
+
   if (mode === 'timed') {
     totalQuestions++;
     if (choice === correctAnswer) {
       score++;
       document.getElementById('result').innerText = '✅ 正解！';
       updateScore();
-      // quick delay then next question (keep remaining time)
       setTimeout(() => {
-        // prevent going to next if time finished in the meantime
         if (timeLeftMs > 0) loadNextQuiz();
-        else endGame();
+        else if (gameTimer) endGame();
       }, 400);
     } else {
       document.getElementById('result').innerText = `❌ 不正解。正解は: ${correctAnswer}`;
       updateScore();
-      endGame();
+      setTimeout(endGame, 1200);
     }
-    // disable choice buttons after answer to avoid double clicks
-    document.querySelectorAll('#choices button').forEach(b => b.disabled = true);
     return;
   }
 
-  // normal mode (existing behavior: counts up to maxQuestions)
   if (mode === 'normal') {
-    // clear any timed state (safety)
     totalQuestions++;
     if (choice === correctAnswer) {
       score++;
@@ -210,106 +200,146 @@ function checkAnswer(choice) {
     } else {
       document.getElementById('result').innerText = `❌ 不正解。正解は: ${correctAnswer}`;
     }
-    document.querySelectorAll('#choices button').forEach(btn => btn.disabled = true);
     updateScore();
 
     if (totalQuestions >= maxQuestions) {
-      // show end screen for normal mode
-      player.stopVideo();
-      document.getElementById('result').innerText += `\n🎉 終了！スコア: ${score}/${maxQuestions}`;
-      const container = document.getElementById('choices');
-      container.innerHTML = '';
-      const againBtn = document.createElement('button');
-      againBtn.textContent = 'もう一度あそぶ';
-      againBtn.onclick = () => {
-        score = 0; totalQuestions = 0; answeredVideos = []; loadNextQuiz();
-      };
-      container.appendChild(againBtn);
-      const homeBtn = document.createElement('button');
-      homeBtn.textContent = 'ホームに戻る';
-      homeBtn.onclick = initGame;
-      container.appendChild(homeBtn);
-      document.getElementById('control-buttons').style.display = 'none';
-      return;
+      endGame();
+    } else {
+      setTimeout(loadNextQuiz, 1200);
     }
-
-    setTimeout(loadNextQuiz, 1200);
   }
 }
 
-// --- Timed mode implementation ---
-function startTimedMode() {
-  // reset state
-  score = 0;
-  totalQuestions = 0;
-  answeredVideos = [];
-  // 60 seconds = 60000 ms
-  timeLeftMs = 60000;
-  updateTimeDisplay(timeLeftMs);
-  document.getElementById('result').innerText = '';
-  document.getElementById('score').innerText = 'スコア: 0 / 0';
-
-  // disable skip button during timed mode
-  setSkipEnabled(false);
-
-  // clear existing timer if any
-  if (gameTimer) clearInterval(gameTimer);
-
-  // 10ms tick for smooth display (reasonable balance)
-  gameTimer = setInterval(() => {
-    timeLeftMs -= 10;
-    if (timeLeftMs < 0) timeLeftMs = 0;
-    updateTimeDisplay(timeLeftMs);
-    if (timeLeftMs <= 0) {
-      endGame();
-    }
-  }, 10);
-
-  mode = 'timed';
-  loadNextQuiz();
-}
-
+// --- End Game Screen ---
 function endGame() {
-  // stop timer
   if (gameTimer) {
     clearInterval(gameTimer);
     gameTimer = null;
   }
-  // stop video playback
   if (player && player.stopVideo) player.stopVideo();
 
-  // ensure display shows 0.00 if timed out
-  updateTimeDisplay(0);
+  let resultMessage = '';
+  if (mode === 'timed') {
+    updateTimeDisplay(0);
+    resultMessage = `\n🎉 タイムアタック終了！スコア: ${score}問`;
+  } else { // Normal mode max questions reached
+    resultMessage = `\n🎉 終了！スコア: ${score}/${totalQuestions}`;
+  }
+  document.getElementById('result').innerText += resultMessage;
 
-  // show result summary
-  document.getElementById('result').innerText += `\n🎉 タイムアタック終了！スコア: ${score}問`;
-
-  // show buttons for replay/home
   const container = document.getElementById('choices');
   container.innerHTML = '';
+  
   const againBtn = document.createElement('button');
   againBtn.textContent = 'もう一度あそぶ';
-  againBtn.onclick = () => startTimedMode();
+  againBtn.onclick = (mode === 'timed') ? startTimedMode : startNormalMode;
   container.appendChild(againBtn);
+
   const homeBtn = document.createElement('button');
   homeBtn.textContent = 'ホームに戻る';
-  homeBtn.onclick = () => {
-    // re-enable skip when going home
-    setSkipEnabled(true);
-    initGame();
-  };
+  homeBtn.onclick = initGame;
   container.appendChild(homeBtn);
-  document.getElementById('control-buttons').style.display = 'none';
 
-  // re-enable skip when leaving timed mode
-  setSkipEnabled(true);
-  mode = 'normal';
+  document.getElementById('control-buttons').style.display = 'none';
 }
 
-// expose initGame on load (ensure mode selection appears even before YouTube API ready)
+
+// --- BGM Encyclopedia ---
+function showEncyclopedia() {
+  mode = 'encyclopedia';
+  document.getElementById('choices').innerHTML = '';
+  document.getElementById('control-buttons').style.display = 'none';
+  document.getElementById('result').innerText = '';
+  document.getElementById('score').innerText = '';
+  document.getElementById('time-display').innerText = '';
+  
+  const encyclopediaContainer = document.getElementById('encyclopedia');
+  encyclopediaContainer.style.display = 'block';
+  encyclopediaContainer.innerHTML = '';
+
+  const header = document.createElement('div');
+  header.innerHTML = `<h2>ブルアカBGM図鑑 (全${playlist.length}曲)</h2>`;
+  encyclopediaContainer.appendChild(header);
+
+  const nowPlayingContainer = document.createElement('div');
+  nowPlayingContainer.id = 'now-playing-container';
+  nowPlayingContainer.innerHTML = '曲名をクリックすると再生されます。';
+  encyclopediaContainer.appendChild(nowPlayingContainer);
+
+  const searchInput = document.createElement('input');
+  searchInput.type = 'text';
+  searchInput.id = 'encyclopedia-search';
+  searchInput.placeholder = '曲名を検索...';
+  searchInput.onkeyup = filterSongs;
+  encyclopediaContainer.appendChild(searchInput);
+
+  const songListContainer = document.createElement('div');
+  songListContainer.id = 'song-list';
+  encyclopediaContainer.appendChild(songListContainer);
+
+  playlist.forEach(song => {
+    const songButton = document.createElement('button');
+    songButton.className = 'song-item';
+    songButton.textContent = song.title;
+    songButton.onclick = () => {
+      if (player && player.loadVideoById) {
+        player.loadVideoById(song.videoId);
+        nowPlayingContainer.innerHTML = `<strong>再生中:</strong> ${song.title}`;
+        document.querySelectorAll('.song-item.playing').forEach(b => b.classList.remove('playing'));
+        songButton.classList.add('playing');
+      }
+    };
+    songListContainer.appendChild(songButton);
+  });
+  
+  const homeBtn = document.createElement('button');
+  homeBtn.textContent = 'ホームに戻る';
+  homeBtn.style.marginTop = '1em';
+  homeBtn.onclick = initGame;
+  encyclopediaContainer.appendChild(homeBtn);
+}
+
+function filterSongs() {
+  const filterText = document.getElementById('encyclopedia-search').value.toLowerCase();
+  const songs = document.getElementById('song-list').getElementsByClassName('song-item');
+
+  for (let song of songs) {
+    const title = song.textContent.toLowerCase();
+    song.style.display = title.includes(filterText) ? '' : 'none';
+  }
+}
+
+// --- Initial Event Listeners ---
+document.addEventListener('DOMContentLoaded', () => {
+  const replayBtn = document.getElementById('replayBtn');
+  replayBtn.onclick = () => {
+    if (player && player.seekTo) {
+      player.seekTo(0);
+      player.playVideo();
+    }
+  };
+
+  const pauseBtn = document.getElementById('pauseBtn');
+  pauseBtn.onclick = () => {
+    if (!player || typeof player.getPlayerState !== 'function') return;
+    const state = player.getPlayerState();
+    if (state === YT.PlayerState.PLAYING) {
+      player.pauseVideo();
+    } else {
+      player.playVideo();
+    }
+  };
+
+  const vol = document.getElementById('volumeSlider');
+  vol.addEventListener('input', (e) => {
+    if (player && player.setVolume) player.setVolume(parseInt(e.target.value, 10));
+  });
+});
+
 window.addEventListener('load', () => {
-  // attempt to show mode selection right away
-  try { showModeSelection(); } catch (e) { /* ignore if DOM not ready */ }
-  // Also call initGame to set things up
-  try { initGame(); } catch (e) { /* ignore */ }
+  if (typeof YT === 'undefined' || typeof YT.Player === 'undefined') {
+    // API not ready, onYouTubeIframeAPIReady will handle init
+  } else {
+    initGame();
+  }
 });
