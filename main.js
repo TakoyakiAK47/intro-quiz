@@ -1,4 +1,3 @@
-
 let player;
 let correctAnswer = '';
 let currentVideoId = '';
@@ -52,7 +51,12 @@ function loadNextQuiz() {
     document.getElementById('result').innerText = `🎉 終了！スコア: ${score}/${maxQuestions}`;
     const againBtn = document.createElement('button');
     againBtn.textContent = '🔄 もう一度あそぶ';
-    againBtn.onclick = showModeSelection;
+    againBtn.onclick = () => {
+      score = 0;
+      totalQuestions = 0;
+      answeredVideos = [];
+      loadNextQuiz(); // 同じモードで再スタート
+    };
     const container = document.getElementById('choices');
     container.innerHTML = '';
     container.appendChild(againBtn);
@@ -91,7 +95,6 @@ function loadNextQuiz() {
 }
 
 function playIntroClip() {
-  
   if (mode === 'timed') {
     let remaining = 10.00;
     document.getElementById('time-display').innerText = `残り時間: ${remaining.toFixed(2)} 秒`;
@@ -153,14 +156,19 @@ function checkAnswer(choice) {
       document.getElementById('result').innerText += "\n🎯 全問正解おめでとう！";
     }
     const againBtn = document.createElement('button');
-    againBtn.textContent = 'もう一度あそぶ';
-    againBtn.onclick = initGame;
+    againBtn.textContent = '🔄 もう一度あそぶ';
+    againBtn.onclick = () => {
+      score = 0;
+      totalQuestions = 0;
+      answeredVideos = [];
+      loadNextQuiz(); // 同じモードで再スタート
+    };
     const container = document.getElementById('choices');
     container.innerHTML = '';
     container.appendChild(againBtn);
 
     const homeBtn = document.createElement('button');
-    homeBtn.textContent = 'ホームに戻る';
+    homeBtn.textContent = '🏠 ホームに戻る';
     homeBtn.onclick = initGame;
     container.appendChild(homeBtn);
     document.getElementById('control-buttons').style.display = 'none';
