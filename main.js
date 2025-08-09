@@ -50,7 +50,7 @@ function loadNextQuiz() {
     player.stopVideo();
     document.getElementById('result').innerText = `🎉 終了！スコア: ${score}/${maxQuestions}`;
     const againBtn = document.createElement('button');
-    againBtn.textContent = '🔄 もう一度あそぶ';
+    againBtn.textContent = 'もう一度あそぶ';
     againBtn.onclick = () => {
       score = 0;
       totalQuestions = 0;
@@ -62,7 +62,7 @@ function loadNextQuiz() {
     container.appendChild(againBtn);
 
     const homeBtn = document.createElement('button');
-    homeBtn.textContent = '🏠 ホームに戻る';
+    homeBtn.textContent = 'ホームに戻る';
     homeBtn.onclick = initGame;
     container.appendChild(homeBtn);
     document.getElementById('control-buttons').style.display = 'none';
@@ -156,7 +156,7 @@ function checkAnswer(choice) {
       document.getElementById('result').innerText += "\n🎯 全問正解おめでとう！";
     }
     const againBtn = document.createElement('button');
-    againBtn.textContent = '🔄 もう一度あそぶ';
+    againBtn.textContent = 'もう一度あそぶ';
     againBtn.onclick = () => {
       score = 0;
       totalQuestions = 0;
@@ -168,7 +168,7 @@ function checkAnswer(choice) {
     container.appendChild(againBtn);
 
     const homeBtn = document.createElement('button');
-    homeBtn.textContent = '🏠 ホームに戻る';
+    homeBtn.textContent = 'ホームに戻る';
     homeBtn.onclick = initGame;
     container.appendChild(homeBtn);
     document.getElementById('control-buttons').style.display = 'none';
