@@ -61,7 +61,7 @@ function showModeSelection() {
   const modes = [
     { label: 'ノーマルモード', value: 'normal' },
     { label: 'タイムアタックモード', value: 'timed' },
-    { label: 'ブルアカBGM図鑑', value: 'encyclopedia' }
+    { label: 'ブルアカBGM図鑑(PCのみ)', value: 'encyclopedia' }
   ];
 
   modes.forEach(({ label, value }) => {
