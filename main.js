@@ -1,22 +1,18 @@
-// main.js - clean implementation with proper Timed Mode (60.00s), millisecond display, skip disabled during timed mode
 let player;
-// Advisory: If you see ERR_BLOCKED_BY_CLIENT in the console, an extension (e.g. adblocker) is blocking requests.
 console.info('If you see ERR_BLOCKED_BY_CLIENT in the console, try disabling adblocker or allowlist this page to permit YouTube requests.');
 
 let correctAnswer = '';
 let currentVideoId = '';
 let score = 0;
 let totalQuestions = 0;
-const maxQuestions = 9999; // legacy
-const MAX_NORMAL_QUESTIONS = 10; // normal mode limit
+const maxQuestions = 9999;
+const MAX_NORMAL_QUESTIONS = 10;
 let answeredVideos = [];
-let mode = 'normal'; // 'normal' or 'timed'
+let mode = 'normal';
 
-// Timed mode timers (milliseconds)
 let gameTimer = null;
-let timeLeftMs = 0; // remaining milliseconds in timed mode (e.g. 60000)
+let timeLeftMs = 0;
 
-// YouTube IFrame API ready
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
     height: '0',
@@ -26,10 +22,8 @@ function onYouTubeIframeAPIReady() {
       'onReady': (event) => {
         player.setVolume(20);
         document.getElementById('volumeSlider').value = 20;
-        // Ensure mode selection is visible when API is ready
         showModeSelection();
         
-        // Try to ensure the YouTube iframe has a permissive 'allow' attribute so widget API can use features.
         setTimeout(() => {
           try {
             const iframe = document.querySelector('#player iframe');
@@ -45,14 +39,9 @@ function onYouTubeIframeAPIReady() {
   });
 }
 
-// --- UI helpers ---
 
 function setSkipEnabled(enabled) {
   try {
-    // Try to find a skip button inside #control-buttons by common heuristics:
-    // 1) button with onclick that calls loadNextQuiz
-    // 2) button with visible text including 'スキップ'
-    // 3) [data-skip] attribute fallback
     const controlArea = document.getElementById('control-buttons');
     let candidates = [];
     if (controlArea) {
@@ -78,7 +67,6 @@ function setSkipEnabled(enabled) {
     if (skipBtn) {
       try { skipBtn.disabled = !enabled; } catch(e) { /* ignore */ }
     } else {
-      // no skip button found; silently ignore (do not throw)
       console.debug('setSkipEnabled: skip button not found');
     }
   } catch (e) {
@@ -100,7 +88,6 @@ function updateScore() {
   document.getElementById('score').innerText = `スコア: ${score} / ${totalQuestions}`;
 }
 
-// --- Mode selection & initialization ---
 function showModeSelection() {
   document.getElementById('control-buttons').style.display = 'none';
   const container = document.getElementById('choices');
@@ -121,7 +108,6 @@ function showModeSelection() {
       if (mode === 'timed') {
         startTimedMode();
       } else {
-        // normal mode init
         score = 0;
         totalQuestions = 0;
         answeredVideos = [];
@@ -148,24 +134,20 @@ function initGame() {
         try { ensureModeButtons(); } catch(e) {}
 }
 
-// --- Quiz flow ---
 function loadNextQuiz() {
   if (mode === 'normal' && totalQuestions >= MAX_NORMAL_QUESTIONS) { endGame(); return; }
-  // If in timed mode and no time left, end game
   if (mode === 'timed' && timeLeftMs <= 0) {
     endGame();
     return;
   }
 
   document.getElementById('result').innerText = '';
-  // ensure player is visible (may have been hidden at endGame)
   try { const playerEl = document.getElementById('player'); if (playerEl) playerEl.style.display = ''; } catch(e) {}
   document.getElementById('choices').innerHTML = '';
   document.getElementById('control-buttons').style.display = 'flex';
 
-  // choose random unused video
   let available = playlist.filter(p => !answeredVideos.includes(p.videoId));
-  if (available.length === 0) available = playlist.slice(); // reset if exhausted
+  if (available.length === 0) available = playlist.slice();
 
   const random = available[Math.floor(Math.random() * available.length)];
   correctAnswer = random.title;
@@ -195,17 +177,14 @@ function displayChoices(choices) {
   });
 }
 
-// Play the intro clip from start (short preview)
 function playIntroClip() {
   if (!player || !player.loadVideoById) return;
-  // play from 0 seconds; you can tweak startSeconds and endSeconds if desired
     try {
     if (mode === 'timed' && player && player.mute) { player.mute(); console.info('Muted player to allow autoplay in timed mode'); }
   } catch(e) { console.warn('mute failed', e); }
 player.loadVideoById({ videoId: currentVideoId, startSeconds: 0 });
 }
 
-// Replay and pause button handlers
 document.addEventListener('DOMContentLoaded', () => {
   const replayBtn = document.getElementById('replayBtn');
   const pauseBtn = document.getElementById('pauseBtn');
@@ -222,7 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
     else player.playVideo();
   };
 
-  // volume slider
   const vol = document.getElementById('volumeSlider');
   vol.addEventListener('input', (e) => {
     const v = parseInt(e.target.value, 10);
@@ -230,21 +208,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// --- Answer checking ---
 function checkAnswer(choice) {
-  // If no choice (shouldn't happen) ignore
   if (!choice) return;
 
-  // timed mode behavior: correct -> next question, incorrect -> immediate end
   if (mode === 'timed') {
     totalQuestions++;
     if (choice === correctAnswer) {
       score++;
       document.getElementById('result').innerText = '✅ 正解！';
       updateScore();
-      // quick delay then next question (keep remaining time)
       setTimeout(() => {
-        // prevent going to next if time finished in the meantime
         if (timeLeftMs > 0) loadNextQuiz();
         else endGame();
       }, 400);
@@ -253,14 +226,11 @@ function checkAnswer(choice) {
       updateScore();
       endGame();
     }
-    // disable choice buttons after answer to avoid double clicks
     document.querySelectorAll('#choices button').forEach(b => b.disabled = true);
     return;
   }
 
-  // normal mode (existing behavior: counts up to maxQuestions)
   if (mode === 'normal') {
-    // clear any timed state (safety)
     totalQuestions++;
     if (choice === correctAnswer) {
       score++;
@@ -271,7 +241,6 @@ function checkAnswer(choice) {
     document.querySelectorAll('#choices button').forEach(btn => btn.disabled = true);
     updateScore();
 
-    // If we've reached the max normal questions, end the game; otherwise continue
     if (totalQuestions >= MAX_NORMAL_QUESTIONS) {
       endGame();
       return;
@@ -282,26 +251,20 @@ function checkAnswer(choice) {
 }
 
 
-// --- Timed mode implementation ---
 function startTimedMode() {
-  // reset state
   score = 0;
   totalQuestions = 0;
   answeredVideos = [];
-  // 60 seconds = 60000 ms
   timeLeftMs = 60000;
   updateTimeDisplay(timeLeftMs);
   try { const playerEl = document.getElementById('player'); if (playerEl) playerEl.style.display = ''; } catch(e) {}
   document.getElementById('result').innerText = '';
   document.getElementById('score').innerText = 'スコア: 0 / 0';
 
-  // disable skip button during timed mode
   setSkipEnabled(false);
 
-  // clear existing timer if any
   if (gameTimer) clearInterval(gameTimer);
 
-  // 10ms tick for smooth display (reasonable balance)
   gameTimer = setInterval(() => {
     timeLeftMs -= 10;
     if (timeLeftMs < 0) timeLeftMs = 0;
@@ -319,16 +282,13 @@ function startTimedMode() {
 
 function endGame() {
   try {
-const finishedMode = mode; // remember which mode ended
-  // stop timer
+const finishedMode = mode;
   if (gameTimer) {
     clearInterval(gameTimer);
     gameTimer = null;
   }
-  // stop video playback
   if (player && player.stopVideo) player.stopVideo();
 
-  // Hide YouTube player to prevent overlay issues
   try {
     const playerEl = document.getElementById('player');
     if (playerEl) {
@@ -336,7 +296,6 @@ const finishedMode = mode; // remember which mode ended
     }
   } catch (e) { console.warn('hide player failed', e); }
 
-  // ensure display shows 0.00 if timed out; hide time display for normal mode
   if (finishedMode === 'normal') {
     const timeDisplay = document.getElementById('time-display');
     if (timeDisplay) { timeDisplay.style.display = 'none'; }
@@ -344,7 +303,6 @@ const finishedMode = mode; // remember which mode ended
     updateTimeDisplay(0);
   }
 
-  // show result summary (format depends on mode)
   if (finishedMode === 'normal') {
     document.getElementById('result').innerText = `
 🎉 プレイ終了！スコア: ${score}/${MAX_NORMAL_QUESTIONS}`;
@@ -353,7 +311,6 @@ const finishedMode = mode; // remember which mode ended
 🎉 タイムアタック終了！スコア: ${score}問`;
   }
 
-  // clear choices and add fresh buttons
   const container = document.getElementById('choices');
   container.innerHTML = '';
 
@@ -364,12 +321,10 @@ const finishedMode = mode; // remember which mode ended
   againBtn.disabled = false;
   againBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    // restore player display
     try { const playerEl = document.getElementById('player'); if (playerEl) playerEl.style.display = ''; } catch(e){}
     if (finishedMode === 'timed') {
       setTimeout(() => startTimedMode(), 50);
     } else {
-      // restart normal mode
       score = 0; totalQuestions = 0; answeredVideos = [];
       setSkipEnabled(true);
       setTimeout(() => loadNextQuiz(), 50);
@@ -384,22 +339,18 @@ const finishedMode = mode; // remember which mode ended
   homeBtn.disabled = false;
   homeBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    // restore player display and go home
     try { const playerEl = document.getElementById('player'); if (playerEl) playerEl.style.display = ''; } catch(e){}
     setSkipEnabled(true);
     setTimeout(() => initGame(), 50);
   });
   container.appendChild(homeBtn);
 
-  // hide control buttons area to avoid overlaps
   const ctrl = document.getElementById('control-buttons');
   if (ctrl) ctrl.style.display = 'none';
 
-  // re-enable skip when leaving timed mode
   setSkipEnabled(true);
   mode = 'normal';
 
-  // Force buttons clickable and on top
   try {
     if (container) {
       container.style.position = 'relative';
@@ -425,13 +376,10 @@ function ensureModeButtons() {
   try {
     const container = document.getElementById('choices');
     if (!container) return;
-    // If container already has visible buttons, do nothing
     const hasButtons = Array.from(container.children).some(c => c.tagName === 'BUTTON');
     if (hasButtons) return;
-    // Otherwise, call showModeSelection (safe)
     try { showModeSelection();
         try { ensureModeButtons(); } catch(e) {} } catch (e) {
-      // If showModeSelection is not defined for some reason, build minimal buttons here
       container.innerHTML = '';
       const normal = document.createElement('button');
       normal.textContent = 'ノーマルモード';
@@ -442,10 +390,8 @@ function ensureModeButtons() {
       timed.addEventListener('click', () => { mode = 'timed'; startTimedMode(); });
       container.appendChild(timed);
     }
-    // make sure choices area is visible and not overlapped
     container.style.display = 'block';
     container.style.zIndex = '1000';
-    // ensure pointer events enabled on body
     document.body.style.pointerEvents = 'auto';
   } catch (err) {
     console.warn('ensureModeButtons error:', err);
@@ -453,9 +399,7 @@ function ensureModeButtons() {
 }
 
 window.addEventListener('load', () => {
-  // attempt to show mode selection right away
   try { showModeSelection();
         try { ensureModeButtons(); } catch(e) {} } catch (e) { /* ignore if DOM not ready */ }
-  // Also call initGame to set things up
   try { initGame(); } catch (e) { /* ignore */ }
 });
