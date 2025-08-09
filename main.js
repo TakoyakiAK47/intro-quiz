@@ -14,7 +14,11 @@ function onYouTubeIframeAPIReady() {
     height: '0',
     width: '0',
     videoId: '',
-    events: { 'onReady': showModeSelection }
+    events: { 'onReady': (event) => {
+        player.setVolume(20);
+        document.getElementById('volumeSlider').value = 20;
+        showModeSelection();
+      }}
   });
 }
 
@@ -55,7 +59,7 @@ function loadNextQuiz() {
 
     const homeBtn = document.createElement('button');
     homeBtn.textContent = '🏠 ホームに戻る';
-    homeBtn.onclick = () => location.reload();
+    homeBtn.onclick = initGame;
     container.appendChild(homeBtn);
     document.getElementById('control-buttons').style.display = 'none';
     return;
@@ -105,7 +109,10 @@ function playIntroClip() {
   player.loadVideoById({ videoId: currentVideoId, startSeconds: 0 });
 }
 
-document.getElementById('replayBtn').onclick = playIntroClip;
+document.getElementById('replayBtn').onclick = () => {
+  player.seekTo(0);
+  playIntroClip();
+};
 document.getElementById('pauseBtn').onclick = () => {
   const state = player.getPlayerState();
   if (state === 1) player.pauseVideo();
@@ -141,7 +148,25 @@ function checkAnswer(choice) {
     document.getElementById('result').innerText = `❌ 不正解。正解は: ${correctAnswer}`;
   }
   document.querySelectorAll('#choices button').forEach(btn => btn.disabled = true);
-  setTimeout(loadNextQuiz, 2000);
+  if (totalQuestions >= maxQuestions) {
+    if (score === maxQuestions) {
+      document.getElementById('result').innerText += "\n🎯 全問正解おめでとう！";
+    }
+    const againBtn = document.createElement('button');
+    againBtn.textContent = 'もう一度あそぶ';
+    againBtn.onclick = initGame;
+    const container = document.getElementById('choices');
+    container.innerHTML = '';
+    container.appendChild(againBtn);
+
+    const homeBtn = document.createElement('button');
+    homeBtn.textContent = 'ホームに戻る';
+    homeBtn.onclick = initGame;
+    container.appendChild(homeBtn);
+    document.getElementById('control-buttons').style.display = 'none';
+  } else {
+    setTimeout(loadNextQuiz, 2000);
+  }
 }
 
 function updateScore() {
@@ -152,3 +177,16 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
   const vol = parseInt(e.target.value, 10);
   if (player && player.setVolume) player.setVolume(vol);
 });
+
+function initGame() {
+  mode = 'normal';
+  score = 0;
+  totalQuestions = 0;
+  answeredVideos = [];
+  document.getElementById('score').innerText = 'スコア: 0 / 0';
+  document.getElementById('result').innerText = '';
+  document.getElementById('time-display').innerText = '';
+  document.getElementById('choices').innerHTML = '';
+  document.getElementById('control-buttons').style.display = 'none';
+  showModeSelection();
+}
