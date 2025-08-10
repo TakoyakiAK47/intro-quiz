@@ -283,7 +283,7 @@ function showEncyclopedia() {
   const searchInput = document.createElement('input');
   searchInput.type = 'text';
   searchInput.id = 'encyclopedia-search';
-  searchInput.placeholder = '曲名を検索...';
+  searchInput.placeholder = '曲名や作者名で検索...';
   searchInput.onkeyup = filterSongs;
   encyclopediaContainer.appendChild(searchInput);
 
@@ -294,19 +294,17 @@ function showEncyclopedia() {
   playlist.forEach(song => {
     const songButton = document.createElement('button');
     songButton.className = 'song-item';
-    songButton.textContent = song.title;
+    // ★変更点1: 表示内容に作曲者を追加
+    songButton.innerHTML = `${song.title} <br><small style="color: #555;">(Composer: ${song.composer || 'N/A'})</small>`;
     
-    // ★修正点2: クリック時の処理をより確実なものに変更
     songButton.onclick = () => {
       if (player && typeof player.playVideo === 'function') {
-        // プレイヤーをリセットするために、まず再生を停止
         player.stopVideo();
-        // 新しいビデオをIDで読み込み
         player.loadVideoById(song.videoId);
-        // 再生を明示的に命令
         player.playVideo();
         
-        nowPlayingContainer.innerHTML = `<strong>再生中:</strong> ${song.title}`;
+        // ★変更点2: 再生中表示に作曲者を追加
+        nowPlayingContainer.innerHTML = `<strong>再生中:</strong> ${song.title} / ${song.composer || 'N/A'}`;
         document.querySelectorAll('.song-item.playing').forEach(b => b.classList.remove('playing'));
         songButton.classList.add('playing');
       }
@@ -326,6 +324,7 @@ function filterSongs() {
   const songs = document.getElementById('song-list').getElementsByClassName('song-item');
 
   for (let song of songs) {
+    // ★変更点3: textContentで曲名と作曲者の両方を検索対象にする
     const title = song.textContent.toLowerCase();
     song.style.display = title.includes(filterText) ? '' : 'none';
   }
