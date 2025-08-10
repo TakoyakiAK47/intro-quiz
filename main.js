@@ -18,13 +18,17 @@ function onYouTubeIframeAPIReady() {
     height: '0',
     width: '0',
     videoId: '',
+    // ★修正点1: playsinline を追加してiOSでの互換性を向上
+    playerVars: {
+      'playsinline': 1
+    },
     events: {
       'onReady': () => {
         player.setVolume(20);
         document.getElementById('volumeSlider').value = 20;
         showModeSelection();
       },
-      'onStateChange': onPlayerStateChange // Add a state change listener
+      'onStateChange': onPlayerStateChange
     }
   });
 }
@@ -70,7 +74,8 @@ function showModeSelection() {
   const modes = [
     { label: 'ノーマルモード', value: 'normal' },
     { label: 'タイムアタックモード', value: 'timed' },
-    { label: 'ブルアカBGM図鑑(PCのみ)', value: 'encyclopedia' }
+    // ラベルから「(PCのみ)」を削除
+    { label: 'ブルアカBGM図鑑', value: 'encyclopedia' }
   ];
 
   modes.forEach(({ label, value }) => {
@@ -174,7 +179,6 @@ function displayChoices(choices) {
 
 function playIntroClip() {
   if (!player || !player.loadVideoById) return;
-  // The onPlayerStateChange event handler will now manage auto-playing the video for quizzes
   player.cueVideoById({ videoId: currentVideoId, startSeconds: 0 });
 }
 
@@ -232,7 +236,7 @@ function endGame() {
   if (mode === 'timed') {
     updateTimeDisplay(0);
     resultMessage = `\n🎉 タイムアタック終了！スコア: ${score}問`;
-  } else { // Normal mode max questions reached
+  } else {
     resultMessage = `\n🎉 終了！スコア: ${score}/${totalQuestions}`;
   }
   document.getElementById('result').innerText += resultMessage;
@@ -291,11 +295,17 @@ function showEncyclopedia() {
     const songButton = document.createElement('button');
     songButton.className = 'song-item';
     songButton.textContent = song.title;
+    
+    // ★修正点2: クリック時の処理をより確実なものに変更
     songButton.onclick = () => {
-      if (player && player.loadVideoById) {
-        // iPhone FIX: Call playVideo() immediately after loading.
+      if (player && typeof player.playVideo === 'function') {
+        // プレイヤーをリセットするために、まず再生を停止
+        player.stopVideo();
+        // 新しいビデオをIDで読み込み
         player.loadVideoById(song.videoId);
-        player.playVideo(); // This is the crucial addition.
+        // 再生を明示的に命令
+        player.playVideo();
+        
         nowPlayingContainer.innerHTML = `<strong>再生中:</strong> ${song.title}`;
         document.querySelectorAll('.song-item.playing').forEach(b => b.classList.remove('playing'));
         songButton.classList.add('playing');
