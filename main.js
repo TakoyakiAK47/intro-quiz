@@ -23,10 +23,19 @@ function onYouTubeIframeAPIReady() {
         player.setVolume(20);
         document.getElementById('volumeSlider').value = 20;
         showModeSelection();
-      }
+      },
+      'onStateChange': onPlayerStateChange // Add a state change listener
     }
   });
 }
+
+// Autoplay fix for quiz modes
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.CUED && (mode === 'normal' || mode === 'timed')) {
+        player.playVideo();
+    }
+}
+
 
 // --- UI Helpers ---
 function setSkipEnabled(enabled) {
@@ -165,7 +174,8 @@ function displayChoices(choices) {
 
 function playIntroClip() {
   if (!player || !player.loadVideoById) return;
-  player.loadVideoById({ videoId: currentVideoId, startSeconds: 0 });
+  // The onPlayerStateChange event handler will now manage auto-playing the video for quizzes
+  player.cueVideoById({ videoId: currentVideoId, startSeconds: 0 });
 }
 
 // --- Answer Checking ---
@@ -283,7 +293,9 @@ function showEncyclopedia() {
     songButton.textContent = song.title;
     songButton.onclick = () => {
       if (player && player.loadVideoById) {
+        // iPhone FIX: Call playVideo() immediately after loading.
         player.loadVideoById(song.videoId);
+        player.playVideo(); // This is the crucial addition.
         nowPlayingContainer.innerHTML = `<strong>再生中:</strong> ${song.title}`;
         document.querySelectorAll('.song-item.playing').forEach(b => b.classList.remove('playing'));
         songButton.classList.add('playing');
