@@ -1,21 +1,13 @@
-// --- Global Variables ---
-let player;
-let correctAnswer = '';
-let currentVideoId = '';
-let score = 0;
-let totalQuestions = 0;
-let answeredVideos = [];
-let mode = 'menu'; // 'normal', 'timed', 'endless', 'menu'
-let endlessStreak = 0;
-let gameTimer = null;
-let timeLeftMs = 0;
-let gameData = {};
-let currentPlaylist = [];
-let answerChecked = false;
-
 // --- Constants ---
 const NEXT_QUESTION_DELAY = 1200;
 const GAME_OVER_DELAY = 2000;
+
+const GAME_MODES = {
+    MENU: 'menu',
+    NORMAL: 'normal',
+    TIMED: 'timed',
+    ENDLESS: 'endless',
+};
 
 const defaultGameData = {
     settings: {
@@ -32,6 +24,28 @@ const defaultGameData = {
         extreme: false, insane: false, torment: false, lunatic: false
     },
 };
+
+// --- Global Variables & State ---
+let player;
+let correctAnswer = '';
+let currentVideoId = '';
+let gameTimer = null;
+let gameData = {};
+let currentPlaylist = [];
+let answeredVideos = [];
+
+// State Object
+let gameState = {
+    mode: GAME_MODES.MENU,
+    score: 0,
+    totalQuestions: 0,
+    endlessStreak: 0,
+    timeLeftMs: 0,
+    answerChecked: false,
+};
+
+// DOM Element Cache
+const domElements = {};
 
 // --- Data Management ---
 function saveGameData() {
@@ -57,36 +71,28 @@ function loadGameData() {
 
 // --- YouTube IFrame API ---
 function onYouTubeIframeAPIReady() {
-    document.getElementById('loading-overlay').style.display = 'none';
+    domElements.loadingOverlay.style.display = 'none';
     player = new YT.Player('player', {
         height: '0', width: '0', videoId: '',
         playerVars: { 'playsinline': 1 },
-        events: {
-            'onReady': () => {
-                player.setVolume(document.getElementById('volumeSlider').value);
-                initGame();
-            },
-            'onStateChange': onPlayerStateChange
-        }
+        events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
     });
 }
 
+function onPlayerReady() {
+    player.setVolume(domElements.volumeSlider.value);
+    initGame();
+}
+
 function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.CUED && ['normal', 'timed', 'endless'].includes(mode)) {
+    if (event.data === YT.PlayerState.CUED && [GAME_MODES.NORMAL, GAME_MODES.TIMED, GAME_MODES.ENDLESS].includes(gameState.mode)) {
         player.playVideo();
     }
 }
 
 // --- Screen Management ---
-/**
- * Manages the visibility of different screens/views.
- * @param {string} screenId The ID of the screen to show ('main-menu', 'game-view', 'settings-screen', etc.)
- */
 function showScreen(screenId) {
-    document.getElementById('main-menu').style.display = 'none';
-    document.getElementById('game-view').style.display = 'none';
-    document.querySelectorAll('.screen').forEach(el => el.style.display = 'none');
-
+    document.querySelectorAll('.screen, #main-menu, #game-view').forEach(el => el.style.display = 'none');
     const target = document.getElementById(screenId);
     if (target) {
         target.style.display = (screenId === 'game-view' || screenId === 'main-menu') ? 'flex' : 'block';
@@ -95,19 +101,18 @@ function showScreen(screenId) {
 
 // --- Game Flow & State ---
 function initGame() {
-    mode = 'menu';
+    gameState.mode = GAME_MODES.MENU;
     if (gameTimer) clearInterval(gameTimer);
     if (player && typeof player.stopVideo === 'function') player.stopVideo();
     
     showScreen('main-menu');
-    
-    const container = document.getElementById('main-menu');
+    const container = domElements.mainMenu;
     container.innerHTML = '';
 
     const modes = [
-        { id: 'normal', label: 'ノーマルモード', action: () => selectMode('normal') },
-        { id: 'timed', label: 'タイムアタックモード', action: () => selectMode('timed') },
-        { id: 'endless', label: 'エンドレスモード', action: () => selectMode('endless') },
+        { id: GAME_MODES.NORMAL, label: 'ノーマルモード', action: () => selectMode(GAME_MODES.NORMAL) },
+        { id: GAME_MODES.TIMED, label: 'タイムアタックモード', action: () => selectMode(GAME_MODES.TIMED) },
+        { id: GAME_MODES.ENDLESS, label: 'エンドレスモード', action: () => selectMode(GAME_MODES.ENDLESS) },
         { id: 'encyclopedia', label: 'ブルアカBGM図鑑', action: showEncyclopedia },
         { id: 'stats', label: '実績・統計', action: showStatsScreen }
     ];
@@ -122,15 +127,14 @@ function initGame() {
 }
 
 function selectMode(selectedMode) {
-    mode = selectedMode;
-    if (mode === 'normal' || mode === 'timed') {
+    gameState.mode = selectedMode;
+    if (gameState.mode === GAME_MODES.NORMAL || gameState.mode === GAME_MODES.TIMED) {
         showScreen('settings-screen');
         setupModeSettings();
     } else {
-        const prompt = document.getElementById('start-prompt');
-        prompt.style.display = 'flex';
-        document.getElementById('start-prompt-btn').onclick = () => {
-            prompt.style.display = 'none';
+        domElements.startPrompt.style.display = 'flex';
+        domElements.startPromptBtn.onclick = () => {
+            domElements.startPrompt.style.display = 'none';
             if (player && player.getPlayerState() !== 1) {
                  player.mute();
                  player.playVideo();
@@ -143,16 +147,16 @@ function selectMode(selectedMode) {
 }
 
 function setupModeSettings() {
-    const container = document.getElementById('settings-screen');
+    const container = domElements.settingsScreen;
     let settingsContent = '';
     
-    if (mode === 'normal') {
+    if (gameState.mode === GAME_MODES.NORMAL) {
         const composers = ['All', ...new Set(playlist.map(s => s.composer).filter(Boolean))];
         const options = composers.map(c => `<option value="${c}" ${gameData.settings.composerFilter === c ? 'selected' : ''}>${c}</option>`).join('');
         settingsContent = `<h2>ノーマルモード設定</h2>
             <div class="setting-item"><label for="normal-questions">問題数:</label><input type="number" id="normal-questions" min="1" max="50" value="${gameData.settings.normalQuestions}"></div>
             <div class="setting-item"><label for="composer-filter">作者で絞り込む:</label><select id="composer-filter">${options}</select></div>`;
-    } else if (mode === 'timed') {
+    } else if (gameState.mode === GAME_MODES.TIMED) {
         settingsContent = `<h2>タイムアタックモード設定</h2>
             <div class="setting-item"><label for="timed-duration">制限時間(秒):</label><input type="number" id="timed-duration" min="10" max="180" step="10" value="${gameData.settings.timedDuration / 1000}"></div>`;
     }
@@ -162,10 +166,10 @@ function setupModeSettings() {
         <button id="settings-back-btn">戻る</button>`;
     
     document.getElementById('start-game-btn').onclick = () => {
-        if (mode === 'normal') {
+        if (gameState.mode === GAME_MODES.NORMAL) {
             gameData.settings.normalQuestions = parseInt(document.getElementById('normal-questions').value, 10);
             gameData.settings.composerFilter = document.getElementById('composer-filter').value;
-        } else if (mode === 'timed') {
+        } else if (gameState.mode === GAME_MODES.TIMED) {
             gameData.settings.timedDuration = parseInt(document.getElementById('timed-duration').value, 10) * 1000;
         }
         saveGameData();
@@ -175,14 +179,14 @@ function setupModeSettings() {
 }
 
 function launchQuiz() {
-    score = 0;
-    totalQuestions = 0;
+    gameState.score = 0;
+    gameState.totalQuestions = 0;
+    gameState.endlessStreak = 0;
+    gameState.answerChecked = false;
     answeredVideos = [];
-    endlessStreak = 0;
-    answerChecked = false;
     
     const filter = gameData.settings.composerFilter;
-    currentPlaylist = (mode === 'normal' && filter !== 'All') 
+    currentPlaylist = (gameState.mode === GAME_MODES.NORMAL && filter !== 'All') 
         ? playlist.filter(song => song.composer === filter) 
         : [...playlist];
     
@@ -193,18 +197,18 @@ function launchQuiz() {
     }
     
     showScreen('game-view');
-    document.getElementById('game-controls-container').style.display = 'block';
+    domElements.gameControlsContainer.style.display = 'block';
 
-    if (mode === 'timed') {
-        timeLeftMs = gameData.settings.timedDuration;
+    if (gameState.mode === GAME_MODES.TIMED) {
+        gameState.timeLeftMs = gameData.settings.timedDuration;
         if (gameTimer) clearInterval(gameTimer);
         gameTimer = setInterval(() => {
-            timeLeftMs -= 10;
-            if (timeLeftMs <= 0) {
-                timeLeftMs = 0;
+            gameState.timeLeftMs -= 10;
+            if (gameState.timeLeftMs <= 0) {
+                gameState.timeLeftMs = 0;
                 endGame();
             }
-            updateTimeDisplay(timeLeftMs);
+            updateTimeDisplay(gameState.timeLeftMs);
         }, 10);
     }
     
@@ -212,17 +216,15 @@ function launchQuiz() {
 }
 
 function loadNextQuiz() {
-    // Check for game over conditions before loading a new question
-    if ((mode === 'timed' && timeLeftMs <= 0) || (mode === 'normal' && totalQuestions >= gameData.settings.normalQuestions)) {
+    if ((gameState.mode === GAME_MODES.TIMED && gameState.timeLeftMs <= 0) || (gameState.mode === GAME_MODES.NORMAL && gameState.totalQuestions >= gameData.settings.normalQuestions)) {
         endGame();
         return;
     }
 
-    answerChecked = false;
-    document.getElementById('result').innerText = '';
+    gameState.answerChecked = false;
+    domElements.result.innerText = '';
     updateUIState();
     
-    // Improve song selection logic: only repeat songs after the entire playlist has been used.
     let available = currentPlaylist.filter(p => !answeredVideos.includes(p.videoId));
     if (available.length === 0) {
         answeredVideos = [];
@@ -250,7 +252,7 @@ function generateChoices(correct) {
 }
 
 function displayChoices(choices) {
-    const container = document.getElementById('choices');
+    const container = domElements.choices;
     container.innerHTML = '';
     choices.forEach(choice => {
         const btn = document.createElement('button');
@@ -265,91 +267,152 @@ function playIntroClip() {
     player.cueVideoById({ videoId: currentVideoId, startSeconds: 0 });
 }
 
-function checkAnswer(choice) {
-    if (answerChecked) return;
-    answerChecked = true;
+// --- Answer Processing (Refactored) ---
+function checkAnswer(selectedChoice) {
+    if (gameState.answerChecked) return;
+    gameState.answerChecked = true;
     player.stopVideo();
+
+    const isCorrect = (selectedChoice === correctAnswer);
     
-    const isCorrect = (choice === correctAnswer);
     if (isCorrect) {
-        score++;
-        document.getElementById('result').innerText = '✅ 正解！';
-        if (mode === 'endless') {
-            endlessStreak++;
-            updateEndlessAchievements();
-        }
+        processCorrectAnswer();
     } else {
-        document.getElementById('result').innerText = `❌ 不正解...`;
-        if (mode === 'endless') endlessStreak = 0;
+        processIncorrectAnswer();
     }
     
-    totalQuestions++;
+    gameState.totalQuestions++;
     updateSongStats(currentVideoId, isCorrect);
+    updateChoiceButtonsUI(selectedChoice);
     updateUIState();
     saveGameData();
-    
-    document.querySelectorAll('#choices button').forEach(b => {
-        b.disabled = true;
-        if (b.textContent === correctAnswer) b.classList.add('correct');
-        else if (b.textContent === choice) b.classList.add('incorrect');
-    });
+    scheduleNextStep(isCorrect);
+}
 
-    // Special handling to show 100% progress bar on the final question
-    if (mode === 'normal' && totalQuestions === gameData.settings.normalQuestions) {
-        document.getElementById('progress-bar-fill').style.width = '100%';
+function processCorrectAnswer() {
+    gameState.score++;
+    domElements.result.innerText = '✅ 正解！';
+    if (gameState.mode === GAME_MODES.ENDLESS) {
+        gameState.endlessStreak++;
+        updateEndlessAchievements();
     }
+}
+
+function processIncorrectAnswer() {
+    domElements.result.innerText = `❌ 不正解...`;
+    if (gameState.mode === GAME_MODES.ENDLESS) {
+        gameState.endlessStreak = 0;
+    }
+}
+
+function updateChoiceButtonsUI(selectedChoice) {
+    domElements.choices.querySelectorAll('button').forEach(b => {
+        b.disabled = true;
+        if (b.textContent === correctAnswer) {
+            b.classList.add('correct');
+        } else if (b.textContent === selectedChoice) {
+            b.classList.add('incorrect');
+        }
+    });
+}
+
+function scheduleNextStep(isCorrect) {
+    const isNormalGameOver = gameState.mode === GAME_MODES.NORMAL && gameState.totalQuestions >= gameData.settings.normalQuestions;
+    const isTimedGameOver = gameState.mode === GAME_MODES.TIMED && !isCorrect;
+    const isGameOver = isNormalGameOver || isTimedGameOver;
     
-    const isGameOver = (mode === 'normal' && totalQuestions >= gameData.settings.normalQuestions) || 
-                       (mode === 'timed' && !isCorrect);
+    if (isNormalGameOver) {
+        domElements.progressBarFill.style.width = '100%';
+    }
     
     setTimeout(() => {
         if (isGameOver) {
             endGame();
-        } else if (mode !== 'timed' || isCorrect) {
+        } else if (gameState.mode !== GAME_MODES.TIMED || isCorrect) {
             loadNextQuiz();
         }
     }, isGameOver ? GAME_OVER_DELAY : NEXT_QUESTION_DELAY);
 }
 
-// --- End Game & Stats ---
+
+// --- End Game & Share ---
+function shareResult() {
+    const title = "Blue Archive BGMイントロクイズ";
+    const hashtag = "ブルアカイントロクイズ";
+    let modeText = '';
+    let resultText = '';
+
+    switch (gameState.mode) {
+        case GAME_MODES.NORMAL:
+            const accuracy = gameState.totalQuestions > 0 ? ((gameState.score / gameState.totalQuestions) * 100).toFixed(1) : 0;
+            modeText = "ノーマルモード";
+            resultText = `結果: ${gameState.score}/${gameState.totalQuestions}問正解 (正答率: ${accuracy}%)`;
+            break;
+        case GAME_MODES.TIMED:
+            const durationInSeconds = gameData.settings.timedDuration / 1000;
+            modeText = `タイムアタックモード(${durationInSeconds}秒)`;
+            resultText = `スコア: ${gameState.score}問`;
+            break;
+        case GAME_MODES.ENDLESS:
+            modeText = "エンドレスモード";
+            resultText = `連続正解記録: ${gameData.stats.highScores.endless}問`; // Use high score for endless share
+            break;
+    }
+
+    const fullText = `${title}\n${modeText}でプレイしました！\n${resultText}\n\n#${hashtag}`;
+    const encodedText = encodeURIComponent(fullText);
+    const url = `https://twitter.com/intent/tweet?text=${encodedText}`;
+    
+    window.open(url, '_blank');
+}
+
 function endGame() {
     if (gameTimer) clearInterval(gameTimer);
     gameTimer = null;
-    answerChecked = true;
+    gameState.answerChecked = true;
     
-    // Hide unnecessary UI elements for the end screen
-    document.getElementById('progress-container').style.display = 'none';
-    document.getElementById('time-display').style.display = 'none';
-    document.getElementById('game-controls-container').style.display = 'none';
+    domElements.progressContainer.style.display = 'none';
+    domElements.timeDisplay.style.display = 'none';
+    domElements.gameControlsContainer.style.display = 'none';
 
     let resultMessage = '';
-    if (mode === 'timed') {
-        if (score > (gameData.stats.highScores.timed || 0)) gameData.stats.highScores.timed = score;
-        resultMessage = `🎉 タイムアップ！ スコア: ${score}問`;
-    } else if (mode === 'normal') {
-        const accuracy = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : 0;
-        if (score > (gameData.stats.highScores.normal || 0)) gameData.stats.highScores.normal = score;
-        resultMessage = `🎉 終了！ スコア: ${score}/${totalQuestions} (正答率: ${accuracy}%)`;
+    if (gameState.mode === GAME_MODES.TIMED) {
+        if (gameState.score > (gameData.stats.highScores.timed || 0)) gameData.stats.highScores.timed = gameState.score;
+        resultMessage = `🎉 タイムアップ！ スコア: ${gameState.score}問`;
+    } else if (gameState.mode === GAME_MODES.NORMAL) {
+        const accuracy = gameState.totalQuestions > 0 ? ((gameState.score / gameState.totalQuestions) * 100).toFixed(1) : 0;
+        if (gameState.score > (gameData.stats.highScores.normal || 0)) gameData.stats.highScores.normal = gameState.score;
+        resultMessage = `🎉 終了！ スコア: ${gameState.score}/${gameState.totalQuestions} (正答率: ${accuracy}%)`;
     }
     saveGameData();
 
-    document.getElementById('result').innerText = resultMessage;
+    domElements.result.innerText = resultMessage;
 
-    const container = document.getElementById('choices');
+    const container = domElements.choices;
     container.innerHTML = ''; 
     
+    const shareBtn = document.createElement('button');
+    shareBtn.id = 'share-btn';
+    shareBtn.textContent = '結果をXでシェア';
+    shareBtn.onclick = shareResult;
+
     const againBtn = document.createElement('button');
     againBtn.textContent = 'もう一度あそぶ';
-    againBtn.onclick = () => selectMode(mode);
+    againBtn.onclick = () => selectMode(gameState.mode);
     
     const homeBtn = document.createElement('button');
     homeBtn.textContent = 'ホームに戻る';
     homeBtn.onclick = initGame;
-
+    
+    if(gameState.mode === GAME_MODES.NORMAL || gameState.mode === GAME_MODES.TIMED) {
+       container.appendChild(shareBtn);
+    }
     container.appendChild(againBtn);
     container.appendChild(homeBtn);
 }
 
+
+// --- UI Helpers & Other Functions ---
 function showStatsScreen() {
     showScreen('stats-screen');
     const container = document.getElementById('stats-screen');
@@ -400,52 +463,45 @@ function showStatsScreen() {
     };
 }
 
-// --- UI Helpers ---
 function updateUIState() {
     updateScore();
     updateProgressIndicator();
-    updateTimeDisplay(mode === 'timed' ? timeLeftMs : null);
+    updateTimeDisplay(gameState.mode === GAME_MODES.TIMED ? gameState.timeLeftMs : null);
 }
 
 function updateScore() {
-    const scoreEl = document.getElementById('score');
     let scoreText = '';
-    if (mode === 'normal' || mode === 'timed') {
-        scoreText = `Score: ${score}`;
-    } else if (mode === 'endless') {
+    if (gameState.mode === GAME_MODES.NORMAL || gameState.mode === GAME_MODES.TIMED) {
+        scoreText = `Score: ${gameState.score}`;
+    } else if (gameState.mode === GAME_MODES.ENDLESS) {
         scoreText = `High Score: ${gameData.stats.highScores.endless || 0}`;
     }
-    scoreEl.innerText = scoreText;
+    domElements.score.innerText = scoreText;
 }
 
 function updateProgressIndicator() {
-    const container = document.getElementById('progress-container');
-    const textEl = document.getElementById('progress-text');
-    const barFillEl = document.getElementById('progress-bar-fill');
-    const barWrapper = document.querySelector('.progress-bar-wrapper');
-
-    container.style.display = 'none'; // Default to hidden
+    const container = domElements.progressContainer;
+    container.style.display = 'none'; 
     
-    if (mode === 'normal') {
+    if (gameState.mode === GAME_MODES.NORMAL) {
         const maxQ = gameData.settings.normalQuestions;
-        textEl.textContent = `Question ${totalQuestions + 1} / ${maxQ}`;
-        barFillEl.style.width = `${(totalQuestions / maxQ) * 100}%`;
+        domElements.progressText.textContent = `Question ${gameState.totalQuestions + 1} / ${maxQ}`;
+        domElements.progressBarFill.style.width = `${(gameState.totalQuestions / maxQ) * 100}%`;
         container.style.display = 'block';
-        barWrapper.style.display = 'block';
-    } else if (mode === 'endless') {
-        textEl.textContent = `Current Streak: ${endlessStreak}`;
+        domElements.progressBarWrapper.style.display = 'block';
+    } else if (gameState.mode === GAME_MODES.ENDLESS) {
+        domElements.progressText.textContent = `Current Streak: ${gameState.endlessStreak}`;
         container.style.display = 'block';
-        barWrapper.style.display = 'none';
+        domElements.progressBarWrapper.style.display = 'none';
     }
 }
 
 function updateTimeDisplay(ms) {
-    const timeEl = document.getElementById('time-display');
-    if (ms != null && mode === 'timed') {
-        timeEl.style.display = 'block';
-        timeEl.innerText = `残り時間: ${(ms / 1000).toFixed(2)} 秒`;
+    if (ms != null && gameState.mode === GAME_MODES.TIMED) {
+        domElements.timeDisplay.style.display = 'block';
+        domElements.timeDisplay.innerText = `残り時間: ${(ms / 1000).toFixed(2)} 秒`;
     } else {
-        timeEl.style.display = 'none';
+        domElements.timeDisplay.style.display = 'none';
     }
 }
 
@@ -457,17 +513,17 @@ function updateSongStats(videoId, isCorrect) {
 }
 
 function updateEndlessAchievements() {
-    if (endlessStreak > (gameData.stats.highScores.endless || 0)) {
-        gameData.stats.highScores.endless = endlessStreak;
+    if (gameState.endlessStreak > (gameData.stats.highScores.endless || 0)) {
+        gameData.stats.highScores.endless = gameState.endlessStreak;
     }
-    if (endlessStreak >= 10)   gameData.achievements.normal = true;
-    if (endlessStreak >= 20)   gameData.achievements.hard = true;
-    if (endlessStreak >= 50)   gameData.achievements.veryhard = true;
-    if (endlessStreak >= 100)  gameData.achievements.hardcore = true;
-    if (endlessStreak >= 150)  gameData.achievements.extreme = true;
-    if (endlessStreak >= 250)  gameData.achievements.insane = true;
-    if (endlessStreak >= 500)  gameData.achievements.torment = true;
-    if (endlessStreak >= 1000) gameData.achievements.lunatic = true;
+    if (gameState.endlessStreak >= 10)   gameData.achievements.normal = true;
+    if (gameState.endlessStreak >= 20)   gameData.achievements.hard = true;
+    if (gameState.endlessStreak >= 50)   gameData.achievements.veryhard = true;
+    if (gameState.endlessStreak >= 100)  gameData.achievements.hardcore = true;
+    if (gameState.endlessStreak >= 150)  gameData.achievements.extreme = true;
+    if (gameState.endlessStreak >= 250)  gameData.achievements.insane = true;
+    if (gameState.endlessStreak >= 500)  gameData.achievements.torment = true;
+    if (gameState.endlessStreak >= 1000) gameData.achievements.lunatic = true;
 }
 
 function showEncyclopedia() {
@@ -506,11 +562,28 @@ function filterSongs() {
 
 // --- Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('loading-overlay').style.display = 'flex';
+    // Cache DOM elements
+    domElements.loadingOverlay = document.getElementById('loading-overlay');
+    domElements.mainMenu = document.getElementById('main-menu');
+    domElements.choices = document.getElementById('choices');
+    domElements.result = document.getElementById('result');
+    domElements.score = document.getElementById('score');
+    domElements.timeDisplay = document.getElementById('time-display');
+    domElements.progressContainer = document.getElementById('progress-container');
+    domElements.progressText = document.getElementById('progress-text');
+    domElements.progressBarFill = document.getElementById('progress-bar-fill');
+    domElements.progressBarWrapper = document.querySelector('.progress-bar-wrapper');
+    domElements.gameControlsContainer = document.getElementById('game-controls-container');
+    domElements.volumeSlider = document.getElementById('volumeSlider');
+    domElements.settingsScreen = document.getElementById('settings-screen');
+    domElements.startPrompt = document.getElementById('start-prompt');
+    domElements.startPromptBtn = document.getElementById('start-prompt-btn');
+
+    domElements.loadingOverlay.style.display = 'flex';
     loadGameData();
 
     document.getElementById('replayBtn').onclick = () => {
-        if (player && player.seekTo && !answerChecked) {
+        if (player && player.seekTo && !gameState.answerChecked) {
             player.seekTo(0);
             player.playVideo();
         }
@@ -522,7 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
         (state === YT.PlayerState.PLAYING) ? player.pauseVideo() : player.playVideo();
     };
 
-    document.getElementById('volumeSlider').addEventListener('input', (e) => {
+    domElements.volumeSlider.addEventListener('input', (e) => {
         if (player && player.setVolume) player.setVolume(parseInt(e.target.value, 10));
     });
 });
