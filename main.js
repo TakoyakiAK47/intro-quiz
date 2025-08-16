@@ -240,16 +240,40 @@ function loadNextQuiz() {
     playIntroClip();
 }
 
+// ▼▼▼ この関数を書き換えました ▼▼▼
 function generateChoices(correct) {
     const choices = new Set([correct]);
-    const distractors = currentPlaylist.filter(p => p.title !== correct).map(p => p.title);
+    
+    // 1. 正解の曲の完全なオブジェクト情報を取得
+    const correctSongObject = currentPlaylist.find(song => song.title === correct);
+
+    // 2. 正解の曲に similarGroup が設定されているかチェック
+    if (correctSongObject && correctSongObject.similarGroup) {
+        // 3. 同じsimilarGroupを持ち、かつ正解とは異なる曲を探す
+        const similarSong = currentPlaylist.find(song => 
+            song.similarGroup === correctSongObject.similarGroup && song.title !== correct
+        );
+        // 4. 見つかった場合、選択肢に追加する
+        if (similarSong) {
+            choices.add(similarSong.title);
+        }
+    }
+    
+    // 5. 残りの選択肢をランダムで埋める
+    // 注意：すでに選択肢に入っている曲は除外する
+    const distractors = currentPlaylist
+        .filter(p => !choices.has(p.title)) // すでにchoicesにある曲は除外
+        .map(p => p.title);
     
     while (choices.size < 4 && distractors.length > 0) {
         const randomIndex = Math.floor(Math.random() * distractors.length);
         choices.add(distractors.splice(randomIndex, 1)[0]);
     }
+    
+    // 最後に選択肢の順番をシャッフルして返す
     return Array.from(choices).sort(() => 0.5 - Math.random());
 }
+// ▲▲▲ この関数を書き換えました ▲▲▲
 
 function displayChoices(choices) {
     const container = domElements.choices;

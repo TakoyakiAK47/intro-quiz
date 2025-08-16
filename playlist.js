@@ -2,13 +2,13 @@ const playlist = [
   { title: "Constant Moderato", videoId: "SHkF48SgiSA", composer: "Mitsukiyo" },
   { title: "Luminous Memory", videoId: "D3boxTP-ZG8", composer: "Mitsukiyo" },
   { title: "Mischievous Step", videoId: "FHW2fNPaHU4", composer: "Mitsukiyo" },
-  { title: "Lovely Picnic", videoId: "dEfXiVI1Euo", composer: "Mitsukiyo" },
+  { title: "Lovely Picnic", videoId: "dEfXiVI1Euo", composer: "Mitsukiyo", similarGroup: 1 }, // similarGroup: 1
   { title: "Colorful Mess", videoId: "OF9cu3cutj0", composer: "KARUT" },
   { title: "Funky Road", videoId: "8h458BG1-Bo", composer: "KARUT" },
   { title: "Unwelcome School", videoId: "pEg_d2f6myw", composer: "Mitsukiyo" },
   { title: "Shady Girls", videoId: "v7s-gHSs-YM", composer: "Mitsukiyo" },
   { title: "Midsummer Cat", videoId: "jokHmrFq56E", composer: "Mitsukiyo" },
-  { title: "Romantic Smile", videoId: "EBnOCXXg91o", composer: "Mitsukiyo" },
+  { title: "Romantic Smile", videoId: "EBnOCXXg91o", composer: "Mitsukiyo", similarGroup: 1 }, // similarGroup: 1
   { title: "Connected Sky", videoId: "DzhcJxrS5Z8", composer: "KARUT" },
   { title: "Shooting Stars", videoId: "yfsqGCO_ZfM", composer: "KARUT" },
   { title: "Barrier", videoId: "phqb4ifkTrE", composer: "KARUT" },
@@ -72,17 +72,17 @@ const playlist = [
   { title: "Denshi Toujou!", videoId: "RM5h6JAtyTs", composer: "KARUT" },
   { title: "Kaiten Screw!!!", videoId: "VBn8YhuMdm0", composer: "KARUT" },
   { title: "Interface (Hard Arrange)", videoId: "kYAswwNTPD4", composer: "Mitsukiyo" },
-  { title: "Tech N Tech (Hard Arrange)", videoId: "Z_b24XEC8Q8", composer: "KARUT" },
+  { title: "Tech N Tech (Hard Arrange)", videoId: "Z_b24XEC8Q8", composer: "KARUT", similarGroup: 2 }, // similarGroup: 2
   { title: "Alert (Hard Arrange)", videoId: "d4XDBYg1Tzg", composer: "KARUT" },
-  { title: "Crossfire (Hard Arrange)", videoId: "RmvlrH2OjM8", composer: "KARUT" },
+  { title: "Crossfire (Hard Arrange)", videoId: "RmvlrH2OjM8", composer: "KARUT", similarGroup: 2 }, // similarGroup: 2
   { title: "Burning Love", videoId: "AKkmWEr7jYY", composer: "Mitsukiyo" },
   { title: "Fevertime", videoId: "JlfIWvaUNng", composer: "KARUT" },
   { title: "Summer Bounce", videoId: "E-Q5CUybI4c", composer: "Mitsukiyo" },
   { title: "Colorful Beach", videoId: "8omekhnCbl8", composer: "Mitsukiyo" },
   { title: "Summer Bounce (Hard Arrange)", videoId: "9vyWEyuPggU", composer: "KARUT" },
   { title: "Hifumi Daisuki", videoId: "ihqpgamoqbM", composer: "Mitsukiyo" },
-  { title: "PRST Academy", videoId: "YX8g_jg1XLs", composer: "Mitsukiyo" },
-  { title: "PRST Marching", videoId: "7K4v6eKqgQg", composer: "Mitsukiyo" },
+  { title: "PRST Academy", videoId: "YX8g_jg1XLs", composer: "Mitsukiyo", similarGroup: 5 }, // similarGroup: 5
+  { title: "PRST Marching", videoId: "7K4v6eKqgQg", composer: "Mitsukiyo", similarGroup: 5 }, // similarGroup: 5
   { title: "Library of Omen", videoId: "rW4gMzdVO8s", composer: "KARUT" },
   { title: "Summertime Archive", videoId: "yyhZgO9BBEw", composer: "Mitsukiyo" },
   { title: "Constant Moderato Piano Arrange", videoId: "qz_G8rqofp0", composer: "Mitsukiyo" },
@@ -94,7 +94,7 @@ const playlist = [
   { title: "Bunny Bunny Carrot Carrot", videoId: "fLeFnN5tarI", composer: "Mitsukiyo" },
   { title: "JACKPOT 777", videoId: "YOm5UvwBLgc", composer: "KARUT" },
   { title: "OperationD", videoId: "RkUmdodpwvU", composer: "Nor" },
-  { title: "Blue New Year", videoId: "-zBJ4RfT8ls", composer: "Nor" },
+  { title: "Blue New Year", videoId: "-zBJ4RfT8ls", composer: "Nor", similarGroup: 4 }, // similarGroup: 4
   { title: "Oxygen Destroyer", videoId: "CQGfCpfRArU", composer: "KARUT" },
   { title: "Nesno wons", videoId: "Le0BSHu5-bQ", composer: "Mitsukiyo" },
   { title: "Undefined Behavior", videoId: "_Df9xJBDPCY", composer: "KARUT" },
@@ -103,7 +103,7 @@ const playlist = [
   { title: "Poppin' Memories", videoId: "OrxJ0uKPBzU", composer: "KARUT" },
   { title: "Cotton Candy Island", videoId: "eS4BAwDkraY", composer: "Mitsukiyo" },
   { title: "Alkaline Tears", videoId: "Tntuxch3aUQ", composer: "Mitsukiyo" },
-  { title: "Blue New Battle", videoId: "_WJLkY7PcvU", composer: "Mitsukiyo" },
+  { title: "Blue New Battle", videoId: "_WJLkY7PcvU", composer: "Mitsukiyo", similarGroup: 4 }, // similarGroup: 4
   { title: "NERINERI CHALLENGE", videoId: "VjxfInALNFY", composer: "Nor" },
   { title: "Starting Pistol", videoId: "f9_dmfwIuKY", composer: "KARUT" },
   { title: "Dolce Biblioteca", videoId: "h2VRu7Dk9D4", composer: "Mitsukiyo" },
@@ -120,7 +120,7 @@ const playlist = [
   { title: "Underwater Jungle", videoId: "d8dIyfIGLQM", composer: "Nor" },
   { title: "Luxury Cool", videoId: "8_m5IPR0x8g", composer: "Nor" },
   { title: "TOMODACHI SUMMER", videoId: "jVWEqpo3uUk", composer: "Mitsukiyo" },
-  { title: "Kaphar", videoId: "Wr7sRXqBwR8", composer: "Mitsukiyo" },
+  { title: "Kaphar", videoId: "Wr7sRXqBwR8", composer: "Mitsukiyo", similarGroup: 3 }, // similarGroup: 3
   { title: "Wave & Conquer", videoId: "IPDbzUwm7hY", composer: "KARUT" },
   { title: "After School Dessert", videoId: "lz-jyS14WVI", composer: "KARUT" },
   { title: "Let me think about it", videoId: "LC0KM4hb1wo", composer: "KARUT" },
@@ -130,7 +130,7 @@ const playlist = [
   { title: "Goal Wo Nerae!", videoId: "dOH0dXpDbaU", composer: "KARUT" },
   { title: "Gestalt Angst", videoId: "91wNSrnRC9k", composer: "Mitsukiyo" },
   { title: "Fruitful Blossom", videoId: "da22g5snShQ", composer: "Mitsukiyo" },
-  { title: "Kyrie Eleison", videoId: "90gEXwoPS9U", composer: "Mitsukiyo" },
+  { title: "Kyrie Eleison", videoId: "90gEXwoPS9U", composer: "Mitsukiyo", similarGroup: 3 }, // similarGroup: 3
   { title: "Utaha No Uta", videoId: "iu_WbNBDnZg", composer: "KARUT" },
   { title: "Cherry Merry Berry", videoId: "HwuRvtu6HlQ", composer: "Mitsukiyo" },
   { title: "Defective Pixel", videoId: "j0lhxnFX7uo", composer: "KARUT" },
