@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>Blue Archive BGMイントロクイズ</title>
+  <title>Blue Archive イントロクイズ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="https://bluearchive.jp/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +17,6 @@
       --red-dark: #c82333;
       --green-primary: #28a745;
       --green-dark: #218838;
-      --yellow-primary: #ffc107;
       --grey-light: #f8f9fa;
       --grey-mid: #6c757d;
       --grey-dark: #343a40;
@@ -44,7 +43,7 @@
 
     main {
       width: 100%;
-      max-width: 800px;
+      max-width: 1200px;
       flex-grow: 1;
       display: flex;
       flex-direction: column;
@@ -59,260 +58,110 @@
       text-shadow: 1px 1px 3px rgba(0,0,0,0.05);
     }
 
-    #game-view {
-        display: none; /* Initially hidden */
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        gap: 0.5em;
-    }
+    /* --- Game View --- */
+    #game-view { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 800px; gap: 0.5em; }
+    #progress-container { width: 95%; max-width: 600px; margin: 0.5em 0; }
+    #progress-text { font-size: 1.1em; font-weight: 500; color: var(--grey-mid); display: block; margin-bottom: 0.5em; }
+    .progress-bar-wrapper { width: 100%; background-color: #e9ecef; border-radius: 8px; height: 12px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+    #progress-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--blue-primary), var(--blue-secondary)); transition: width 0.4s ease-in-out; }
+    p#score { font-size: 1.2em; font-weight: 700; color: var(--grey-dark); }
+    p#result { font-size: 1.4em; font-weight: 700; margin: 0.5em 0; min-height: 1.5em; animation: pop-in 0.3s ease-out; }
+    #answer-details { display: none; font-size: 1em; color: var(--grey-dark); background-color: #e9f5ff; border-left: 5px solid var(--blue-secondary); padding: 1em; border-radius: 8px; margin: 0.75em 0; width: 90%; max-width: 580px; text-align: left; line-height: 1.6; animation: fadeIn 0.5s ease-out; }
+    p#time-display { font-size: 1.2em; margin: 0; color: var(--red-primary); font-weight: 700; }
 
-    #progress-container {
-        width: 95%;
-        max-width: 600px;
-        margin: 0.5em 0;
-    }
-    #progress-text {
-        font-size: 1.1em;
-        font-weight: 500;
-        color: var(--grey-mid);
-        display: block;
-        margin-bottom: 0.5em;
-    }
-    .progress-bar-wrapper {
-        width: 100%;
-        background-color: #e9ecef;
-        border-radius: 8px;
-        height: 12px;
-        overflow: hidden;
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-    }
-    #progress-bar-fill {
-        width: 0%;
-        height: 100%;
-        background: linear-gradient(90deg, var(--blue-primary), var(--blue-secondary));
-        transition: width 0.4s ease-in-out;
-    }
+    /* --- Buttons --- */
+    button { font-family: 'Noto Sans JP', sans-serif; font-size: 1.1em; font-weight: 500; cursor: pointer; border-radius: 12px; border: 1px solid var(--border-color); padding: 0.8em 1.5em; margin: 0.4em; transition: all 0.2s ease-in-out; box-shadow: var(--shadow); display: inline-flex; align-items: center; justify-content: center; gap: 0.5em; white-space: normal; line-height: 1.4; background-color: var(--text-light); color: var(--text-dark); }
+    button:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); filter: brightness(1.02); }
+    button:active { transform: translateY(-1px) scale(0.98); box-shadow: var(--shadow); }
+    #choices, #main-menu { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; gap: 0.5em; }
+    #choices button, #main-menu button { width: 95%; max-width: 600px; }
+    button.correct { background-color: var(--green-primary) !important; color: var(--text-light) !important; border-color: var(--green-dark) !important; transform: scale(1.05); }
+    button.incorrect { background-color: var(--red-primary) !important; color: var(--text-light) !important; border-color: var(--red-dark) !important; animation: shake 0.4s; }
+    #control-buttons { display: flex; flex-wrap: wrap; gap: 0.75em; justify-content: center; margin-top: 1em; }
+    #control-buttons button { background-color: var(--grey-mid); color: var(--text-light); border: none; }
 
-    p#score {
-        font-size: 1.2em;
-        font-weight: 700;
-        color: var(--grey-dark);
-    }
-    
-    p#result {
-      font-size: 1.4em;
-      font-weight: 700;
-      margin: 0.5em 0;
-      min-height: 1.5em;
-      animation: pop-in 0.3s ease-out;
-    }
-    
-    p#answer-details {
-      display: none; /* 初期状態では非表示 */
-      font-size: 1em;
-      font-weight: 400;
-      color: var(--grey-dark);
-      background-color: #e9f5ff;
-      border-left: 5px solid var(--blue-secondary);
-      padding: 1em;
-      border-radius: 8px;
-      margin: 0.75em 0;
-      width: 90%;
-      max-width: 580px;
-      text-align: left;
-      line-height: 1.6;
-      animation: fadeIn 0.5s ease-out;
-    }
-
-    p#time-display {
-        font-size: 1.2em;
-        margin: 0;
-        color: var(--red-primary);
-        font-weight: 700;
-    }
-
-    button {
-      font-family: 'Noto Sans JP', sans-serif;
-      font-size: 1.1em;
-      font-weight: 500;
-      cursor: pointer;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      padding: 0.8em 1.5em;
-      margin: 0.4em;
-      transition: all 0.2s ease-in-out;
-      box-shadow: var(--shadow);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5em;
-      white-space: normal;
-      line-height: 1.4;
-      background-color: var(--text-light);
-      color: var(--text-dark);
-    }
-    button:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-hover);
-      filter: brightness(1.02);
-    }
-    button:active {
-      transform: translateY(-1px) scale(0.98);
-      box-shadow: var(--shadow);
-    }
-
-    #choices, #main-menu {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      gap: 0.5em;
-    }
-    #choices button, #main-menu button {
-      width: 95%;
-      max-width: 600px;
-    }
-    #main-menu button {
-      background: linear-gradient(145deg, #ffffff, #e6e6e6);
-    }
-
-    button.correct { 
-        background-color: var(--green-primary) !important; 
-        color: var(--text-light) !important; 
-        border-color: var(--green-dark) !important; 
-        transform: scale(1.05);
-    }
-    button.incorrect { 
-        background-color: var(--red-primary) !important; 
-        color: var(--text-light) !important; 
-        border-color: var(--red-dark) !important; 
-        animation: shake 0.4s;
-    }
-
-    #control-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75em;
-      justify-content: center;
-      margin-top: 1em;
-    }
-    #control-buttons button {
-      background-color: var(--grey-mid);
-      color: var(--text-light);
-      border: none;
-    }
-
-    .screen {
-      display: none;
-      width: 100%;
-      padding: 2em;
-      background: var(--text-light);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      animation: fadeIn 0.4s ease-in-out;
-    }
+    /* --- Screens --- */
+    .screen { display: none; width: 100%; max-width: 800px; padding: 2em; background: var(--text-light); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow); animation: fadeIn 0.4s ease-in-out; }
     .screen h2 { margin-top: 0; text-align: center; color: var(--blue-primary); }
     
-    /* ▼▼▼ BGM図鑑のレイアウト変更 ▼▼▼ */
+    /* --- Settings Screen --- */
+    .setting-item { margin: 1.5em 0; font-size: 1.1em; }
+    .setting-item label { margin-right: 0.5em; font-weight: 500; }
+    .setting-item input, .setting-item select { padding: 0.5em; font-size: 1em; border-radius: 8px; border: 1px solid var(--border-color); }
+
+    /* --- Encyclopedia --- */
     #encyclopedia { max-width: 1200px; }
-    #encyclopedia-content {
-        display: flex;
-        flex-direction: row;
-        gap: 1.5em;
-        width: 100%;
-        margin-top: 1em;
-    }
-    #song-list {
-        flex: 1;
-        max-height: 60vh;
-        overflow-y: auto;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 0.5em;
-    }
-    #encyclopedia-details {
-        flex: 1;
-        text-align: left;
-        padding: 1em;
-        background-color: #f4f8ff;
-        border-radius: 8px;
-        line-height: 1.6;
-    }
-    #encyclopedia-details strong {
-        color: var(--blue-primary);
-    }
-    .song-item.playing {
-        background-color: var(--blue-secondary);
-        color: white;
-        border-color: var(--blue-dark);
-    }
-     /* ▲▲▲ BGM図鑑のレイアウト変更ここまで ▲▲▲ */
+    .encyclopedia-menu { display: flex; flex-direction: column; align-items: center; gap: 1em; }
+    .encyclopedia-menu button { width: 80%; max-width: 400px; padding: 1em; }
+    .encyclopedia-view { display: none; }
+    #encyclopedia-controls { display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 1em; align-items: center; }
+    #encyclopedia-search { flex-grow: 1; padding: 0.8em; font-size: 1em; border-radius: 8px; border: 1px solid var(--border-color); min-width: 200px; }
+    
+    #encyclopedia-layout { display: flex; gap: 1.5em; width: 100%; margin-top: 1em; }
+    #song-list-container { flex: 3; max-height: 65vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.5em; }
+    #song-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1em; width: 100%; }
+    #encyclopedia-details { flex: 1; text-align: left; padding: 1em; background: #f8f9fa; border-radius: 8px; border: 1px solid var(--border-color); }
+    #now-playing-container { font-weight: bold; margin-top: 0; }
+    #song-context-display { margin-top: 1em; white-space: pre-wrap; word-wrap: break-word; }
 
-
-    #loading-overlay, #start-prompt {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85); color: white;
-        display: flex; justify-content: center; align-items: center;
-        flex-direction: column; z-index: 1000;
-        animation: fadeIn 0.3s;
+    .song-card { cursor: pointer; background: white; border-radius: 12px; box-shadow: var(--shadow); transition: all 0.2s ease-in-out; overflow: hidden; text-align: left; border: 2px solid transparent; }
+    .song-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+    .song-card.playing { border-color: var(--blue-secondary); box-shadow: 0 0 15px rgba(0, 174, 239, 0.5); }
+    .song-card-image {
+      width: 100%;
+      aspect-ratio: 16 / 9; /* 画像の比率を16:9に固定 */
+      object-fit: cover; /* 比率を保ったまま領域を埋める */
+      background-color: #eee;
+      border-bottom: 1px solid var(--border-color);
     }
+    .song-card-info { padding: 0.8em; }
+    .song-card-title { font-weight: 700; font-size: 1em; margin: 0 0 0.25em 0; }
+    .song-card-composer { font-size: 0.85em; color: var(--grey-mid); margin: 0; }
+
+    /* --- Overlays --- */
+    #loading-overlay, #start-prompt { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); color: white; display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 1000; animation: fadeIn 0.3s; }
     #start-prompt button { padding: 1.5em 3em; font-size: 1.2em; background-color: var(--blue-primary); color: white; border: none; }
 
+    /* --- Stats Screen --- */
+    #stats-screen .stats-grid { display: grid; grid-template-columns: 1fr; gap: 2em; text-align: left; }
+
+    /* --- Footer --- */
     footer { margin-top: auto; padding-top: 2em; font-size: 0.9em; color: var(--grey-mid); }
     a.footer-link { text-decoration: none; color: var(--blue-primary); font-weight: 500; }
 
+    /* --- Animations --- */
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes pop-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-    }
-    /* レスポンシブ対応 */
-    @media (max-width: 768px) {
-        #encyclopedia-content {
-            flex-direction: column;
-        }
-        #song-list, #encyclopedia-details {
-            max-height: 40vh;
-        }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } }
+    
+    /* --- Responsive --- */
+    @media (min-width: 768px) { #stats-screen .stats-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 900px) {
+        #encyclopedia-layout { flex-direction: column; }
+        #song-list-container { max-height: 40vh; }
     }
   </style>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JGZ3NY5VFL"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-JGZ3NY5VFL');
-  </script>
 </head>
 <body>
   <div id="loading-overlay"><p>読み込み中...</p></div>
   <main>
-    <h1>Blue Archive<br>BGMイントロクイズ</h1>
+    <h1>Blue Archive<br>イントロクイズ</h1>
 
     <div id="main-menu"></div>
     
     <div id="game-view">
         <div id="progress-container">
             <span id="progress-text"></span>
-            <div class="progress-bar-wrapper">
-                <div id="progress-bar-fill"></div>
-            </div>
+            <div class="progress-bar-wrapper"><div id="progress-bar-fill"></div></div>
         </div>
         <p id="score"></p>
         <p id="time-display"></p>
         <div id="player"></div>
         <div id="choices"></div>
         <p id="result"></p>
-        <p id="answer-details"></p>
+        <div id="answer-details"></div>
         <div id="game-controls-container">
-          <div style="margin: 0.5em 0;">
-            音量: <input type="range" id="volumeSlider" min="0" max="100" value="25" />
-          </div>
+          <div style="margin: 0.5em 0;">音量: <input type="range" id="volumeSlider" min="0" max="100" value="25" /></div>
           <div id="control-buttons">
             <button onclick="loadNextQuiz()">スキップ</button>
             <button id="replayBtn">もう一度聞く</button>

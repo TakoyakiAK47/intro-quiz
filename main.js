@@ -1,4 +1,3 @@
-// --- Constants ---
 const NEXT_QUESTION_DELAY = 1200;
 const GAME_OVER_DELAY = 2000;
 
@@ -7,6 +6,7 @@ const GAME_MODES = {
     NORMAL: 'normal',
     TIMED: 'timed',
     ENDLESS: 'endless',
+    ENCYCLOPEDIA: 'encyclopedia'
 };
 
 const defaultGameData = {
@@ -33,6 +33,9 @@ let gameTimer = null;
 let gameData = {};
 let currentPlaylist = [];
 let answeredVideos = [];
+// Encyclopedia state
+let currentEncyclopediaPlaylist = [];
+let currentSongIndex = -1;
 
 // State Object
 let gameState = {
@@ -113,7 +116,7 @@ function initGame() {
         { id: GAME_MODES.NORMAL, label: 'ノーマルモード', action: () => selectMode(GAME_MODES.NORMAL) },
         { id: GAME_MODES.TIMED, label: 'タイムアタックモード', action: () => selectMode(GAME_MODES.TIMED) },
         { id: GAME_MODES.ENDLESS, label: 'エンドレスモード', action: () => selectMode(GAME_MODES.ENDLESS) },
-        { id: 'encyclopedia', label: 'ブルアカBGM図鑑', action: showEncyclopedia },
+        { id: 'encyclopedia', label: 'サウンドアーカイブ', action: showEncyclopedia },
         { id: 'stats', label: '実績・統計', action: showStatsScreen }
     ];
 
@@ -151,19 +154,21 @@ function setupModeSettings() {
     let settingsContent = '';
     
     if (gameState.mode === GAME_MODES.NORMAL) {
-        const composers = ['All', ...new Set(playlist.map(s => s.composer).filter(Boolean))];
+        const composers = ['All', ...new Set(playlist.map(s => s.composer).filter(c => c && c !== 'Unknown').sort())];
         const options = composers.map(c => `<option value="${c}" ${gameData.settings.composerFilter === c ? 'selected' : ''}>${c}</option>`).join('');
         settingsContent = `<h2>ノーマルモード設定</h2>
             <div class="setting-item"><label for="normal-questions">問題数:</label><input type="number" id="normal-questions" min="1" max="50" value="${gameData.settings.normalQuestions}"></div>
-            <div class="setting-item"><label for="composer-filter">作者で絞り込む:</label><select id="composer-filter">${options}</select></div>`;
+            <div class="setting-item"><label for="composer-filter">作曲者で絞り込む:</label><select id="composer-filter">${options}</select></div>`;
     } else if (gameState.mode === GAME_MODES.TIMED) {
         settingsContent = `<h2>タイムアタックモード設定</h2>
             <div class="setting-item"><label for="timed-duration">制限時間(秒):</label><input type="number" id="timed-duration" min="10" max="180" step="10" value="${gameData.settings.timedDuration / 1000}"></div>`;
     }
 
     container.innerHTML = `${settingsContent}
-        <button id="start-game-btn">ゲーム開始</button>
-        <button id="settings-back-btn">戻る</button>`;
+        <div style="margin-top: 2em;">
+            <button id="settings-back-btn">戻る</button>
+            <button id="start-game-btn">クイズ開始</button>
+        </div>`;
     
     document.getElementById('start-game-btn').onclick = () => {
         if (gameState.mode === GAME_MODES.NORMAL) {
@@ -185,7 +190,6 @@ function launchQuiz() {
     gameState.answerChecked = false;
     answeredVideos = [];
     
-    // クイズ対象の曲のみをフィルタリング
     const quizPlaylist = playlist.filter(song => song.quiz !== false);
     
     const filter = gameData.settings.composerFilter;
@@ -194,7 +198,7 @@ function launchQuiz() {
         : [...quizPlaylist];
     
     if (currentPlaylist.length < 4) {
-        alert('選択した作者の曲が4曲未満のため、クイズを開始できません。');
+        alert('選択した作曲者の楽曲が4曲未満のため、クイズを開始できません。');
         initGame();
         return;
     }
@@ -299,7 +303,7 @@ function checkAnswer(selectedChoice) {
 
     const correctSongObject = playlist.find(song => song.title === correctAnswer);
     if (correctSongObject && correctSongObject.context) {
-        domElements.answerDetails.innerText = `💡 豆知識: ${correctSongObject.context}`;
+        domElements.answerDetails.innerText = `💡 ヒント: ${correctSongObject.context.replace(/メモロビ:\s*「準備中」/g, '').trim()}`;
         domElements.answerDetails.style.display = 'block';
     }
     
@@ -330,9 +334,10 @@ function processIncorrectAnswer() {
 function updateChoiceButtonsUI(selectedChoice) {
     domElements.choices.querySelectorAll('button').forEach(b => {
         b.disabled = true;
-        if (b.textContent === correctAnswer) {
+        const buttonText = b.querySelector('span').textContent;
+        if (buttonText === correctAnswer) {
             b.classList.add('correct');
-        } else if (b.textContent === selectedChoice) {
+        } else if (buttonText === selectedChoice) {
             b.classList.add('incorrect');
         }
     });
@@ -379,8 +384,9 @@ function shareResult() {
             resultText = `連続正解記録: ${gameData.stats.highScores.endless}問`;
             break;
     }
-    const fullText = `${title}\n${modeText}でプレイしました！\n${resultText}\n\n#${hashtag}`;
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(fullText)}`, '_blank');
+    const fullText = `${title}\n${modeText}でプレイしました！\n${resultText}`;
+    const url = `https://x.com/intent/tweet?text=${encodeURIComponent(fullText)}&hashtags=${encodeURIComponent(hashtag)}`;
+    window.open(url, '_blank');
 }
 
 function endGame() {
@@ -408,38 +414,33 @@ function endGame() {
     domElements.result.innerText = resultMessage;
 
     const container = domElements.choices;
-    container.innerHTML = ''; 
+    container.innerHTML = `
+      <div>
+        <button id="share-btn">結果をXでシェア</button>
+        <button id="again-btn">もう一度あそぶ</button>
+        <button id="home-btn">ホームに戻る</button>
+      </div>
+    `; 
     
-    const shareBtn = document.createElement('button');
-    shareBtn.textContent = '結果をXでシェア';
-    shareBtn.onclick = shareResult;
-
-    const againBtn = document.createElement('button');
-    againBtn.textContent = 'もう一度あそぶ';
-    againBtn.onclick = () => selectMode(gameState.mode);
-    
-    const homeBtn = document.createElement('button');
-    homeBtn.textContent = 'ホームに戻る';
-    homeBtn.onclick = initGame;
-    
-    container.appendChild(shareBtn);
-    container.appendChild(againBtn);
-    container.appendChild(homeBtn);
+    document.getElementById('share-btn').onclick = shareResult;
+    document.getElementById('again-btn').onclick = () => selectMode(gameState.mode);
+    document.getElementById('home-btn').onclick = initGame;
 }
 
 function showStatsScreen() {
     showScreen('stats-screen');
     const container = document.getElementById('stats-screen');
     const unlockedCount = Object.values(gameData.achievements).filter(Boolean).length;
+    
     const achievementTiers = [
-        { key: 'normal', label: 'NORMAL', desc: 'エンドレスモードで10問連続正解' },
-        { key: 'hard', label: 'HARD', desc: 'エンドレスモードで20問連続正解' },
+        { key: 'normal',   label: 'NORMAL',   desc: 'エンドレスモードで10問連続正解' },
+        { key: 'hard',     label: 'HARD',     desc: 'エンドレスモードで20問連続正解' },
         { key: 'veryhard', label: 'VERYHARD', desc: 'エンドレスモードで50問連続正解' },
         { key: 'hardcore', label: 'HARDCORE', desc: 'エンドレスモードで100問連続正解' },
-        { key: 'extreme', label: 'EXTREME', desc: 'エンドレスモードで150問連続正解' },
-        { key: 'insane', label: 'INSANE', desc: 'エンドレスモードで250問連続正解' },
-        { key: 'torment', label: 'TORMENT', desc: 'エンドレスモードで500問連続正解' },
-        { key: 'lunatic', label: 'LUNATIC', desc: 'エンドレスモードで1000問連続正解' }
+        { key: 'extreme',  label: 'EXTREME',  desc: 'エンドレスモードで150問連続正解' },
+        { key: 'insane',   label: 'INSANE',   desc: 'エンドレスモードで250問連続正解' },
+        { key: 'torment',  label: 'TORMENT',  desc: 'エンドレスモードで500問連続正解' },
+        { key: 'lunatic',  label: 'LUNATIC',  desc: 'エンドレスモードで1000問連続正解' }
     ];
     
     const achievementsHTML = achievementTiers.map(tier => `
@@ -451,13 +452,14 @@ function showStatsScreen() {
     container.innerHTML = `
         <h2>実績 & 統計</h2>
         <h3>ハイスコア</h3>
-        <div>ノーマル: <strong>${gameData.stats.highScores.normal || 0}</strong> 問</div>
-        <div>タイムアタック: <strong>${gameData.stats.highScores.timed || 0}</strong> 問</div>
-        <div>エンドレス: <strong>${gameData.stats.highScores.endless || 0}</strong> 連続正解</div>
+        <p>ノーマル: <strong>${gameData.stats.highScores.normal || 0}</strong> 問 / タイムアタック: <strong>${gameData.stats.highScores.timed || 0}</strong> 問 / エンドレス: <strong>${gameData.stats.highScores.endless || 0}</strong> 連続正解</p>
         <h3 style="margin-top: 2em;">実績 (${unlockedCount}/${achievementTiers.length})</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1em;">${achievementsHTML}</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1em; margin-bottom: 2em;">
+            ${achievementsHTML}
+        </div>
         <button id="stats-back-btn">ホームに戻る</button>
-        <button id="reset-data-btn" style="background-color: var(--red-primary); color:white;">データリセット</button>`;
+        <button id="reset-data-btn" style="background-color: var(--red-primary); color:white;">データリセット</button>
+    `;
 
     document.getElementById('stats-back-btn').onclick = initGame;
     document.getElementById('reset-data-btn').onclick = () => {
@@ -469,6 +471,8 @@ function showStatsScreen() {
     };
 }
 
+
+// --- UI Update Functions ---
 function updateUIState() {
     updateScore();
     updateProgressIndicator();
@@ -496,7 +500,7 @@ function updateProgressIndicator() {
         container.style.display = 'block';
         domElements.progressBarWrapper.style.display = 'block';
     } else if (gameState.mode === GAME_MODES.ENDLESS) {
-        domElements.progressText.textContent = `Current Streak: ${gameState.endlessStreak}`;
+        domElements.progressText.textContent = `連続正解数: ${gameState.endlessStreak}`;
         container.style.display = 'block';
         domElements.progressBarWrapper.style.display = 'none';
     }
@@ -511,6 +515,7 @@ function updateTimeDisplay(ms) {
     }
 }
 
+// --- Stats & Achievements ---
 function updateSongStats(videoId, isCorrect) {
     if (!gameData.stats.songStats[videoId]) {
         gameData.stats.songStats[videoId] = { correct: 0, incorrect: 0 };
@@ -528,58 +533,114 @@ function updateEndlessAchievements() {
     }
 }
 
-// ▼▼▼ BGM図鑑の表示ロジックを更新 ▼▼▼
+// --- Encyclopedia Functions ---
 function showEncyclopedia() {
+    gameState.mode = GAME_MODES.ENCYCLOPEDIA;
     showScreen('encyclopedia');
     const container = document.getElementById('encyclopedia');
     container.innerHTML = `
-        <h2>ブルアカBGM図鑑 (全${playlist.length}曲)</h2>
-        <input type="text" id="encyclopedia-search" placeholder="曲名や作者名で検索..." onkeyup="filterSongs()">
-        <div id="encyclopedia-content">
-            <div id="song-list"></div>
-            <div id="encyclopedia-details">
-                <div id="now-playing-container">左のリストから曲を選択してください。</div>
-                <div id="song-context-display" style="margin-top: 1em;"></div>
-            </div>
+        <div class="encyclopedia-menu">
+            <h2>サウンドアーカイブ</h2>
+            <p>どちらのライブラリを見ますか？</p>
+            <button id="show-bgm-btn">BGM</button>
+            <button id="show-charasong-btn">キャラクターソング</button>
+            <button id="enc-home-btn" style="margin-top: 1em; background-color: var(--grey-mid); color: white;">ホームに戻る</button>
         </div>
-        <button id="enc-back-btn" style="margin-top: 1em;" onclick="initGame()">ホームに戻る</button>
-    `;
-
-    const songListContainer = document.getElementById('song-list');
-    const nowPlayingContainer = document.getElementById('now-playing-container');
-    const contextDisplay = document.getElementById('song-context-display');
+        <div class="encyclopedia-view">
+            <h3 id="encyclopedia-title"></h3>
+            <div id="encyclopedia-controls">
+                <input type="text" id="encyclopedia-search" placeholder="曲名や作曲者名で検索..." onkeyup="filterSongs()">
+            </div>
+            <div id="encyclopedia-layout">
+                <div id="song-list-container"><div id="song-list"></div></div>
+                <div id="encyclopedia-details">
+                    <p id="now-playing-container">曲を選択して再生します。</p>
+                    <div id="song-context-display"></div>
+                </div>
+            </div>
+            <button id="enc-back-btn" style="margin-top: 1em;">ライブラリ選択に戻る</button>
+        </div>`;
     
-    playlist.forEach(song => {
-        const songButton = document.createElement('button');
-        songButton.className = 'song-item';
-        songButton.innerHTML = `${song.title} <br><small style="color: #555;">${song.composer || 'N/A'}</small>`;
-        songButton.onclick = () => {
-            player.stopVideo();
-            player.loadVideoById(song.videoId);
-            
-            nowPlayingContainer.innerHTML = `<strong>再生中:</strong> ${song.title}`;
-            contextDisplay.innerHTML = `<strong>曲の解説:</strong><br>${song.context || 'この曲の解説は現在準備中です。'}`;
-            
-            document.querySelectorAll('.song-item.playing').forEach(b => b.classList.remove('playing'));
-            songButton.classList.add('playing');
-        };
-        songListContainer.appendChild(songButton);
-    });
+    document.getElementById('show-bgm-btn').onclick = () => displayEncyclopediaView('BGM');
+    document.getElementById('show-charasong-btn').onclick = () => displayEncyclopediaView('キャラクターソング');
+    document.getElementById('enc-home-btn').onclick = initGame;
 }
-// ▲▲▲ BGM図鑑の表示ロジックを更新ここまで ▲▲▲
+
+function displayEncyclopediaView(type) {
+    document.querySelector('.encyclopedia-menu').style.display = 'none';
+    document.querySelector('.encyclopedia-view').style.display = 'block';
+
+    const sourcePlaylist = type === 'BGM' ? playlist : characterSongPlaylist;
+    currentEncyclopediaPlaylist = [...sourcePlaylist];
+    currentSongIndex = -1;
+
+    document.getElementById('encyclopedia-title').textContent = `${type} (全${sourcePlaylist.length}曲)`;
+    
+    const songListContainer = document.getElementById('song-list');
+    songListContainer.innerHTML = '';
+    
+    sourcePlaylist.forEach((song, index) => {
+        const songCard = document.createElement('div');
+        songCard.className = 'song-card';
+        songCard.dataset.index = index;
+        songCard.onclick = () => {
+            currentSongIndex = index;
+            playSongFromEncyclopedia();
+        };
+        songCard.innerHTML = `
+            <img src="${song.imageUrl}" alt="${song.title}" class="song-card-image" loading="lazy">
+            <div class="song-card-info">
+                <p class="song-card-title">${song.title}</p>
+                <p class="song-card-composer">${song.composer || 'N/A'}</p>
+            </div>
+        `;
+        songListContainer.appendChild(songCard);
+    });
+    
+    document.getElementById('enc-back-btn').onclick = () => {
+        if (player && typeof player.stopVideo === 'function') player.stopVideo();
+        showEncyclopedia();
+    };
+    resetEncyclopediaDetails();
+}
+
+function playSongFromEncyclopedia() {
+    if (currentSongIndex < 0 || currentSongIndex >= currentEncyclopediaPlaylist.length) return;
+
+    const song = currentEncyclopediaPlaylist[currentSongIndex];
+    if (player && typeof player.loadVideoById === 'function') {
+        player.loadVideoById(song.videoId);
+    }
+
+    document.getElementById('now-playing-container').innerHTML = `再生中: ${song.title}`;
+    document.getElementById('song-context-display').innerHTML = `<strong>情報:</strong><br>${song.context || '解説はありません。'}`;
+    
+    document.querySelectorAll('.song-card.playing').forEach(card => card.classList.remove('playing'));
+    const currentCard = document.querySelector(`.song-card[data-index='${currentSongIndex}']`);
+    if (currentCard) {
+        currentCard.classList.add('playing');
+        currentCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+}
+
+function resetEncyclopediaDetails() {
+    document.getElementById('now-playing-container').textContent = '曲を選択して再生します。';
+    document.getElementById('song-context-display').innerHTML = '';
+    document.querySelectorAll('.song-card.playing').forEach(card => card.classList.remove('playing'));
+}
 
 function filterSongs() {
     const filterText = document.getElementById('encyclopedia-search').value.toLowerCase();
-    document.querySelectorAll('#song-list .song-item').forEach(song => {
-        song.style.display = song.textContent.toLowerCase().includes(filterText) ? 'block' : 'none';
+    document.querySelectorAll('#song-list .song-card').forEach(songCard => {
+        songCard.style.display = songCard.textContent.toLowerCase().includes(filterText) ? '' : 'none';
     });
 }
 
+// --- DOM Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
-    const ids = ['loading-overlay', 'main-menu', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn'];
+    const ids = ['loading-overlay', 'main-menu', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia'];
     ids.forEach(id => {
-        let camelCaseId = id.replace(/-(\w)/g, (_, c) => c.toUpperCase());
-        domElements[camelCaseId] = document.getElementById(id);
+        domElements[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
     });
     domElements.progressBarWrapper = document.querySelector('.progress-bar-wrapper');
 
