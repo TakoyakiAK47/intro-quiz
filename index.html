@@ -107,6 +107,9 @@
     .song-card { cursor: pointer; background: white; border-radius: 12px; box-shadow: var(--shadow); transition: all 0.2s ease-in-out; overflow: hidden; text-align: left; border: 2px solid transparent; }
     .song-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
     .song-card.playing { border-color: var(--blue-secondary); box-shadow: 0 0 15px rgba(0, 174, 239, 0.5); }
+    
+    a.song-card { text-decoration: none; color: inherit; } /* This is the new line */
+
     .song-card-image {
       width: 100%;
       aspect-ratio: 16 / 9; /* 画像の比率を16:9に固定 */

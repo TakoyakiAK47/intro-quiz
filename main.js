@@ -552,11 +552,7 @@ function showEncyclopedia() {
                 <input type="text" id="encyclopedia-search" placeholder="曲名や作曲者名で検索..." onkeyup="filterSongs()">
             </div>
             <div id="encyclopedia-layout">
-                <div id="song-list-container"><div id="song-list"></div></div>
-                <div id="encyclopedia-details">
-                    <p id="now-playing-container">曲を選択して再生します。</p>
-                    <div id="song-context-display"></div>
-                </div>
+                <div id="song-list-container" style="flex: 1; width: 100%;"><div id="song-list"></div></div>
             </div>
             <button id="enc-back-btn" style="margin-top: 1em;">ライブラリ選択に戻る</button>
         </div>`;
@@ -572,21 +568,19 @@ function displayEncyclopediaView(type) {
 
     const sourcePlaylist = type === 'BGM' ? playlist : characterSongPlaylist;
     currentEncyclopediaPlaylist = [...sourcePlaylist];
-    currentSongIndex = -1;
-
+    
     document.getElementById('encyclopedia-title').textContent = `${type} (全${sourcePlaylist.length}曲)`;
     
     const songListContainer = document.getElementById('song-list');
     songListContainer.innerHTML = '';
     
     sourcePlaylist.forEach((song, index) => {
-        const songCard = document.createElement('div');
+        const songCard = document.createElement('a');
         songCard.className = 'song-card';
-        songCard.dataset.index = index;
-        songCard.onclick = () => {
-            currentSongIndex = index;
-            playSongFromEncyclopedia();
-        };
+        songCard.href = `https://www.youtube.com/watch?v=${song.videoId}`;
+        songCard.target = '_blank';
+        songCard.rel = 'noopener noreferrer';
+
         songCard.innerHTML = `
             <img src="${song.imageUrl}" alt="${song.title}" class="song-card-image" loading="lazy">
             <div class="song-card-info">
@@ -601,9 +595,9 @@ function displayEncyclopediaView(type) {
         if (player && typeof player.stopVideo === 'function') player.stopVideo();
         showEncyclopedia();
     };
-    resetEncyclopediaDetails();
 }
 
+// This function is no longer used by the encyclopedia but kept for other potential uses
 function playSongFromEncyclopedia() {
     if (currentSongIndex < 0 || currentSongIndex >= currentEncyclopediaPlaylist.length) return;
 
@@ -623,6 +617,7 @@ function playSongFromEncyclopedia() {
     }
 }
 
+// This function is no longer used by the encyclopedia but kept for other potential uses
 function resetEncyclopediaDetails() {
     document.getElementById('now-playing-container').textContent = '曲を選択して再生します。';
     document.getElementById('song-context-display').innerHTML = '';
@@ -632,7 +627,9 @@ function resetEncyclopediaDetails() {
 function filterSongs() {
     const filterText = document.getElementById('encyclopedia-search').value.toLowerCase();
     document.querySelectorAll('#song-list .song-card').forEach(songCard => {
-        songCard.style.display = songCard.textContent.toLowerCase().includes(filterText) ? '' : 'none';
+        const songTitle = songCard.querySelector('.song-card-title').textContent.toLowerCase();
+        const songComposer = songCard.querySelector('.song-card-composer').textContent.toLowerCase();
+        songCard.style.display = (songTitle.includes(filterText) || songComposer.includes(filterText)) ? '' : 'none';
     });
 }
 
