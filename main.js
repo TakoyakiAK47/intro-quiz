@@ -79,8 +79,8 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
-function onPlayerReady() {
-    player.setVolume(domElements.volumeSlider.value);
+function onPlayerReady(event) {
+    event.target.setVolume(domElements.volumeSlider.value);
     initGame();
 }
 
@@ -223,10 +223,12 @@ function loadNextQuiz() {
 
     gameState.answerChecked = false;
     domElements.result.innerText = '';
+    domElements.answerDetails.innerText = '';
+    domElements.answerDetails.style.display = 'none';
     updateUIState();
     
     let available = currentPlaylist.filter(p => !answeredVideos.includes(p.videoId));
-    if (available.length === 0) {
+    if (available.length < 4) {
         answeredVideos = [];
         available = currentPlaylist;
     }
@@ -240,40 +242,28 @@ function loadNextQuiz() {
     playIntroClip();
 }
 
-// ▼▼▼ この関数を書き換えました ▼▼▼
 function generateChoices(correct) {
     const choices = new Set([correct]);
-    
-    // 1. 正解の曲の完全なオブジェクト情報を取得
     const correctSongObject = currentPlaylist.find(song => song.title === correct);
 
-    // 2. 正解の曲に similarGroup が設定されているかチェック
     if (correctSongObject && correctSongObject.similarGroup) {
-        // 3. 同じsimilarGroupを持ち、かつ正解とは異なる曲を探す
-        const similarSong = currentPlaylist.find(song => 
+        const similarSongs = currentPlaylist.filter(song => 
             song.similarGroup === correctSongObject.similarGroup && song.title !== correct
         );
-        // 4. 見つかった場合、選択肢に追加する
-        if (similarSong) {
-            choices.add(similarSong.title);
+        if (similarSongs.length > 0) {
+            choices.add(similarSongs[Math.floor(Math.random() * similarSongs.length)].title);
         }
     }
     
-    // 5. 残りの選択肢をランダムで埋める
-    // 注意：すでに選択肢に入っている曲は除外する
-    const distractors = currentPlaylist
-        .filter(p => !choices.has(p.title)) // すでにchoicesにある曲は除外
-        .map(p => p.title);
+    const distractors = currentPlaylist.filter(p => !choices.has(p.title)).map(p => p.title);
     
     while (choices.size < 4 && distractors.length > 0) {
         const randomIndex = Math.floor(Math.random() * distractors.length);
         choices.add(distractors.splice(randomIndex, 1)[0]);
     }
     
-    // 最後に選択肢の順番をシャッフルして返す
     return Array.from(choices).sort(() => 0.5 - Math.random());
 }
-// ▲▲▲ この関数を書き換えました ▲▲▲
 
 function displayChoices(choices) {
     const container = domElements.choices;
@@ -287,11 +277,10 @@ function displayChoices(choices) {
 }
 
 function playIntroClip() {
-    if (!player || !player.loadVideoById) return;
+    if (!player || !player.cueVideoById) return;
     player.cueVideoById({ videoId: currentVideoId, startSeconds: 0 });
 }
 
-// --- Answer Processing (Refactored) ---
 function checkAnswer(selectedChoice) {
     if (gameState.answerChecked) return;
     gameState.answerChecked = true;
@@ -303,6 +292,12 @@ function checkAnswer(selectedChoice) {
         processCorrectAnswer();
     } else {
         processIncorrectAnswer();
+    }
+
+    const correctSongObject = playlist.find(song => song.title === correctAnswer);
+    if (correctSongObject && correctSongObject.context) {
+        domElements.answerDetails.innerText = `💡 豆知識: ${correctSongObject.context}`;
+        domElements.answerDetails.style.display = 'block';
     }
     
     gameState.totalQuestions++;
@@ -323,7 +318,7 @@ function processCorrectAnswer() {
 }
 
 function processIncorrectAnswer() {
-    domElements.result.innerText = `❌ 不正解...`;
+    domElements.result.innerText = `❌ 不正解... (正解は「${correctAnswer}」)`;
     if (gameState.mode === GAME_MODES.ENDLESS) {
         gameState.endlessStreak = 0;
     }
@@ -342,8 +337,10 @@ function updateChoiceButtonsUI(selectedChoice) {
 
 function scheduleNextStep(isCorrect) {
     const isNormalGameOver = gameState.mode === GAME_MODES.NORMAL && gameState.totalQuestions >= gameData.settings.normalQuestions;
-    const isTimedGameOver = gameState.mode === GAME_MODES.TIMED && !isCorrect;
-    const isGameOver = isNormalGameOver || isTimedGameOver;
+    const isTimedGameOver = gameState.mode === GAME_MODES.TIMED && gameState.timeLeftMs <= 0;
+    const isEndlessGameOver = gameState.mode === GAME_MODES.ENDLESS && !isCorrect;
+
+    const isGameOver = isNormalGameOver || isTimedGameOver || isEndlessGameOver;
     
     if (isNormalGameOver) {
         domElements.progressBarFill.style.width = '100%';
@@ -352,19 +349,16 @@ function scheduleNextStep(isCorrect) {
     setTimeout(() => {
         if (isGameOver) {
             endGame();
-        } else if (gameState.mode !== GAME_MODES.TIMED || isCorrect) {
+        } else {
             loadNextQuiz();
         }
     }, isGameOver ? GAME_OVER_DELAY : NEXT_QUESTION_DELAY);
 }
 
-
-// --- End Game & Share ---
 function shareResult() {
     const title = "Blue Archive BGMイントロクイズ";
     const hashtag = "ブルアカイントロクイズ";
-    let modeText = '';
-    let resultText = '';
+    let modeText = '', resultText = '';
 
     switch (gameState.mode) {
         case GAME_MODES.NORMAL:
@@ -373,21 +367,17 @@ function shareResult() {
             resultText = `結果: ${gameState.score}/${gameState.totalQuestions}問正解 (正答率: ${accuracy}%)`;
             break;
         case GAME_MODES.TIMED:
-            const durationInSeconds = gameData.settings.timedDuration / 1000;
-            modeText = `タイムアタックモード(${durationInSeconds}秒)`;
+            const duration = gameData.settings.timedDuration / 1000;
+            modeText = `タイムアタックモード(${duration}秒)`;
             resultText = `スコア: ${gameState.score}問`;
             break;
         case GAME_MODES.ENDLESS:
             modeText = "エンドレスモード";
-            resultText = `連続正解記録: ${gameData.stats.highScores.endless}問`; // Use high score for endless share
+            resultText = `連続正解記録: ${gameData.stats.highScores.endless}問`;
             break;
     }
-
     const fullText = `${title}\n${modeText}でプレイしました！\n${resultText}\n\n#${hashtag}`;
-    const encodedText = encodeURIComponent(fullText);
-    const url = `https://twitter.com/intent/tweet?text=${encodedText}`;
-    
-    window.open(url, '_blank');
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(fullText)}`, '_blank');
 }
 
 function endGame() {
@@ -404,9 +394,11 @@ function endGame() {
         if (gameState.score > (gameData.stats.highScores.timed || 0)) gameData.stats.highScores.timed = gameState.score;
         resultMessage = `🎉 タイムアップ！ スコア: ${gameState.score}問`;
     } else if (gameState.mode === GAME_MODES.NORMAL) {
-        const accuracy = gameState.totalQuestions > 0 ? ((gameState.score / gameState.totalQuestions) * 100).toFixed(1) : 0;
         if (gameState.score > (gameData.stats.highScores.normal || 0)) gameData.stats.highScores.normal = gameState.score;
+        const accuracy = gameState.totalQuestions > 0 ? ((gameState.score / gameState.totalQuestions) * 100).toFixed(1) : 0;
         resultMessage = `🎉 終了！ スコア: ${gameState.score}/${gameState.totalQuestions} (正答率: ${accuracy}%)`;
+    } else if (gameState.mode === GAME_MODES.ENDLESS) {
+        resultMessage = `🎉 ゲームオーバー！ 今回の記録: ${gameState.endlessStreak}問`;
     }
     saveGameData();
 
@@ -416,7 +408,6 @@ function endGame() {
     container.innerHTML = ''; 
     
     const shareBtn = document.createElement('button');
-    shareBtn.id = 'share-btn';
     shareBtn.textContent = '結果をXでシェア';
     shareBtn.onclick = shareResult;
 
@@ -428,54 +419,42 @@ function endGame() {
     homeBtn.textContent = 'ホームに戻る';
     homeBtn.onclick = initGame;
     
-    if(gameState.mode === GAME_MODES.NORMAL || gameState.mode === GAME_MODES.TIMED) {
-       container.appendChild(shareBtn);
-    }
+    container.appendChild(shareBtn);
     container.appendChild(againBtn);
     container.appendChild(homeBtn);
 }
 
-
-// --- UI Helpers & Other Functions ---
 function showStatsScreen() {
     showScreen('stats-screen');
     const container = document.getElementById('stats-screen');
     const unlockedCount = Object.values(gameData.achievements).filter(Boolean).length;
     const achievementTiers = [
-        { key: 'normal',   label: 'NORMAL',   desc: 'エンドレスモードで10問連続正解' },
-        { key: 'hard',     label: 'HARD',     desc: 'エンドレスモードで20問連続正解' },
+        { key: 'normal', label: 'NORMAL', desc: 'エンドレスモードで10問連続正解' },
+        { key: 'hard', label: 'HARD', desc: 'エンドレスモードで20問連続正解' },
         { key: 'veryhard', label: 'VERYHARD', desc: 'エンドレスモードで50問連続正解' },
         { key: 'hardcore', label: 'HARDCORE', desc: 'エンドレスモードで100問連続正解' },
-        { key: 'extreme',  label: 'EXTREME',  desc: 'エンドレスモードで150問連続正解' },
-        { key: 'insane',   label: 'INSANE',   desc: 'エンドレスモードで250問連続正解' },
-        { key: 'torment',  label: 'TORMENT',  desc: 'エンドレスモードで500問連続正解' },
-        { key: 'lunatic',  label: 'LUNATIC',  desc: 'エンドレスモードで1000問連続正解' }
+        { key: 'extreme', label: 'EXTREME', desc: 'エンドレスモードで150問連続正解' },
+        { key: 'insane', label: 'INSANE', desc: 'エンドレスモードで250問連続正解' },
+        { key: 'torment', label: 'TORMENT', desc: 'エンドレスモードで500問連続正解' },
+        { key: 'lunatic', label: 'LUNATIC', desc: 'エンドレスモードで1000問連続正解' }
     ];
     
-    const achievementsHTML = `
-        <div class="achievements-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1em;">
-            ${achievementTiers.map(tier => `
-                <div class="achievement ${gameData.achievements[tier.key] ? 'unlocked' : ''}" style="padding: 1em; border: 1px solid var(--border-color); border-radius: 8px; background: ${gameData.achievements[tier.key] ? 'var(--blue-secondary)' : '#f9f9f9'}; color: ${gameData.achievements[tier.key] ? 'white' : 'inherit'}; transition: all 0.3s ease;">
-                    <div class="ach-title" style="font-weight: bold;">${tier.label}</div>
-                    <div class="ach-desc" style="font-size: 0.9em; margin-top: 0.5em;">${tier.desc}</div>
-                </div>
-            `).join('')}
-        </div>
-    `;
+    const achievementsHTML = achievementTiers.map(tier => `
+        <div class="achievement ${gameData.achievements[tier.key] ? 'unlocked' : ''}" style="padding: 1em; border: 1px solid var(--border-color); border-radius: 8px; background: ${gameData.achievements[tier.key] ? 'var(--blue-secondary)' : '#f9f9f9'}; color: ${gameData.achievements[tier.key] ? 'white' : 'inherit'};">
+            <div style="font-weight: bold;">${tier.label}</div>
+            <div style="font-size: 0.9em; margin-top: 0.5em;">${tier.desc}</div>
+        </div>`).join('');
 
     container.innerHTML = `
         <h2>実績 & 統計</h2>
-        <div class="stats-container">
-            <h3>ハイスコア</h3>
-            <div class="stat-item">ノーマルモード: <strong>${gameData.stats.highScores.normal || 0}</strong> 問</div>
-            <div class="stat-item">タイムアタックモード: <strong>${gameData.stats.highScores.timed || 0}</strong> 問</div>
-            <div class="stat-item">エンドレスモード: <strong>${gameData.stats.highScores.endless || 0}</strong> 連続正解</div>
-            <h3 style="margin-top: 2em;">実績 (${unlockedCount} / ${achievementTiers.length})</h3>
-            ${achievementsHTML}
-        </div>
+        <h3>ハイスコア</h3>
+        <div>ノーマル: <strong>${gameData.stats.highScores.normal || 0}</strong> 問</div>
+        <div>タイムアタック: <strong>${gameData.stats.highScores.timed || 0}</strong> 問</div>
+        <div>エンドレス: <strong>${gameData.stats.highScores.endless || 0}</strong> 連続正解</div>
+        <h3 style="margin-top: 2em;">実績 (${unlockedCount}/${achievementTiers.length})</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1em;">${achievementsHTML}</div>
         <button id="stats-back-btn">ホームに戻る</button>
-        <button id="reset-data-btn" style="background-color: var(--red-primary); color:white;">データリセット</button>
-    `;
+        <button id="reset-data-btn" style="background-color: var(--red-primary); color:white;">データリセット</button>`;
 
     document.getElementById('stats-back-btn').onclick = initGame;
     document.getElementById('reset-data-btn').onclick = () => {
@@ -498,7 +477,7 @@ function updateScore() {
     if (gameState.mode === GAME_MODES.NORMAL || gameState.mode === GAME_MODES.TIMED) {
         scoreText = `Score: ${gameState.score}`;
     } else if (gameState.mode === GAME_MODES.ENDLESS) {
-        scoreText = `High Score: ${gameData.stats.highScores.endless || 0}`;
+        scoreText = `High Score: ${gameData.stats.highScores.endless || 0} | Current: ${gameState.endlessStreak}`;
     }
     domElements.score.innerText = scoreText;
 }
@@ -540,28 +519,33 @@ function updateEndlessAchievements() {
     if (gameState.endlessStreak > (gameData.stats.highScores.endless || 0)) {
         gameData.stats.highScores.endless = gameState.endlessStreak;
     }
-    if (gameState.endlessStreak >= 10)   gameData.achievements.normal = true;
-    if (gameState.endlessStreak >= 20)   gameData.achievements.hard = true;
-    if (gameState.endlessStreak >= 50)   gameData.achievements.veryhard = true;
-    if (gameState.endlessStreak >= 100)  gameData.achievements.hardcore = true;
-    if (gameState.endlessStreak >= 150)  gameData.achievements.extreme = true;
-    if (gameState.endlessStreak >= 250)  gameData.achievements.insane = true;
-    if (gameState.endlessStreak >= 500)  gameData.achievements.torment = true;
-    if (gameState.endlessStreak >= 1000) gameData.achievements.lunatic = true;
+    const achievements = {10: 'normal', 20: 'hard', 50: 'veryhard', 100: 'hardcore', 150: 'extreme', 250: 'insane', 500: 'torment', 1000: 'lunatic'};
+    for (const [streak, achievement] of Object.entries(achievements)) {
+        if (gameState.endlessStreak >= streak) gameData.achievements[achievement] = true;
+    }
 }
 
+// ▼▼▼ BGM図鑑の表示ロジックを更新 ▼▼▼
 function showEncyclopedia() {
     showScreen('encyclopedia');
     const container = document.getElementById('encyclopedia');
     container.innerHTML = `
         <h2>ブルアカBGM図鑑 (全${playlist.length}曲)</h2>
-        <div id="now-playing-container">曲名をクリックすると再生されます。</div>
         <input type="text" id="encyclopedia-search" placeholder="曲名や作者名で検索..." onkeyup="filterSongs()">
-        <div id="song-list"></div>
+        <div id="encyclopedia-content">
+            <div id="song-list"></div>
+            <div id="encyclopedia-details">
+                <div id="now-playing-container">左のリストから曲を選択してください。</div>
+                <div id="song-context-display" style="margin-top: 1em;"></div>
+            </div>
+        </div>
         <button id="enc-back-btn" style="margin-top: 1em;" onclick="initGame()">ホームに戻る</button>
     `;
 
     const songListContainer = document.getElementById('song-list');
+    const nowPlayingContainer = document.getElementById('now-playing-container');
+    const contextDisplay = document.getElementById('song-context-display');
+    
     playlist.forEach(song => {
         const songButton = document.createElement('button');
         songButton.className = 'song-item';
@@ -569,13 +553,17 @@ function showEncyclopedia() {
         songButton.onclick = () => {
             player.stopVideo();
             player.loadVideoById(song.videoId);
-            document.getElementById('now-playing-container').innerHTML = `<strong>再生中:</strong> ${song.title}`;
+            
+            nowPlayingContainer.innerHTML = `<strong>再生中:</strong> ${song.title}`;
+            contextDisplay.innerHTML = `<strong>曲の解説:</strong><br>${song.context || 'この曲の解説は現在準備中です。'}`;
+            
             document.querySelectorAll('.song-item.playing').forEach(b => b.classList.remove('playing'));
             songButton.classList.add('playing');
         };
         songListContainer.appendChild(songButton);
     });
 }
+// ▲▲▲ BGM図鑑の表示ロジックを更新ここまで ▲▲▲
 
 function filterSongs() {
     const filterText = document.getElementById('encyclopedia-search').value.toLowerCase();
@@ -584,24 +572,13 @@ function filterSongs() {
     });
 }
 
-// --- Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Cache DOM elements
-    domElements.loadingOverlay = document.getElementById('loading-overlay');
-    domElements.mainMenu = document.getElementById('main-menu');
-    domElements.choices = document.getElementById('choices');
-    domElements.result = document.getElementById('result');
-    domElements.score = document.getElementById('score');
-    domElements.timeDisplay = document.getElementById('time-display');
-    domElements.progressContainer = document.getElementById('progress-container');
-    domElements.progressText = document.getElementById('progress-text');
-    domElements.progressBarFill = document.getElementById('progress-bar-fill');
+    const ids = ['loading-overlay', 'main-menu', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn'];
+    ids.forEach(id => {
+        let camelCaseId = id.replace(/-(\w)/g, (_, c) => c.toUpperCase());
+        domElements[camelCaseId] = document.getElementById(id);
+    });
     domElements.progressBarWrapper = document.querySelector('.progress-bar-wrapper');
-    domElements.gameControlsContainer = document.getElementById('game-controls-container');
-    domElements.volumeSlider = document.getElementById('volumeSlider');
-    domElements.settingsScreen = document.getElementById('settings-screen');
-    domElements.startPrompt = document.getElementById('start-prompt');
-    domElements.startPromptBtn = document.getElementById('start-prompt-btn');
 
     domElements.loadingOverlay.style.display = 'flex';
     loadGameData();
