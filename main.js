@@ -185,10 +185,13 @@ function launchQuiz() {
     gameState.answerChecked = false;
     answeredVideos = [];
     
+    // クイズ対象の曲のみをフィルタリング
+    const quizPlaylist = playlist.filter(song => song.quiz !== false);
+    
     const filter = gameData.settings.composerFilter;
     currentPlaylist = (gameState.mode === GAME_MODES.NORMAL && filter !== 'All') 
-        ? playlist.filter(song => song.composer === filter) 
-        : [...playlist];
+        ? quizPlaylist.filter(song => song.composer === filter) 
+        : [...quizPlaylist];
     
     if (currentPlaylist.length < 4) {
         alert('選択した作者の曲が4曲未満のため、クイズを開始できません。');
