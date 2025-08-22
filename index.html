@@ -70,9 +70,9 @@
     p#time-display { font-size: 1.2em; margin: 0; color: var(--red-primary); font-weight: 700; }
 
     /* --- Buttons --- */
-    button { font-family: 'Noto Sans JP', sans-serif; font-size: 1.1em; font-weight: 500; cursor: pointer; border-radius: 12px; border: 1px solid var(--border-color); padding: 0.8em 1.5em; margin: 0.4em; transition: all 0.2s ease-in-out; box-shadow: var(--shadow); display: inline-flex; align-items: center; justify-content: center; gap: 0.5em; white-space: normal; line-height: 1.4; background-color: var(--text-light); color: var(--text-dark); }
-    button:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); filter: brightness(1.02); }
-    button:active { transform: translateY(-1px) scale(0.98); box-shadow: var(--shadow); }
+    button, .yt-button { font-family: 'Noto Sans JP', sans-serif; font-size: 1.1em; font-weight: 500; cursor: pointer; border-radius: 12px; border: 1px solid var(--border-color); padding: 0.8em 1.5em; margin: 0.4em; transition: all 0.2s ease-in-out; box-shadow: var(--shadow); display: inline-flex; align-items: center; justify-content: center; gap: 0.5em; white-space: normal; line-height: 1.4; background-color: var(--text-light); color: var(--text-dark); text-decoration: none; }
+    button:hover, .yt-button:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); filter: brightness(1.02); }
+    button:active, .yt-button:active { transform: translateY(-1px) scale(0.98); box-shadow: var(--shadow); }
     #choices, #main-menu { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; gap: 0.5em; }
     #choices button, #main-menu button { width: 95%; max-width: 600px; }
     button.correct { background-color: var(--green-primary) !important; color: var(--text-light) !important; border-color: var(--green-dark) !important; transform: scale(1.05); }
@@ -100,20 +100,22 @@
     #encyclopedia-layout { display: flex; gap: 1.5em; width: 100%; margin-top: 1em; }
     #song-list-container { flex: 3; max-height: 65vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.5em; }
     #song-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1em; width: 100%; }
-    #encyclopedia-details { flex: 1; text-align: left; padding: 1em; background: #f8f9fa; border-radius: 8px; border: 1px solid var(--border-color); }
-    #now-playing-container { font-weight: bold; margin-top: 0; }
-    #song-context-display { margin-top: 1em; white-space: pre-wrap; word-wrap: break-word; }
+    #encyclopedia-details { flex: 2; text-align: left; padding: 1.5em; background: var(--grey-light); border-radius: 8px; border: 1px solid var(--border-color); }
+    #encyclopedia-details-content { display: flex; flex-direction: column; align-items: center; gap: 1em; }
+    #encyclopedia-details-content h4 { margin: 0.5em 0 0.2em 0; font-size: 1.4em; color: var(--blue-primary); }
+    #encyclopedia-details-content p { margin: 0; }
+    #encyclopedia-context { white-space: pre-wrap; background-color: #fff; padding: 1em; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 1em; width: 100%; box-sizing: border-box; }
+    .yt-button { background-color: var(--red-primary); color: white; border: none; }
+
 
     .song-card { cursor: pointer; background: white; border-radius: 12px; box-shadow: var(--shadow); transition: all 0.2s ease-in-out; overflow: hidden; text-align: left; border: 2px solid transparent; }
     .song-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
-    .song-card.playing { border-color: var(--blue-secondary); box-shadow: 0 0 15px rgba(0, 174, 239, 0.5); }
+    .song-card.selected { border-color: var(--blue-secondary); box-shadow: 0 0 15px rgba(0, 174, 239, 0.5); transform: translateY(-2px); }
     
-    a.song-card { text-decoration: none; color: inherit; } /* This is the new line */
-
     .song-card-image {
       width: 100%;
-      aspect-ratio: 16 / 9; /* 画像の比率を16:9に固定 */
-      object-fit: cover; /* 比率を保ったまま領域を埋める */
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
       background-color: #eee;
       border-bottom: 1px solid var(--border-color);
     }
@@ -141,7 +143,7 @@
     @media (min-width: 768px) { #stats-screen .stats-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 900px) {
         #encyclopedia-layout { flex-direction: column; }
-        #song-list-container { max-height: 40vh; }
+        #song-list-container { max-height: 45vh; }
     }
   </style>
 </head>

@@ -35,7 +35,6 @@ let currentPlaylist = [];
 let answeredVideos = [];
 // Encyclopedia state
 let currentEncyclopediaPlaylist = [];
-let currentSongIndex = -1;
 
 // State Object
 let gameState = {
@@ -552,7 +551,10 @@ function showEncyclopedia() {
                 <input type="text" id="encyclopedia-search" placeholder="曲名や作曲者名で検索..." onkeyup="filterSongs()">
             </div>
             <div id="encyclopedia-layout">
-                <div id="song-list-container" style="flex: 1; width: 100%;"><div id="song-list"></div></div>
+                <div id="song-list-container"><div id="song-list"></div></div>
+                <div id="encyclopedia-details">
+                     <p>リストから曲を選択してください。</p>
+                </div>
             </div>
             <button id="enc-back-btn" style="margin-top: 1em;">ライブラリ選択に戻る</button>
         </div>`;
@@ -574,13 +576,9 @@ function displayEncyclopediaView(type) {
     const songListContainer = document.getElementById('song-list');
     songListContainer.innerHTML = '';
     
-    sourcePlaylist.forEach((song, index) => {
-        const songCard = document.createElement('a');
+    sourcePlaylist.forEach((song) => {
+        const songCard = document.createElement('div');
         songCard.className = 'song-card';
-        songCard.href = `https://www.youtube.com/watch?v=${song.videoId}`;
-        songCard.target = '_blank';
-        songCard.rel = 'noopener noreferrer';
-
         songCard.innerHTML = `
             <img src="${song.imageUrl}" alt="${song.title}" class="song-card-image" loading="lazy">
             <div class="song-card-info">
@@ -588,6 +586,11 @@ function displayEncyclopediaView(type) {
                 <p class="song-card-composer">${song.composer || 'N/A'}</p>
             </div>
         `;
+        songCard.addEventListener('click', () => {
+            document.querySelectorAll('.song-card.selected').forEach(card => card.classList.remove('selected'));
+            songCard.classList.add('selected');
+            displaySongDetails(song);
+        });
         songListContainer.appendChild(songCard);
     });
     
@@ -597,31 +600,21 @@ function displayEncyclopediaView(type) {
     };
 }
 
-// This function is no longer used by the encyclopedia but kept for other potential uses
-function playSongFromEncyclopedia() {
-    if (currentSongIndex < 0 || currentSongIndex >= currentEncyclopediaPlaylist.length) return;
-
-    const song = currentEncyclopediaPlaylist[currentSongIndex];
-    if (player && typeof player.loadVideoById === 'function') {
-        player.loadVideoById(song.videoId);
-    }
-
-    document.getElementById('now-playing-container').innerHTML = `再生中: ${song.title}`;
-    document.getElementById('song-context-display').innerHTML = `<strong>情報:</strong><br>${song.context || '解説はありません。'}`;
-    
-    document.querySelectorAll('.song-card.playing').forEach(card => card.classList.remove('playing'));
-    const currentCard = document.querySelector(`.song-card[data-index='${currentSongIndex}']`);
-    if (currentCard) {
-        currentCard.classList.add('playing');
-        currentCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-}
-
-// This function is no longer used by the encyclopedia but kept for other potential uses
-function resetEncyclopediaDetails() {
-    document.getElementById('now-playing-container').textContent = '曲を選択して再生します。';
-    document.getElementById('song-context-display').innerHTML = '';
-    document.querySelectorAll('.song-card.playing').forEach(card => card.classList.remove('playing'));
+function displaySongDetails(song) {
+    const detailsContainer = document.getElementById('encyclopedia-details');
+    detailsContainer.innerHTML = `
+        <div id="encyclopedia-details-content">
+             <div style="width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 8px; box-shadow: var(--shadow); margin-bottom: 0.5em;">
+                <img src="${song.imageUrl}" alt="${song.title}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <h4>${song.title}</h4>
+            <p><strong>作曲者:</strong> ${song.composer || 'N/A'}</p>
+            <div id="encyclopedia-context"><strong>💡 ヒント情報:</strong><br>${song.context || '情報はありません。'}</div>
+            <a href="https://www.youtube.com/watch?v=${song.videoId}" target="_blank" rel="noopener noreferrer" class="yt-button">
+                ▶️ YouTubeで聴く
+            </a>
+        </div>
+    `;
 }
 
 function filterSongs() {
