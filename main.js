@@ -1,7 +1,3 @@
-はい、承知いたしました。
-キャラクター名でのBGM検索機能を実装した `main.js` の全コードはこちらです。以下のコードをすべてコピーして、お手元の `main.js` ファイルに貼り付けてください。
-
-```javascript
 const NEXT_QUESTION_DELAY = 1200;
 const GAME_OVER_DELAY = 2000;
 
@@ -672,4 +668,3 @@ document.addEventListener('DOMContentLoaded', () => {
         if (player && player.setVolume) player.setVolume(parseInt(e.target.value, 10));
     });
 });
-```
