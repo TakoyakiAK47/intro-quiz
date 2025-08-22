@@ -228,6 +228,7 @@ const playlist = [
   { title: "Expo Festa", videoId: "l4ZJmw8J918", composer: "EmoCosine", context: "OST 245\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/l4ZJmw8J918/hqdefault.jpg" },
   { title: "OST 246", videoId: "dyCEDeF5cXg", composer: "Unknown", context: "OST 246\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/dyCEDeF5cXg/hqdefault.jpg" },
   { title: "Mission Possible", videoId: "SPrBLc_KVd4", composer: "EmoCosine", context: "OST 247\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/SPrBLc_KVd4/hqdefault.jpg" },
+  { title: "OST 249", videoId: "rI2McfptXko", composer: "Unknown", context: "OST 249\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/rI2McfptXko/hqdefault.jpg" },
   { title: "OST 252", videoId: "5LgvokZKhV0", composer: "Unknown", context: "OST 252\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/5LgvokZKhV0/hqdefault.jpg" },
   { title: "WE'RE CCC", videoId: "8pi6ztlikIQ", composer: "EmoCosine", context: "OST 253\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/8pi6ztlikIQ/hqdefault.jpg" },
   { title: "Sweet Allegro", videoId: "HTl_f6fQBjM", composer: "EmoCosine", context: "OST 255\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/HTl_f6fQBjM/hqdefault.jpg" },
