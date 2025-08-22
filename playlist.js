@@ -224,6 +224,7 @@ const playlist = [
   { title: "OST 240", videoId: "NJddhV0FpxA", composer: "Unknown", context: "OST 240\nメモロビ:チアキ、マキ(キャンプ)、ハスミ(水着)\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/NJddhV0FpxA/hqdefault.jpg" },
   { title: "DAN! DAN!! INVADER!!!", videoId: "ZG3Mc2gM5_g", composer: "KARUT", context: "OST 241\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/ZG3Mc2gM5_g/hqdefault.jpg" },
   { title: "OST 242", videoId: "n1_8YzRMslM", composer: "Unknown", context: "OST 242\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/n1_8YzRMslM/hqdefault.jpg" },
+  { title: "OST 243", videoId: "vWZWU8r-rRA", composer: "Unknown", context: "OST 243\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/vWZWU8r-rRA/hqdefault.jpg" },
   { title: "OST 244", videoId: "Qy7GQxaUEyw", composer: "EmoCosine", context: "OST 244\nメモロビ:セナ(私服)、レンゲ(水着)\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/Qy7GQxaUEyw/hqdefault.jpg" },
   { title: "Expo Festa", videoId: "l4ZJmw8J918", composer: "EmoCosine", context: "OST 245\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/l4ZJmw8J918/hqdefault.jpg" },
   { title: "OST 246", videoId: "dyCEDeF5cXg", composer: "Unknown", context: "OST 246\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/dyCEDeF5cXg/hqdefault.jpg" },
