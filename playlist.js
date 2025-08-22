@@ -231,6 +231,7 @@ const playlist = [
   { title: "OST 249", videoId: "rI2McfptXko", composer: "Unknown", context: "OST 249\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/rI2McfptXko/hqdefault.jpg" },
   { title: "OST 252", videoId: "5LgvokZKhV0", composer: "Unknown", context: "OST 252\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/5LgvokZKhV0/hqdefault.jpg" },
   { title: "WE'RE CCC", videoId: "8pi6ztlikIQ", composer: "EmoCosine", context: "OST 253\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/8pi6ztlikIQ/hqdefault.jpg" },
+  { title: "OST 254", videoId: "oUjxLLLOdzQ", composer: "Unknown", context: "OST 254\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/oUjxLLLOdzQ/hqdefault.jpg" },
   { title: "Sweet Allegro", videoId: "HTl_f6fQBjM", composer: "EmoCosine", context: "OST 255\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/HTl_f6fQBjM/hqdefault.jpg" },
   { title: "OST 256", videoId: "iZKn56LY3NM", composer: "Unknown", context: "OST 256\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/iZKn56LY3NM/hqdefault.jpg" },
   { title: "OST 257", videoId: "-vz7KqCwNOI", composer: "Aiobahn", context: "OST 257\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/-vz7KqCwNOI/hqdefault.jpg" },
