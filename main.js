@@ -1,3 +1,7 @@
+はい、承知いたしました。
+キャラクター名でのBGM検索機能を実装した `main.js` の全コードはこちらです。以下のコードをすべてコピーして、お手元の `main.js` ファイルに貼り付けてください。
+
+```javascript
 const NEXT_QUESTION_DELAY = 1200;
 const GAME_OVER_DELAY = 2000;
 
@@ -548,7 +552,7 @@ function showEncyclopedia() {
         <div class="encyclopedia-view">
             <h3 id="encyclopedia-title"></h3>
             <div id="encyclopedia-controls">
-                <input type="text" id="encyclopedia-search" placeholder="曲名や作曲者名で検索..." onkeyup="filterSongs()">
+                <input type="text" id="encyclopedia-search" placeholder="曲名や作曲者名、キャラ名で検索..." onkeyup="filterSongs()">
             </div>
             <div id="encyclopedia-layout">
                 <div id="song-list-container"><div id="song-list"></div></div>
@@ -609,7 +613,7 @@ function displaySongDetails(song) {
             </div>
             <h4>${song.title}</h4>
             <p><strong>作曲者:</strong> ${song.composer || 'N/A'}</p>
-            <div id="encyclopedia-context"><strong>💡 ヒント情報:</strong><br>${song.context || '情報はありません。'}</div>
+            <div id="encyclopedia-context"><strong>詳細:</strong><br>${song.context || '情報はありません。'}</div>
             <a href="https://www.youtube.com/watch?v=${song.videoId}" target="_blank" rel="noopener noreferrer" class="yt-button">
                 ▶️ YouTubeで聴く
             </a>
@@ -619,10 +623,24 @@ function displaySongDetails(song) {
 
 function filterSongs() {
     const filterText = document.getElementById('encyclopedia-search').value.toLowerCase();
-    document.querySelectorAll('#song-list .song-card').forEach(songCard => {
-        const songTitle = songCard.querySelector('.song-card-title').textContent.toLowerCase();
-        const songComposer = songCard.querySelector('.song-card-composer').textContent.toLowerCase();
-        songCard.style.display = (songTitle.includes(filterText) || songComposer.includes(filterText)) ? '' : 'none';
+    const songCards = document.querySelectorAll('#song-list .song-card');
+
+    // 表示されているプレイリストの各曲情報をチェックする
+    currentEncyclopediaPlaylist.forEach((song, index) => {
+        const card = songCards[index];
+        if (!card) return; // 対応するカードがなければスキップ
+
+        const title = song.title.toLowerCase();
+        const composer = (song.composer || '').toLowerCase();
+        // メモロビ情報(context)も検索対象に加える
+        const context = (song.context || '').toLowerCase(); 
+
+        // 曲名、作曲者名、またはメモロビ情報に検索テキストが含まれていれば表示
+        if (title.includes(filterText) || composer.includes(filterText) || context.includes(filterText)) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
     });
 }
 
@@ -654,3 +672,4 @@ document.addEventListener('DOMContentLoaded', () => {
         if (player && player.setVolume) player.setVolume(parseInt(e.target.value, 10));
     });
 });
+```
