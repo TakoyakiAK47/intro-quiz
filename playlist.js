@@ -291,6 +291,7 @@ const characterSongPlaylist = [
   { title: "憧れの日々", videoId: "XNN3z28uOrc", composer: "フウカ", context: "「準備中」", imageUrl: "https://i.ytimg.com/vi/XNN3z28uOrc/hqdefault.jpg" },
   { title: "Hand in Hand, Heart in Heart", videoId: "6TPuTDDHkMk", composer: "ノノミ", context: "「準備中」", imageUrl: "https://i.ytimg.com/vi/6TPuTDDHkMk/hqdefault.jpg" },
   { title: "記憶と記録の間に", videoId: "I6LhzSm2QZ4", composer: "ノア", context: "「準備中」", imageUrl: "https://i.ytimg.com/vi/I6LhzSm2QZ4/hqdefault.jpg" },
+  { title: "Clear Morning", videoId: "rFeBMv98X30", composer: "小倉 唯", context: "「準備中」", imageUrl: "https://i.ytimg.com/vi/rFeBMv98X30/hqdefault.jpg" },
   { title: "わたしたちのクエスト", videoId: "lsQrEl4znzo", composer: "モモイ、ミドリ、ユズ、アリス", context: "「準備中」", imageUrl: "https://i.ytimg.com/vi/lsQrEl4znzo/hqdefault.jpg" },
   { title: "優しさの記憶", videoId: "GXh57ZcnyYg", composer: "鹿乃", context: "「準備中」", imageUrl: "https://i.ytimg.com/vi/GXh57ZcnyYg/hqdefault.jpg" },
   { title: "夢路の花", videoId: "y3Yl6AbMq5c", composer: "ヒナ", context: "「準備中」", imageUrl: "https://i.ytimg.com/vi/y3Yl6AbMq5c/hqdefault.jpg" },
