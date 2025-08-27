@@ -1,5 +1,7 @@
 const NEXT_QUESTION_DELAY = 1200;
 const GAME_OVER_DELAY = 2000;
+// 【変更点】ノーマル・エンドレスモード用の新しい遅延時間を追加
+const EXTENDED_RESULT_DELAY = 3000; // 3秒
 
 const GAME_MODES = {
     MENU: 'menu',
@@ -342,6 +344,7 @@ function updateChoiceButtonsUI(selectedChoice) {
     });
 }
 
+// 【変更点】この関数全体を修正しました
 function scheduleNextStep(isCorrect) {
     const isNormalGameOver = gameState.mode === GAME_MODES.NORMAL && gameState.totalQuestions >= gameData.settings.normalQuestions;
     const isTimedGameOver = gameState.mode === GAME_MODES.TIMED && gameState.timeLeftMs <= 0;
@@ -353,13 +356,23 @@ function scheduleNextStep(isCorrect) {
         domElements.progressBarFill.style.width = '100%';
     }
     
+    // ゲームモードに基づいて遅延時間を決定
+    let delay;
+    if (gameState.mode === GAME_MODES.NORMAL || gameState.mode === GAME_MODES.ENDLESS) {
+        // ノーマルモードとエンドレスモードでは、延長された遅延時間を使用
+        delay = EXTENDED_RESULT_DELAY;
+    } else {
+        // 他のモード（タイムアタックなど）では、元の遅延ロジックを使用
+        delay = isGameOver ? GAME_OVER_DELAY : NEXT_QUESTION_DELAY;
+    }
+
     setTimeout(() => {
         if (isGameOver) {
             endGame();
         } else {
             loadNextQuiz();
         }
-    }, isGameOver ? GAME_OVER_DELAY : NEXT_QUESTION_DELAY);
+    }, delay);
 }
 
 function shareResult() {
