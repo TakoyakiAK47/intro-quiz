@@ -214,7 +214,7 @@ const playlist = [
   { title: "Sudden Onset Disaster", videoId: "wTfRrbi72uw", composer: "KARUT", context: "OST 229\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/wTfRrbi72uw/hqdefault.jpg" },
   { title: "OST 230", videoId: "IQXbaw6XfXY", composer: "Unknown", context: "OST 230\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/IQXbaw6XfXY/hqdefault.jpg" },
   { title: "Oukaranman", videoId: "H4JnF1VtNlY", composer: "EmoCosine", context: "OST 231\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/H4JnF1VtNlY/hqdefault.jpg" },
-  { title: "OST 232", videoId: "gpxqvFAYARc", composer: "Unknown", context: "OST 232\nメモロビ:\nコクマー", quiz: false, imageUrl: "https://i.ytimg.com/vi/gpxqvFAYARc/hqdefault.jpg" },
+  { title: "The Eruption", videoId: "gpxqvFAYARc", composer: "KARUT", context: "OST 232\nメモロビ:\nコクマー", imageUrl: "https://i.ytimg.com/vi/gpxqvFAYARc/hqdefault.jpg" },
   { title: "OST 233", videoId: "z_vEwtQUjlc", composer: "Unknown", context: "OST 233\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/z_vEwtQUjlc/hqdefault.jpg" },
   { title: "U-n.I", videoId: "bGicz6yyFQc", composer: "Mitsukiyo", context: "OST 234\nメモロビ:ホシノ(臨戦)、マリー(アイドル)\n「準備中」", imageUrl: "https://i.ytimg.com/vi/bGicz6yyFQc/hqdefault.jpg" },
   { title: "Sugary Holiday", videoId: "3P7zDw5UFNo", composer: "EmoCosine", context: "OST 235\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/3P7zDw5UFNo/hqdefault.jpg" },
