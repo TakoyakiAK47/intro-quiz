@@ -621,7 +621,7 @@ function displaySongDetails(song) {
                 <img src="${song.imageUrl}" alt="${song.title}" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <h4>${song.title}</h4>
-            <p><strong>作曲者:</strong> ${song.composer || 'N/A'}</p>
+            <p><strong>:</strong> ${song.composer || 'N/A'}</p>
             <div id="encyclopedia-context"><strong>詳細:</strong><br>${song.context || '情報はありません。'}</div>
             <a href="https://www.youtube.com/watch?v=${song.videoId}" target="_blank" rel="noopener noreferrer" class="yt-button">
                 ▶️ YouTubeで聴く
