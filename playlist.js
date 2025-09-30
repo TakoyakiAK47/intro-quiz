@@ -259,7 +259,7 @@ const playlist = [
   { title: "OST 293", videoId: "dL9FYCKRlV4", composer: "Unknown", context: "OST 293\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/dL9FYCKRlV4/hqdefault.jpg" },
   { title: "OST 294", videoId: "XXZ_TcOHXaY", composer: "Unknown", context: "OST 294\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/XXZ_TcOHXaY/hqdefault.jpg" },
   { title: "OST 295", videoId: "u_id-29xj60", composer: "Unknown", context: "OST 295\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/u_id-29xj60/hqdefault.jpg" },
-  { title: "OST 296", videoId: "Wachawacha Rush", composer: "Mitsukiyo", context: "OST 296\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/6yAw5Uxjj8c/hqdefault.jpg" },
+  { title: "Wachawacha Rush", videoId: "6yAw5Uxjj8c", composer: "Mitsukiyo", context: "OST 296\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/6yAw5Uxjj8c/hqdefault.jpg" },
   { title: "You’re My Princess", videoId: "SFETQKiqPu4", composer: "EmoCosine", context: "OST 298\nメモロビ:ミカ(水着)\n「準備中」", imageUrl: "https://i.ytimg.com/vi/SFETQKiqPu4/hqdefault.jpg" },
   { title: "OST 299", videoId: "JJr054EMO4U", composer: "KARUT", context: "OST 299\nメモロビ:セイア(水着)\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/JJr054EMO4U/hqdefault.jpg" },
   { title: "OST 300", videoId: "oDIazvE-kzQ", composer: "Unknown", context: "OST 300\nメモロビ:ナギサ(水着)\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/oDIazvE-kzQ/hqdefault.jpg" },
