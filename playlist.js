@@ -176,7 +176,7 @@ const playlist = [
   { title: "Action 68", videoId: "g2uYkvC8VhA", composer: "KARUT", context: "OST 187\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/g2uYkvC8VhA/hqdefault.jpg" },
   { title: "Dreaming Trip", videoId: "YsT_WI9op70", composer: "EmoCosine", context: "OST 188\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/YsT_WI9op70/hqdefault.jpg" },
   { title: "Bluemark Canvas", videoId: "2mNAmP73qac", composer: "Mitsukiyo", context: "OST 189\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/2mNAmP73qac/hqdefault.jpg" },
-  { title: "Dancing Falsehood", videoId: "yEZlSGFouco", composer: "Mitsukiyo", context: "OST 190\nメモロビ:ナギサ\n「準備中」", imageUrl: "https://i.ytimg.com/vi/yEZlSGFouco/hqdefault.jpg" },
+  { title: "Dancing Falsehood", videoId: "yEZlSGFouco", composer: "Mitsukiyo", context: "OST 190\nメモロビ:ナグサ\n「準備中」", imageUrl: "https://i.ytimg.com/vi/yEZlSGFouco/hqdefault.jpg" },
   { title: "F1ghtback", videoId: "aqD_lL7edNA", composer: "KARUT", context: "OST 191\nメモロビ:\n「準備中」", imageUrl: "https://i.ytimg.com/vi/aqD_lL7edNA/hqdefault.jpg" },
   { title: "Chilling Out", videoId: "2HRBQj3WF4U", composer: "Nor", context: "OST 192\nメモロビ:イチカ、トモエ(チーパオ)、サツキ、ニヤ\n「準備中」", imageUrl: "https://i.ytimg.com/vi/2HRBQj3WF4U/hqdefault.jpg" },
   { title: "Starry Confession", videoId: "AUhKxTe6684", composer: "Synthion", context: "OST 193\nメモロビ:ハレ(キャンプ)\n「準備中」", imageUrl: "https://i.ytimg.com/vi/AUhKxTe6684/hqdefault.jpg" },
