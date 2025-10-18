@@ -239,7 +239,7 @@ const playlist = [
   { title: "OST 257", videoId: "-vz7KqCwNOI", composer: "Aiobahn", context: "OST 257\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/-vz7KqCwNOI/hqdefault.jpg" },
   { title: "OST 258", videoId: "ufHrOQgynRE", composer: "Unknown", context: "OST 258\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/ufHrOQgynRE/hqdefault.jpg" },
   { title: "OST 261", videoId: "x1qbEB_3Cjg", composer: "Unknown", context: "OST 261\nメモロビ:\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/x1qbEB_3Cjg/hqdefault.jpg" },
-  { title: "OST 263", videoId: "tufQqFTIOb8", composer: "Unknown", context: "OST 263\nメモロビ:レイ\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/tufQqFTIOb8/hqdefault.jpg" },
+  { title: "OST 263", videoId: "tufQqFTIOb8", composer: "Unknown", context: "OST 263\nメモロビ:レイ、リツ\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/tufQqFTIOb8/hqdefault.jpg" },
   { title: "Breaking Silence", videoId: "L7C-hty7ONg", composer: "Mitsukiyo", context: "OST 264\nメモロビ:セイア、キキョウ(水着)\n「準備中」", imageUrl: "https://i.ytimg.com/vi/L7C-hty7ONg/hqdefault.jpg" },
   { title: "OST 265", videoId: "xUzka0n9T5U", composer: "Unknown", context: "OST 265\nメモロビ:リオ\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/xUzka0n9T5U/hqdefault.jpg" },
   { title: "OST 266", videoId: "04rUEmcjkLQ", composer: "Unknown", context: "OST 266\nメモロビ:アスナ(制服)、ヒカリ\n「準備中」", quiz: false, imageUrl: "https://i.ytimg.com/vi/04rUEmcjkLQ/hqdefault.jpg" },
