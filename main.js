@@ -327,9 +327,12 @@ function processCorrectAnswer() {
 
 function processIncorrectAnswer() {
     domElements.result.innerText = `❌ 不正解... (正解は「${correctAnswer}」)`;
+    // エンドレスモードでのストリークリセット処理を削除
+    /*
     if (gameState.mode === GAME_MODES.ENDLESS) {
         gameState.endlessStreak = 0;
     }
+    */
 }
 
 function updateChoiceButtonsUI(selectedChoice) {
