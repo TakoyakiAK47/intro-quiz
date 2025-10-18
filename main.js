@@ -1,7 +1,6 @@
-const NEXT_QUESTION_DELAY = 1200;
-const GAME_OVER_DELAY = 2000;
-// 【変更点】ノーマル・エンドレスモード用の新しい遅延時間を追加
-const EXTENDED_RESULT_DELAY = 3000; // 3秒
+const NEXT_QUESTION_DELAY = 1000;
+const GAME_OVER_DELAY = 1000;
+const EXTENDED_RESULT_DELAY = 1000; // 1秒
 
 const GAME_MODES = {
     MENU: 'menu',
@@ -89,9 +88,7 @@ function onPlayerReady(event) {
 }
 
 function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.CUED && [GAME_MODES.NORMAL, GAME_MODES.TIMED, GAME_MODES.ENDLESS].includes(gameState.mode)) {
-        player.playVideo();
-    }
+    // 
 }
 
 // --- Screen Management ---
@@ -130,23 +127,35 @@ function initGame() {
     });
 }
 
+
+function showStartPrompt() {
+    domElements.startPrompt.style.display = 'flex';
+    domElements.startPromptBtn.onclick = () => {
+        domElements.startPrompt.style.display = 'none';
+        
+        
+        if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) {
+             player.mute();
+             player.playVideo();
+             player.pauseVideo();
+             player.unMute();
+        }
+        
+        
+        launchQuiz();
+    };
+}
+
 function selectMode(selectedMode) {
     gameState.mode = selectedMode;
+    
+    
     if (gameState.mode === GAME_MODES.NORMAL || gameState.mode === GAME_MODES.TIMED) {
         showScreen('settings-screen');
         setupModeSettings();
-    } else {
-        domElements.startPrompt.style.display = 'flex';
-        domElements.startPromptBtn.onclick = () => {
-            domElements.startPrompt.style.display = 'none';
-            if (player && player.getPlayerState() !== 1) {
-                 player.mute();
-                 player.playVideo();
-                 player.pauseVideo();
-                 player.unMute();
-            }
-            launchQuiz();
-        };
+    } else { 
+        
+        showStartPrompt();
     }
 }
 
@@ -179,7 +188,8 @@ function setupModeSettings() {
             gameData.settings.timedDuration = parseInt(document.getElementById('timed-duration').value, 10) * 1000;
         }
         saveGameData();
-        launchQuiz();
+        // launchQuiz() の代わりに showStartPrompt() を呼び出し、タップ操作を確実に捕捉
+        showStartPrompt();
     };
     document.getElementById('settings-back-btn').onclick = initGame;
 }
@@ -199,7 +209,7 @@ function launchQuiz() {
         : [...quizPlaylist];
     
     if (currentPlaylist.length < 4) {
-        alert('選択した作曲者の楽曲が4曲未満のため、クイズを開始できません。');
+        alert('選択した楽曲が4曲未満のため、クイズを開始できません。');
         initGame();
         return;
     }
@@ -224,11 +234,13 @@ function launchQuiz() {
 }
 
 function loadNextQuiz() {
+    // 終了条件のチェック (Timed, Normal)
     if ((gameState.mode === GAME_MODES.TIMED && gameState.timeLeftMs <= 0) || (gameState.mode === GAME_MODES.NORMAL && gameState.totalQuestions >= gameData.settings.normalQuestions)) {
         endGame();
         return;
     }
 
+    // UIリセット
     gameState.answerChecked = false;
     domElements.result.innerText = '';
     domElements.answerDetails.innerText = '';
@@ -241,13 +253,31 @@ function loadNextQuiz() {
         available = currentPlaylist;
     }
 
+    
     const random = available[Math.floor(Math.random() * available.length)];
+    
+    if (!random) {
+        
+        console.error("No songs available in the playlist. Ending game.");
+        endGame();
+        return;
+    }
+
     correctAnswer = random.title;
     currentVideoId = random.videoId;
     answeredVideos.push(currentVideoId);
+
+   
+    if (player && player.getPlayerState() === YT.PlayerState.PLAYING) {
+        player.pauseVideo();
+    }
+
+    
+    playIntroClip();
+    // ---------------------------------------------
+    
     
     displayChoices(generateChoices(correctAnswer));
-    playIntroClip();
 }
 
 function generateChoices(correct) {
@@ -285,8 +315,13 @@ function displayChoices(choices) {
 }
 
 function playIntroClip() {
-    if (!player || !player.cueVideoById) return;
-    player.cueVideoById({ videoId: currentVideoId, startSeconds: 0 });
+    // load(読み込んで再生)を使うことで、自動再生を試みる
+    if (!player || !player.loadVideoById) return;
+    player.loadVideoById({ 
+        videoId: currentVideoId, 
+        startSeconds: 0,
+        playerVars: { 'playsinline': 1 } 
+    });
 }
 
 function checkAnswer(selectedChoice) {
@@ -310,11 +345,27 @@ function checkAnswer(selectedChoice) {
     
     gameState.totalQuestions++;
     updateSongStats(currentVideoId, isCorrect);
-    updateChoiceButtonsUI(selectedChoice);
+    updateChoiceButtonsUI(selectedChoice); // <--- ここでエラーが発生していた
     updateUIState();
     saveGameData();
     scheduleNextStep(isCorrect);
 }
+
+// 【問題の核心：欠落していた関数を追加】
+function updateChoiceButtonsUI(selectedChoice) {
+    document.querySelectorAll('#choices button').forEach(btn => {
+        btn.disabled = true; // ボタンを無効化
+        const choiceText = btn.textContent.trim();
+        if (choiceText === correctAnswer) {
+            btn.classList.add('correct'); // 正解ボタンを緑に
+        } else if (choiceText === selectedChoice) {
+            btn.classList.add('incorrect'); // 不正解ボタンを赤に
+        }
+        // 回答後のUIアニメーションを確保するため、ボタンのホバー/アクティブスタイルを一時的に無効化する
+        btn.style.pointerEvents = 'none'; 
+    });
+}
+
 
 function processCorrectAnswer() {
     gameState.score++;
@@ -327,56 +378,46 @@ function processCorrectAnswer() {
 
 function processIncorrectAnswer() {
     domElements.result.innerText = `❌ 不正解... (正解は「${correctAnswer}」)`;
-    // エンドレスモードでのストリークリセット処理を削除
-    /*
-    if (gameState.mode === GAME_MODES.ENDLESS) {
-        gameState.endlessStreak = 0;
-    }
-    */
 }
 
-function updateChoiceButtonsUI(selectedChoice) {
-    domElements.choices.querySelectorAll('button').forEach(b => {
-        b.disabled = true;
-        const buttonText = b.querySelector('span').textContent;
-        if (buttonText === correctAnswer) {
-            b.classList.add('correct');
-        } else if (buttonText === selectedChoice) {
-            b.classList.add('incorrect');
-        }
-    });
-}
-
-// 【変更点】この関数全体を修正しました
 function scheduleNextStep(isCorrect) {
+    // 1. 各モードのゲームオーバー条件を判定
     const isNormalGameOver = gameState.mode === GAME_MODES.NORMAL && gameState.totalQuestions >= gameData.settings.normalQuestions;
     const isTimedGameOver = gameState.mode === GAME_MODES.TIMED && gameState.timeLeftMs <= 0;
+    // エンドレスモードの場合、不正解の時にゲームオーバー
     const isEndlessGameOver = gameState.mode === GAME_MODES.ENDLESS && !isCorrect;
 
     const isGameOver = isNormalGameOver || isTimedGameOver || isEndlessGameOver;
     
+    // ノーマルモードで最終問題の場合はプログレスバーを完了させる
     if (isNormalGameOver) {
         domElements.progressBarFill.style.width = '100%';
     }
     
-    // ゲームモードに基づいて遅延時間を決定
+    // 2. ゲームモードに基づいて遅延時間を決定
     let delay;
-    if (gameState.mode === GAME_MODES.NORMAL || gameState.mode === GAME_MODES.ENDLESS) {
-        // ノーマルモードとエンドレスモードでは、延長された遅延時間を使用
-        delay = EXTENDED_RESULT_DELAY;
+    if (isGameOver) {
+        // ゲームオーバーの場合は、結果表示を終えてから次の画面へ
+        delay = GAME_OVER_DELAY; // 2000ms
+    } else if (gameState.mode === GAME_MODES.TIMED) {
+        // タイムアタックモードで次の問題に進む場合
+        delay = NEXT_QUESTION_DELAY; // 1200ms
     } else {
-        // 他のモード（タイムアタックなど）では、元の遅延ロジックを使用
-        delay = isGameOver ? GAME_OVER_DELAY : NEXT_QUESTION_DELAY;
+        // ノーマルモードまたはエンドレスモードで次の問題に進む場合
+        delay = EXTENDED_RESULT_DELAY; // 3000ms
     }
 
+    // 3. 遅延実行
     setTimeout(() => {
         if (isGameOver) {
             endGame();
         } else {
+            // ゲームオーバーではない場合、次の問題をロード
             loadNextQuiz();
         }
     }, delay);
 }
+
 
 function shareResult() {
     const title = "Blue Archive BGMイントロクイズ";

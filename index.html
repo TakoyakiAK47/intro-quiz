@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Blue Archive イントロクイズ</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="icon" href="https://bluearchive.jp/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -98,7 +98,7 @@
     #encyclopedia-search { flex-grow: 1; padding: 0.8em; font-size: 1em; border-radius: 8px; border: 1px solid var(--border-color); min-width: 200px; }
     
     #encyclopedia-layout { display: flex; gap: 1.5em; width: 100%; margin-top: 1em; }
-    #song-list-container { flex: 3; max-height: 65vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.5em; }
+    #song-list-container { flex: 3; max-height: 65dvh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.5em; }
     #song-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1em; width: 100%; }
     #encyclopedia-details { flex: 2; text-align: left; padding: 1.5em; background: var(--grey-light); border-radius: 8px; border: 1px solid var(--border-color); }
     #encyclopedia-details-content { display: flex; flex-direction: column; align-items: center; gap: 1em; }
@@ -129,6 +129,35 @@
 
     /* --- Stats Screen --- */
     #stats-screen .stats-grid { display: grid; grid-template-columns: 1fr; gap: 2em; text-align: left; }
+    
+    /* --- Mobile Optimizations --- */
+
+    /* タップ時のハイライト色を透明にし、テキストの偶発的な選択を防止 */
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* * :active 状態を定義して、タップした瞬間のフィードバックを強化
+     * これにより、スマホでの操作感が格段に向上します。
+     */
+    button:active:not(.correct):not(.incorrect), .yt-button:active {
+        transform: translateY(-1px) scale(0.98);
+        box-shadow: var(--shadow);
+        filter: brightness(0.95); /* タップ時に少し暗くする */
+    }
+
+    /*
+     * タッチデバイスでは :hover によるエフェクトを無効化
+     */
+    @media (hover: none) {
+      button:hover, .yt-button:hover {
+        transform: none;
+        box-shadow: var(--shadow);
+        filter: none;
+      }
+    }
 
     /* --- Footer --- */
     footer { margin-top: auto; padding-top: 2em; font-size: 0.9em; color: var(--grey-mid); }
