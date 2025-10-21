@@ -1,6 +1,6 @@
 const NEXT_QUESTION_DELAY = 1000;
 const GAME_OVER_DELAY = 1000;
-const EXTENDED_RESULT_DELAY = 1000; // 1秒
+const EXTENDED_RESULT_DELAY = 1000; 
 
 const GAME_MODES = {
     MENU: 'menu',
@@ -26,7 +26,7 @@ const defaultGameData = {
     },
 };
 
-// --- Global Variables & State ---
+
 let player;
 let correctAnswer = '';
 let currentVideoId = '';
@@ -34,10 +34,10 @@ let gameTimer = null;
 let gameData = {};
 let currentPlaylist = [];
 let answeredVideos = [];
-// Encyclopedia state
+
 let currentEncyclopediaPlaylist = [];
 
-// State Object
+
 let gameState = {
     mode: GAME_MODES.MENU,
     score: 0,
@@ -47,10 +47,10 @@ let gameState = {
     answerChecked: false,
 };
 
-// DOM Element Cache
+
 const domElements = {};
 
-// --- Data Management ---
+
 function saveGameData() {
     try {
         localStorage.setItem('blueArchiveQuizDataV2', JSON.stringify(gameData));
@@ -72,7 +72,7 @@ function loadGameData() {
     }
 }
 
-// --- YouTube IFrame API ---
+
 function onYouTubeIframeAPIReady() {
     domElements.loadingOverlay.style.display = 'none';
     player = new YT.Player('player', {
@@ -88,10 +88,10 @@ function onPlayerReady(event) {
 }
 
 function onPlayerStateChange(event) {
-    // 
+    
 }
 
-// --- Screen Management ---
+
 function showScreen(screenId) {
     document.querySelectorAll('.screen, #main-menu, #game-view').forEach(el => el.style.display = 'none');
     const target = document.getElementById(screenId);
@@ -100,7 +100,7 @@ function showScreen(screenId) {
     }
 }
 
-// --- Game Flow & State ---
+
 function initGame() {
     gameState.mode = GAME_MODES.MENU;
     if (gameTimer) clearInterval(gameTimer);
@@ -188,7 +188,7 @@ function setupModeSettings() {
             gameData.settings.timedDuration = parseInt(document.getElementById('timed-duration').value, 10) * 1000;
         }
         saveGameData();
-        // launchQuiz() の代わりに showStartPrompt() を呼び出し、タップ操作を確実に捕捉
+        
         showStartPrompt();
     };
     document.getElementById('settings-back-btn').onclick = initGame;
@@ -234,13 +234,13 @@ function launchQuiz() {
 }
 
 function loadNextQuiz() {
-    // 終了条件のチェック (Timed, Normal)
+    
     if ((gameState.mode === GAME_MODES.TIMED && gameState.timeLeftMs <= 0) || (gameState.mode === GAME_MODES.NORMAL && gameState.totalQuestions >= gameData.settings.normalQuestions)) {
         endGame();
         return;
     }
 
-    // UIリセット
+    
     gameState.answerChecked = false;
     domElements.result.innerText = '';
     domElements.answerDetails.innerText = '';
@@ -274,7 +274,7 @@ function loadNextQuiz() {
 
     
     playIntroClip();
-    // ---------------------------------------------
+    
     
     
     displayChoices(generateChoices(correctAnswer));
@@ -354,14 +354,14 @@ function checkAnswer(selectedChoice) {
 
 function updateChoiceButtonsUI(selectedChoice) {
     document.querySelectorAll('#choices button').forEach(btn => {
-        btn.disabled = true; // ボタンを無効化
+        btn.disabled = true; 
         const choiceText = btn.textContent.trim();
         if (choiceText === correctAnswer) {
-            btn.classList.add('correct'); // 正解ボタンを緑に
+            btn.classList.add('correct'); 
         } else if (choiceText === selectedChoice) {
-            btn.classList.add('incorrect'); // 不正解ボタンを赤に
+            btn.classList.add('incorrect'); 
         }
-        // 回答後のUIアニメーションを確保するため、ボタンのホバー/アクティブスタイルを一時的に無効化する
+        
         btn.style.pointerEvents = 'none'; 
     });
 }
@@ -381,38 +381,38 @@ function processIncorrectAnswer() {
 }
 
 function scheduleNextStep(isCorrect) {
-    // 1. 各モードのゲームオーバー条件を判定
+    
     const isNormalGameOver = gameState.mode === GAME_MODES.NORMAL && gameState.totalQuestions >= gameData.settings.normalQuestions;
     const isTimedGameOver = gameState.mode === GAME_MODES.TIMED && gameState.timeLeftMs <= 0;
-    // エンドレスモードの場合、不正解の時にゲームオーバー
+    
     const isEndlessGameOver = gameState.mode === GAME_MODES.ENDLESS && !isCorrect;
 
     const isGameOver = isNormalGameOver || isTimedGameOver || isEndlessGameOver;
     
-    // ノーマルモードで最終問題の場合はプログレスバーを完了させる
+    
     if (isNormalGameOver) {
         domElements.progressBarFill.style.width = '100%';
     }
     
-    // 2. ゲームモードに基づいて遅延時間を決定
+    
     let delay;
     if (isGameOver) {
-        // ゲームオーバーの場合は、結果表示を終えてから次の画面へ
-        delay = GAME_OVER_DELAY; // 2000ms
+        
+        delay = GAME_OVER_DELAY; 
     } else if (gameState.mode === GAME_MODES.TIMED) {
-        // タイムアタックモードで次の問題に進む場合
-        delay = NEXT_QUESTION_DELAY; // 1200ms
+        
+        delay = NEXT_QUESTION_DELAY; 
     } else {
-        // ノーマルモードまたはエンドレスモードで次の問題に進む場合
-        delay = EXTENDED_RESULT_DELAY; // 3000ms
+        
+        delay = EXTENDED_RESULT_DELAY; 
     }
 
-    // 3. 遅延実行
+    
     setTimeout(() => {
         if (isGameOver) {
             endGame();
         } else {
-            // ゲームオーバーではない場合、次の問題をロード
+            
             loadNextQuiz();
         }
     }, delay);
@@ -528,7 +528,7 @@ function showStatsScreen() {
 }
 
 
-// --- UI Update Functions ---
+
 function updateUIState() {
     updateScore();
     updateProgressIndicator();
@@ -571,13 +571,22 @@ function updateTimeDisplay(ms) {
     }
 }
 
-// --- Stats & Achievements ---
+
 function updateSongStats(videoId, isCorrect) {
+    
+    
+    const song = playlist.find(s => s.videoId === videoId) || 
+                 (typeof characterSongPlaylist !== 'undefined' ? characterSongPlaylist.find(s => s.videoId === videoId) : null);
+    
+    
+    if (song && song.quiz === false) return; 
+
     if (!gameData.stats.songStats[videoId]) {
         gameData.stats.songStats[videoId] = { correct: 0, incorrect: 0 };
     }
     isCorrect ? gameData.stats.songStats[videoId].correct++ : gameData.stats.songStats[videoId].incorrect++;
 }
+
 
 function updateEndlessAchievements() {
     if (gameState.endlessStreak > (gameData.stats.highScores.endless || 0)) {
@@ -589,7 +598,7 @@ function updateEndlessAchievements() {
     }
 }
 
-// --- Encyclopedia Functions ---
+
 function showEncyclopedia() {
     gameState.mode = GAME_MODES.ENCYCLOPEDIA;
     showScreen('encyclopedia');
@@ -625,6 +634,7 @@ function displayEncyclopediaView(type) {
     document.querySelector('.encyclopedia-menu').style.display = 'none';
     document.querySelector('.encyclopedia-view').style.display = 'block';
 
+    
     const sourcePlaylist = type === 'BGM' ? playlist : characterSongPlaylist;
     currentEncyclopediaPlaylist = [...sourcePlaylist];
     
@@ -636,17 +646,41 @@ function displayEncyclopediaView(type) {
     sourcePlaylist.forEach((song) => {
         const songCard = document.createElement('div');
         songCard.className = 'song-card';
+        
+        
+        
+        
+        const showStats = type === 'BGM' && song.quiz !== false;
+
+        let statsHtml = '';
+        if (showStats) {
+            
+            const stats = gameData.stats.songStats[song.videoId] || { correct: 0, incorrect: 0 };
+            const total = stats.correct + stats.incorrect;
+            const correctRate = total > 0 
+                ? ((stats.correct / total) * 100).toFixed(0) + '%' 
+                : 'N/A';
+            
+            
+            statsHtml = `
+                <div style="font-size: 0.9em; margin-top: 0.5em; padding-top: 5px; border-top: 1px solid var(--border-color);">
+                    <span style="color: var(--grey-mid);">統計:</span><br>
+                    正解率: <strong>${correctRate}</strong> (${stats.correct}/${total} 回)
+                </div>
+            `;
+        }
+        
         songCard.innerHTML = `
             <img src="${song.imageUrl}" alt="${song.title}" class="song-card-image" loading="lazy">
             <div class="song-card-info">
                 <p class="song-card-title">${song.title}</p>
                 <p class="song-card-composer">${song.composer || 'N/A'}</p>
-            </div>
+                ${statsHtml} </div>
         `;
         songCard.addEventListener('click', () => {
             document.querySelectorAll('.song-card.selected').forEach(card => card.classList.remove('selected'));
             songCard.classList.add('selected');
-            displaySongDetails(song);
+            displaySongDetails(song, showStats); 
         });
         songListContainer.appendChild(songCard);
     });
@@ -657,18 +691,38 @@ function displayEncyclopediaView(type) {
     };
 }
 
-function displaySongDetails(song) {
+function displaySongDetails(song, showStats) {
     const detailsContainer = document.getElementById('encyclopedia-details');
+    
+    let statsDetailHtml = '';
+    if (showStats) { 
+        
+        const stats = gameData.stats.songStats[song.videoId] || { correct: 0, incorrect: 0 };
+        const total = stats.correct + stats.incorrect;
+        const correctRate = total > 0 
+            ? ((stats.correct / total) * 100).toFixed(1) + '%' 
+            : 'N/A';
+            
+        statsDetailHtml = `
+            <div style="text-align: center; margin: 1em 0; padding: 1em; background-color: #fff; border-radius: 8px; border: 1px solid var(--border-color);">
+                <p style="font-weight: 500; margin: 0;">あなたのクイズ統計</p>
+                <p style="margin: 0.5em 0 0;">正解率: <strong style="color: var(--blue-primary);">${correctRate}</strong> (${stats.correct} / ${total} 回)
+                <br>回答回数: <strong>${total}</strong> 回</p>
+            </div>
+        `;
+    }
+
     detailsContainer.innerHTML = `
         <div id="encyclopedia-details-content">
              <div style="width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 8px; box-shadow: var(--shadow); margin-bottom: 0.5em;">
                 <img src="${song.imageUrl}" alt="${song.title}" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <h4>${song.title}</h4>
-            <p><strong>:</strong> ${song.composer || 'N/A'}</p>
+            <p><strong>作曲者:</strong> ${song.composer || 'N/A'}</p>
+            ${statsDetailHtml} 
             <div id="encyclopedia-context"><strong>詳細:</strong><br>${song.context || '情報はありません。'}</div>
             <a href="https://www.youtube.com/watch?v=${song.videoId}" target="_blank" rel="noopener noreferrer" class="yt-button">
-                ▶️ YouTubeで聴く
+               ▶️ YouTubeで聴く
             </a>
         </div>
     `;
@@ -678,17 +732,17 @@ function filterSongs() {
     const filterText = document.getElementById('encyclopedia-search').value.toLowerCase();
     const songCards = document.querySelectorAll('#song-list .song-card');
 
-    // 表示されているプレイリストの各曲情報をチェックする
+    
     currentEncyclopediaPlaylist.forEach((song, index) => {
         const card = songCards[index];
-        if (!card) return; // 対応するカードがなければスキップ
+        if (!card) return; 
 
         const title = song.title.toLowerCase();
         const composer = (song.composer || '').toLowerCase();
-        // メモロビ情報(context)も検索対象に加える
+        
         const context = (song.context || '').toLowerCase(); 
 
-        // 曲名、作曲者名、またはメモロビ情報に検索テキストが含まれていれば表示
+        
         if (title.includes(filterText) || composer.includes(filterText) || context.includes(filterText)) {
             card.style.display = '';
         } else {
@@ -697,7 +751,7 @@ function filterSongs() {
     });
 }
 
-// --- DOM Initialization ---
+
 document.addEventListener('DOMContentLoaded', () => {
     const ids = ['loading-overlay', 'main-menu', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia'];
     ids.forEach(id => {
