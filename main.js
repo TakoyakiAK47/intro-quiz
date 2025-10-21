@@ -315,7 +315,7 @@ function displayChoices(choices) {
 }
 
 function playIntroClip() {
-    // load(読み込んで再生)を使うことで、自動再生を試みる
+    
     if (!player || !player.loadVideoById) return;
     player.loadVideoById({ 
         videoId: currentVideoId, 
@@ -345,13 +345,13 @@ function checkAnswer(selectedChoice) {
     
     gameState.totalQuestions++;
     updateSongStats(currentVideoId, isCorrect);
-    updateChoiceButtonsUI(selectedChoice); // <--- ここでエラーが発生していた
+    updateChoiceButtonsUI(selectedChoice); 
     updateUIState();
     saveGameData();
     scheduleNextStep(isCorrect);
 }
 
-// 【問題の核心：欠落していた関数を追加】
+
 function updateChoiceButtonsUI(selectedChoice) {
     document.querySelectorAll('#choices button').forEach(btn => {
         btn.disabled = true; // ボタンを無効化
