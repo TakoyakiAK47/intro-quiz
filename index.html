@@ -131,26 +131,20 @@
     #stats-screen .stats-grid { display: grid; grid-template-columns: 1fr; gap: 2em; text-align: left; }
     
     /* --- Mobile Optimizations --- */
-
-    /* タップ時のハイライト色を透明にし、テキストの偶発的な選択を防止 */
     body {
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       -webkit-user-select: none;
     }
 
-    /* * :active 状態を定義して、タップした瞬間のフィードバックを強化
-     * これにより、スマホでの操作感が格段に向上します。
-     */
     button:active:not(.correct):not(.incorrect), .yt-button:active {
         transform: translateY(-1px) scale(0.98);
         box-shadow: var(--shadow);
-        filter: brightness(0.95); /* タップ時に少し暗くする */
+        filter: brightness(0.95); 
     }
 
-    /*
-     * タッチデバイスでは :hover によるエフェクトを無効化
-     */
+  
+  
     @media (hover: none) {
       button:hover, .yt-button:hover {
         transform: none;
