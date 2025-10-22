@@ -705,7 +705,7 @@ function displaySongDetails(song, showStats) {
             
         statsDetailHtml = `
             <div style="text-align: center; margin: 1em 0; padding: 1em; background-color: #fff; border-radius: 8px; border: 1px solid var(--border-color);">
-                <p style="font-weight: 500; margin: 0;">あなたのクイズ統計</p>
+                <p style="font-weight: 500; margin: 0;">クイズ統計</p>
                 <p style="margin: 0.5em 0 0;">正解率: <strong style="color: var(--blue-primary);">${correctRate}</strong> (${stats.correct} / ${total} 回)
                 <br>回答回数: <strong>${total}</strong> 回</p>
             </div>
