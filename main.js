@@ -1,3 +1,4 @@
+
 const NEXT_QUESTION_DELAY = 1000;
 const GAME_OVER_DELAY = 1000;
 const EXTENDED_RESULT_DELAY = 1000; 
@@ -25,6 +26,9 @@ const defaultGameData = {
         extreme: false, insane: false, torment: false, lunatic: false
     },
 };
+
+const TITLE_SCREEN_VIDEO_ID = 'ISZ8lKOVapA';
+const SUB_SCREEN_VIDEO_ID = 'I7A-xuDS-rA';
 
 
 let player;
@@ -84,11 +88,26 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerReady(event) {
     event.target.setVolume(domElements.volumeSlider.value);
+    
+    if (player && typeof player.loadVideoById === 'function') {
+        player.loadVideoById({ 
+            videoId: TITLE_SCREEN_VIDEO_ID, 
+            startSeconds: 0, 
+            playerVars: { 'playsinline': 1, 'autoplay': 0 } 
+        });
+        player.mute();
+    }
+    
     initGame();
 }
 
 function onPlayerStateChange(event) {
-    
+    if (gameState.mode === GAME_MODES.MENU && event.data === YT.PlayerState.ENDED) {
+         if (player && typeof player.seekTo === 'function') {
+             player.seekTo(0); 
+             player.playVideo();
+         }
+    }
 }
 
 
@@ -104,7 +123,17 @@ function showScreen(screenId) {
 function initGame() {
     gameState.mode = GAME_MODES.MENU;
     if (gameTimer) clearInterval(gameTimer);
-    if (player && typeof player.stopVideo === 'function') player.stopVideo();
+    
+    if (player && typeof player.loadVideoById === 'function') {
+        player.loadVideoById({ 
+            videoId: TITLE_SCREEN_VIDEO_ID, 
+            startSeconds: 0, 
+            playerVars: { 'playsinline': 1, 'autoplay': 0 } 
+        });
+        player.mute(); 
+        player.playVideo();
+        player.pauseVideo();
+    }
     
     showScreen('main-menu');
     if (domElements.footer) domElements.footer.style.display = 'none'; 
@@ -134,14 +163,10 @@ function showStartPrompt() {
     domElements.startPromptBtn.onclick = () => {
         domElements.startPrompt.style.display = 'none';
         
-        
         if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) {
-             player.mute();
-             player.playVideo();
-             player.pauseVideo();
              player.unMute();
+             player.playVideo();
         }
-        
         
         launchQuiz();
     };
@@ -202,6 +227,10 @@ function launchQuiz() {
     gameState.endlessStreak = 0;
     gameState.answerChecked = false;
     answeredVideos = [];
+    
+    if (player && typeof player.stopVideo === 'function') {
+        player.stopVideo(); 
+    }
     
     const quizPlaylist = playlist.filter(song => song.quiz !== false);
     
@@ -459,6 +488,15 @@ function endGame() {
     domElements.timeDisplay.style.display = 'none';
     domElements.gameControlsContainer.style.display = 'none';
 
+    if (player && typeof player.loadVideoById === 'function') {
+        player.loadVideoById({ 
+            videoId: SUB_SCREEN_VIDEO_ID, 
+            startSeconds: 0, 
+            playerVars: { 'playsinline': 1, 'autoplay': 1, 'loop': 1, 'playlist': SUB_SCREEN_VIDEO_ID } 
+        });
+        player.unMute(); 
+    }
+
     let resultMessage = '';
     if (gameState.mode === GAME_MODES.TIMED) {
         if (gameState.score > (gameData.stats.highScores.timed || 0)) gameData.stats.highScores.timed = gameState.score;
@@ -491,6 +529,16 @@ function endGame() {
 function showStatsScreen() {
     showScreen('stats-screen');
     if (domElements.footer) domElements.footer.style.display = 'none';
+
+    if (player && typeof player.loadVideoById === 'function') {
+        player.loadVideoById({ 
+            videoId: SUB_SCREEN_VIDEO_ID, 
+            startSeconds: 0, 
+            playerVars: { 'playsinline': 1, 'autoplay': 1, 'loop': 1, 'playlist': SUB_SCREEN_VIDEO_ID } 
+        });
+        player.unMute(); 
+    }
+
     const container = document.getElementById('stats-screen');
     const unlockedCount = Object.values(gameData.achievements).filter(Boolean).length;
     
@@ -609,6 +657,16 @@ function showEncyclopedia() {
     gameState.mode = GAME_MODES.ENCYCLOPEDIA;
     showScreen('encyclopedia');
     if (domElements.footer) domElements.footer.style.display = 'none';
+    
+    if (player && typeof player.loadVideoById === 'function') {
+        player.loadVideoById({ 
+            videoId: SUB_SCREEN_VIDEO_ID, 
+            startSeconds: 0, 
+            playerVars: { 'playsinline': 1, 'autoplay': 1, 'loop': 1, 'playlist': SUB_SCREEN_VIDEO_ID } 
+        });
+        player.unMute(); 
+    }
+
     const container = document.getElementById('encyclopedia');
     container.innerHTML = `
         <div class="encyclopedia-menu">
