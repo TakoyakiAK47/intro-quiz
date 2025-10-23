@@ -162,6 +162,7 @@ function selectMode(selectedMode) {
 
 function setupModeSettings() {
     const container = domElements.settingsScreen;
+    if (domElements.footer) domElements.footer.style.display = 'none';
     let settingsContent = '';
     
     if (gameState.mode === GAME_MODES.NORMAL) {
