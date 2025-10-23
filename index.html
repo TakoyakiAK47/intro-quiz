@@ -58,7 +58,6 @@
       text-shadow: 1px 1px 3px rgba(0,0,0,0.05);
     }
 
-    /* --- Game View --- */
     #game-view { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 800px; gap: 0.5em; }
     #progress-container { width: 95%; max-width: 600px; margin: 0.5em 0; }
     #progress-text { font-size: 1.1em; font-weight: 500; color: var(--grey-mid); display: block; margin-bottom: 0.5em; }
@@ -69,7 +68,6 @@
     #answer-details { display: none; font-size: 1em; color: var(--grey-dark); background-color: #e9f5ff; border-left: 5px solid var(--blue-secondary); padding: 1em; border-radius: 8px; margin: 0.75em 0; width: 90%; max-width: 580px; text-align: left; line-height: 1.6; animation: fadeIn 0.5s ease-out; }
     p#time-display { font-size: 1.2em; margin: 0; color: var(--red-primary); font-weight: 700; }
 
-    /* --- Buttons --- */
     button, .yt-button { font-family: 'Noto Sans JP', sans-serif; font-size: 1.1em; font-weight: 500; cursor: pointer; border-radius: 12px; border: 1px solid var(--border-color); padding: 0.8em 1.5em; margin: 0.4em; transition: all 0.2s ease-in-out; box-shadow: var(--shadow); display: inline-flex; align-items: center; justify-content: center; gap: 0.5em; white-space: normal; line-height: 1.4; background-color: var(--text-light); color: var(--text-dark); text-decoration: none; }
     button:hover, .yt-button:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); filter: brightness(1.02); }
     button:active, .yt-button:active { transform: translateY(-1px) scale(0.98); box-shadow: var(--shadow); }
@@ -80,16 +78,13 @@
     #control-buttons { display: flex; flex-wrap: wrap; gap: 0.75em; justify-content: center; margin-top: 1em; }
     #control-buttons button { background-color: var(--grey-mid); color: var(--text-light); border: none; }
 
-    /* --- Screens --- */
     .screen { display: none; width: 100%; max-width: 800px; padding: 2em; background: var(--text-light); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow); animation: fadeIn 0.4s ease-in-out; }
     .screen h2 { margin-top: 0; text-align: center; color: var(--blue-primary); }
     
-    /* --- Settings Screen --- */
     .setting-item { margin: 1.5em 0; font-size: 1.1em; }
     .setting-item label { margin-right: 0.5em; font-weight: 500; }
     .setting-item input, .setting-item select { padding: 0.5em; font-size: 1em; border-radius: 8px; border: 1px solid var(--border-color); }
 
-    /* --- Encyclopedia --- */
     #encyclopedia { max-width: 1200px; }
     .encyclopedia-menu { display: flex; flex-direction: column; align-items: center; gap: 1em; }
     .encyclopedia-menu button { width: 80%; max-width: 400px; padding: 1em; }
@@ -123,14 +118,11 @@
     .song-card-title { font-weight: 700; font-size: 1em; margin: 0 0 0.25em 0; }
     .song-card-composer { font-size: 0.85em; color: var(--grey-mid); margin: 0; }
 
-    /* --- Overlays --- */
     #loading-overlay, #start-prompt { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); color: white; display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 1000; animation: fadeIn 0.3s; }
     #start-prompt button { padding: 1.5em 3em; font-size: 1.2em; background-color: var(--blue-primary); color: white; border: none; }
 
-    /* --- Stats Screen --- */
     #stats-screen .stats-grid { display: grid; grid-template-columns: 1fr; gap: 2em; text-align: left; }
     
-    /* --- Mobile Optimizations --- */
     body {
       -webkit-tap-highlight-color: transparent;
       user-select: none;
@@ -153,21 +145,32 @@
       }
     }
 
-    /* --- Footer --- */
     footer { margin-top: auto; padding-top: 2em; font-size: 0.9em; color: var(--grey-mid); }
     a.footer-link { text-decoration: none; color: var(--blue-primary); font-weight: 500; }
 
-    /* --- Animations --- */
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes pop-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
     @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } }
     
-    /* --- Responsive --- */
     @media (min-width: 768px) { #stats-screen .stats-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 900px) {
         #encyclopedia-layout { flex-direction: column; }
         #song-list-container { max-height: 45vh; }
     }
+body {
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-color: #f4f8ff; 
+    background-image: url('bg_sp.png');
+}
+
+@media (min-aspect-ratio: 16/9) {
+    body {
+        background-image: url('bg_pc.png');
+    }
+}
   </style>
 </head>
 <body>
