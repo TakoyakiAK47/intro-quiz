@@ -1,7 +1,6 @@
-
 const NEXT_QUESTION_DELAY = 1000;
 const GAME_OVER_DELAY = 1000;
-const EXTENDED_RESULT_DELAY = 1000; 
+const EXTENDED_RESULT_DELAY = 1000;
 
 const GAME_MODES = {
     MENU: 'menu',
@@ -40,6 +39,8 @@ let currentPlaylist = [];
 let answeredVideos = [];
 
 let currentEncyclopediaPlaylist = [];
+
+let isInitialTapHandled = false;
 
 
 let gameState = {
@@ -124,19 +125,22 @@ function initGame() {
     gameState.mode = GAME_MODES.MENU;
     if (gameTimer) clearInterval(gameTimer);
     
+    if (!isInitialTapHandled) {
+        showStartPrompt(true);
+        return; 
+    }
+    
     if (player && typeof player.loadVideoById === 'function') {
         player.loadVideoById({ 
             videoId: TITLE_SCREEN_VIDEO_ID, 
             startSeconds: 0, 
-            playerVars: { 'playsinline': 1, 'autoplay': 0 } 
+            playerVars: { 'playsinline': 1, 'autoplay': 0, 'loop': 1, 'playlist': TITLE_SCREEN_VIDEO_ID } 
         });
-        player.mute(); 
+        player.unMute(); 
         player.playVideo();
-        player.pauseVideo();
     }
     
     showScreen('main-menu');
-    if (domElements.footer) domElements.footer.style.display = 'none'; 
     const container = domElements.mainMenu;
     container.innerHTML = '';
 
@@ -158,17 +162,27 @@ function initGame() {
 }
 
 
-function showStartPrompt() {
+function showStartPrompt(isInitial = false) {
     domElements.startPrompt.style.display = 'flex';
+    
+    domElements.startPromptBtn.textContent = isInitial ? 'Are you ready?' : 'クイズ開始'; 
+
     domElements.startPromptBtn.onclick = () => {
         domElements.startPrompt.style.display = 'none';
         
-        if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) {
-             player.unMute();
-             player.playVideo();
+        if (isInitial) {
+            isInitialTapHandled = true;
+            if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) {
+                 player.unMute();
+                 player.playVideo();
+            }
+            initGame();
+        } else {
+            if (player && typeof player.stopVideo === 'function') {
+                player.stopVideo(); 
+            }
+            launchQuiz();
         }
-        
-        launchQuiz();
     };
 }
 
@@ -181,13 +195,12 @@ function selectMode(selectedMode) {
         setupModeSettings();
     } else { 
         
-        showStartPrompt();
+        showStartPrompt(false);
     }
 }
 
 function setupModeSettings() {
     const container = domElements.settingsScreen;
-    if (domElements.footer) domElements.footer.style.display = 'none';
     let settingsContent = '';
     
     if (gameState.mode === GAME_MODES.NORMAL) {
@@ -216,7 +229,7 @@ function setupModeSettings() {
         }
         saveGameData();
         
-        showStartPrompt();
+        showStartPrompt(false);
     };
     document.getElementById('settings-back-btn').onclick = initGame;
 }
@@ -227,10 +240,6 @@ function launchQuiz() {
     gameState.endlessStreak = 0;
     gameState.answerChecked = false;
     answeredVideos = [];
-    
-    if (player && typeof player.stopVideo === 'function') {
-        player.stopVideo(); 
-    }
     
     const quizPlaylist = playlist.filter(song => song.quiz !== false);
     
@@ -276,7 +285,6 @@ function loadNextQuiz() {
     domElements.result.innerText = '';
     domElements.answerDetails.innerText = '';
     domElements.answerDetails.style.display = 'none';
-    if (domElements.footer) domElements.footer.style.display = 'none'; 
     updateUIState();
     
     let available = currentPlaylist.filter(p => !answeredVideos.includes(p.videoId));
@@ -374,8 +382,6 @@ function checkAnswer(selectedChoice) {
         domElements.answerDetails.innerText = `💡 ヒント: ${correctSongObject.context.replace(/メモロビ:\s*「準備中」/g, '').trim()}`;
         domElements.answerDetails.style.display = 'block';
     }
-    
-    if (domElements.footer) domElements.footer.style.display = 'block'; 
     
     gameState.totalQuestions++;
     updateSongStats(currentVideoId, isCorrect);
@@ -528,8 +534,7 @@ function endGame() {
 
 function showStatsScreen() {
     showScreen('stats-screen');
-    if (domElements.footer) domElements.footer.style.display = 'none';
-
+    
     if (player && typeof player.loadVideoById === 'function') {
         player.loadVideoById({ 
             videoId: SUB_SCREEN_VIDEO_ID, 
@@ -538,7 +543,7 @@ function showStatsScreen() {
         });
         player.unMute(); 
     }
-
+    
     const container = document.getElementById('stats-screen');
     const unlockedCount = Object.values(gameData.achievements).filter(Boolean).length;
     
@@ -656,7 +661,6 @@ function updateEndlessAchievements() {
 function showEncyclopedia() {
     gameState.mode = GAME_MODES.ENCYCLOPEDIA;
     showScreen('encyclopedia');
-    if (domElements.footer) domElements.footer.style.display = 'none';
     
     if (player && typeof player.loadVideoById === 'function') {
         player.loadVideoById({ 
@@ -823,7 +827,6 @@ document.addEventListener('DOMContentLoaded', () => {
         domElements[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
     });
     domElements.progressBarWrapper = document.querySelector('.progress-bar-wrapper');
-    domElements.footer = document.querySelector('footer'); 
 
     domElements.loadingOverlay.style.display = 'flex';
     loadGameData();
