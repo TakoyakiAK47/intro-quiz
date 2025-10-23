@@ -207,7 +207,14 @@
       align-items: center; flex-direction: column; z-index: 1000; 
       animation: fadeIn 0.3s; 
     }
-    #start-prompt button { padding: 1.5em 3em; font-size: 1.2em; background-color: var(--blue-primary); color: white; border: none; }
+    #start-prompt button { 
+      padding: 1.5em 3em; 
+      font-size: clamp(1.2em, 5vw, 2em); 
+      background-color: var(--blue-primary); 
+      color: white; 
+      border: none; 
+      font-weight: 700;
+    }
 
     #stats-screen .stats-grid { display: grid; grid-template-columns: 1fr; gap: 2em; text-align: left; }
     
@@ -320,7 +327,5 @@
   <script src="https://www.youtube.com/iframe_api"></script>
   <script src="playlist.js"></script>
   <script src="main.js"></script>
-</body>
-</html>
 </body>
 </html>
