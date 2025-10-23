@@ -315,6 +315,7 @@ function launchQuiz() {
         }, 10);
     }
     
+    // プレイヤーが未定義の場合、クイズ用に初期化します
     if (!player) {
          player = new YT.Player('player', {
             height: '0', 
@@ -334,6 +335,7 @@ function launchQuiz() {
             }
         });
     } else {
+        // プレイヤーが既に存在する場合は次のクイズをロード
         loadNextQuiz();
     }
 }
@@ -451,6 +453,10 @@ function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.ENDED) {
         player.seekTo(0, true);
         player.playVideo();
+    } else if (event.data === YT.PlayerState.PAUSED) {
+         domElements.pauseBtn.textContent = '再生';
+    } else if (event.data === YT.PlayerState.PLAYING) {
+         domElements.pauseBtn.textContent = '一時停止';
     }
 }
 
@@ -694,6 +700,7 @@ function showStatsScreen() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 修正: 'game-view' を追加
     const ids = ['loading-overlay', 'main-menu', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia', 'game-view'];
     ids.forEach(id => {
         domElements[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
