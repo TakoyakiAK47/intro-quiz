@@ -86,14 +86,19 @@
       margin: 0.5em 0; 
       min-height: 1.5em; 
       animation: pop-in 0.3s ease-out; 
-      background-color: rgba(255, 255, 255, 0.8); 
-      padding: 0.1em 0.5em;
+      background-color: transparent; 
+      padding: 0;
       border-radius: 5px;
+      border: none;
       text-shadow: 
         -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, 
         -2px 2px 0 #ffffff, 2px 2px 0 #ffffff,
-        0 8px 0 rgba(255, 230, 150, 0.75),
-        0 10px 0 rgba(0, 0, 0, 0.1);
+        0 6px 0 rgba(255, 230, 150, 0.75), 
+        0 8px 0 rgba(0, 0, 0, 0.1);
+      color: var(--blue-dark);
+      display: none; 
+      align-items: center;
+      justify-content: center;
     }
     
     #answer-details { display: none; font-size: 1em; color: var(--grey-dark); background-color: #e9f5ff; border-left: 5px solid var(--blue-secondary); padding: 1em; border-radius: 8px; margin: 0.75em 0; width: 90%; max-width: 580px; text-align: left; line-height: 1.6; animation: fadeIn 0.5s ease-out; }
@@ -309,5 +314,7 @@
   <script src="https://www.youtube.com/iframe_api"></script>
   <script src="playlist.js"></script>
   <script src="main.js"></script>
+</body>
+</html>
 </body>
 </html>
