@@ -107,6 +107,7 @@ function initGame() {
     if (player && typeof player.stopVideo === 'function') player.stopVideo();
     
     showScreen('main-menu');
+    if (domElements.footer) domElements.footer.style.display = 'none'; 
     const container = domElements.mainMenu;
     container.innerHTML = '';
 
@@ -245,6 +246,7 @@ function loadNextQuiz() {
     domElements.result.innerText = '';
     domElements.answerDetails.innerText = '';
     domElements.answerDetails.style.display = 'none';
+    if (domElements.footer) domElements.footer.style.display = 'none'; 
     updateUIState();
     
     let available = currentPlaylist.filter(p => !answeredVideos.includes(p.videoId));
@@ -342,6 +344,8 @@ function checkAnswer(selectedChoice) {
         domElements.answerDetails.innerText = `💡 ヒント: ${correctSongObject.context.replace(/メモロビ:\s*「準備中」/g, '').trim()}`;
         domElements.answerDetails.style.display = 'block';
     }
+    
+    if (domElements.footer) domElements.footer.style.display = 'block'; 
     
     gameState.totalQuestions++;
     updateSongStats(currentVideoId, isCorrect);
@@ -485,6 +489,7 @@ function endGame() {
 
 function showStatsScreen() {
     showScreen('stats-screen');
+    if (domElements.footer) domElements.footer.style.display = 'none';
     const container = document.getElementById('stats-screen');
     const unlockedCount = Object.values(gameData.achievements).filter(Boolean).length;
     
@@ -602,6 +607,7 @@ function updateEndlessAchievements() {
 function showEncyclopedia() {
     gameState.mode = GAME_MODES.ENCYCLOPEDIA;
     showScreen('encyclopedia');
+    if (domElements.footer) domElements.footer.style.display = 'none';
     const container = document.getElementById('encyclopedia');
     container.innerHTML = `
         <div class="encyclopedia-menu">
@@ -758,6 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
         domElements[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
     });
     domElements.progressBarWrapper = document.querySelector('.progress-bar-wrapper');
+    domElements.footer = document.querySelector('footer'); 
 
     domElements.loadingOverlay.style.display = 'flex';
     loadGameData();
