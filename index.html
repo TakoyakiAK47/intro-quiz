@@ -54,7 +54,7 @@
       font-size: clamp(2.5em, 5vw, 3em); 
       font-weight: 700;
       color: var(--blue-secondary);
-      margin-bottom: 0.5em;
+      margin-bottom: 0.5em; 
       text-shadow: 
         -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, 
         -2px 2px 0 #ffffff, 2px 2px 0 #ffffff,
@@ -141,6 +141,7 @@
     button:active, .yt-button:active { transform: translateY(-1px) scale(0.98); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08); }
     
     #choices, #main-menu { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; gap: 0.5em; }
+    #main-menu { margin-top: 3em; } 
     #choices button, #main-menu button { width: 95%; max-width: 600px; }
     button.correct { background-color: var(--green-primary) !important; color: var(--text-light) !important; border-color: var(--green-dark) !important; transform: scale(1.05); }
     button.incorrect { background-color: var(--red-primary) !important; color: var(--text-light) !important; border-color: var(--red-dark) !important; animation: shake 0.4s; }
@@ -305,7 +306,7 @@
   </main>
 
   <footer>
-    <div style="border: 1px solid var(--border-color); padding: 1em; margin-top: 2em; background-color: #fff; border-radius: 12px; box-shadow: var(--shadow);">
+    <div style="border: 1px solid var(--border-color); padding: 1em; margin-top: 1em; background-color: #fff; border-radius: 12px; box-shadow: var(--shadow);">
       問い合わせは <a class="footer-link" href="https://x.com/TakoyakiAK47" target="_blank">たこやき</a> までDMお願いします。
     </div>
   </footer>
@@ -313,7 +314,5 @@
   <script src="https://www.youtube.com/iframe_api"></script>
   <script src="playlist.js"></script>
   <script src="main.js"></script>
-</body>
-</html>
 </body>
 </html>
