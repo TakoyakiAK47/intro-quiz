@@ -169,7 +169,8 @@ function playIntroMusic() {
         },
         events: {
             onReady: (e) => {
-                e.target.setVolume(domElements.volumeSlider.value || 25);
+                const volume = domElements.volumeSlider ? domElements.volumeSlider.value : 25;
+                e.target.setVolume(volume);
                 e.target.playVideo();
             }
         }
@@ -300,7 +301,10 @@ function launchQuiz() {
     } 
     
     showScreen('game-view');
-    domElements.gameControlsContainer.style.display = 'block';
+    // domElements.gameControlsContainer が存在しない場合があるためチェック
+    if (domElements.gameControlsContainer) {
+        domElements.gameControlsContainer.style.display = 'block';
+    }
     
     if (gameState.mode === GAME_MODES.TIMED) {
         gameState.timeLeftMs = gameData.settings.timedDuration;
@@ -328,7 +332,8 @@ function launchQuiz() {
             },
             events: {
                 onReady: (e) => {
-                    e.target.setVolume(domElements.volumeSlider.value || 25);
+                    const volume = domElements.volumeSlider ? domElements.volumeSlider.value : 25;
+                    e.target.setVolume(volume);
                     loadNextQuiz();
                 },
                 onStateChange: onPlayerStateChange
@@ -403,9 +408,13 @@ function loadNextQuiz() {
     if (gameState.mode === GAME_MODES.NORMAL || gameState.mode === GAME_MODES.ENDLESS) {
         domElements.progressText.textContent = `第 ${gameState.totalQuestions + 1} 問`;
         const progress = gameState.mode === GAME_MODES.NORMAL ? ((gameState.totalQuestions) / gameData.settings.normalQuestions) * 100 : 0;
-        domElements.progressBarFill.style.width = `${progress}%`;
+        if (domElements.progressBarFill) {
+            domElements.progressBarFill.style.width = `${progress}%`;
+        }
         domElements.progressContainer.style.display = 'block';
-        domElements.timeDisplay.style.display = 'none';
+        if (domElements.timeDisplay) {
+            domElements.timeDisplay.style.display = 'none';
+        }
     } else {
         domElements.progressContainer.style.display = 'none';
         domElements.timeDisplay.style.display = 'block';
@@ -432,23 +441,27 @@ function playIntroClip(videoId) {
             endSeconds: 10,
             suggestedQuality: 'small'
         });
-        player.setVolume(domElements.volumeSlider.value || 25);
+        const volume = domElements.volumeSlider ? domElements.volumeSlider.value : 25;
+        player.setVolume(volume);
         
-        domElements.pauseBtn.textContent = '一時停止';
-        domElements.pauseBtn.onclick = () => {
-            if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-                player.pauseVideo();
-                domElements.pauseBtn.textContent = '再生';
-            } else {
-                player.playVideo();
-                domElements.pauseBtn.textContent = '一時停止';
-            }
-        };
+        if (domElements.pauseBtn) {
+            domElements.pauseBtn.textContent = '一時停止';
+            domElements.pauseBtn.onclick = () => {
+                if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+                    player.pauseVideo();
+                    domElements.pauseBtn.textContent = '再生';
+                } else {
+                    player.playVideo();
+                    domElements.pauseBtn.textContent = '一時停止';
+                }
+            };
+        }
     }
 }
 
 function onPlayerStateChange(event) {
     if (gameState.answerChecked) return; 
+    if (!domElements.pauseBtn) return; 
 
     if (event.data === YT.PlayerState.ENDED) {
         player.seekTo(0, true);
@@ -546,9 +559,13 @@ function endGame() {
     domElements.answerDetails.style.display = 'block';
     
     domElements.choices.innerHTML = '';
-    domElements.timeDisplay.style.display = 'none';
+    if (domElements.timeDisplay) {
+        domElements.timeDisplay.style.display = 'none';
+    }
     domElements.progressContainer.style.display = 'none';
-    domElements.gameControlsContainer.style.display = 'none';
+    if (domElements.gameControlsContainer) {
+        domElements.gameControlsContainer.style.display = 'none';
+    }
     
     setTimeout(() => {
         domElements.choices.innerHTML = `
@@ -638,7 +655,11 @@ function filterSongList(query) {
 
 function showSongDetails(song) {
     document.querySelectorAll('.song-card').forEach(card => card.classList.remove('selected'));
-    document.querySelector(`.song-card[data-videoid="${song.videoId}"]`).classList.add('selected');
+    // 安全な要素取得のため、nullチェックを強化
+    const selected_card = document.querySelector(`.song-card[data-videoid="${song.videoId}"]`);
+    if (selected_card) {
+        selected_card.classList.add('selected');
+    }
     
     const detailsDiv = document.getElementById('encyclopedia-details');
     detailsDiv.innerHTML = `
@@ -700,37 +721,57 @@ function showStatsScreen() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 修正: 'game-view' を追加
-    const ids = ['loading-overlay', 'main-menu', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia', 'game-view'];
+    // 修正: 存在が必須の要素のみをリストアップし、安全に取得
+    const ids = [
+        'loading-overlay', 'main-menu', 'choices', 'result', 'answer-details', 
+        'score', 'time-display', 'progress-container', 'progress-text', 
+        'progress-bar-fill', 'game-controls-container', 'volumeSlider', 
+        'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia', 
+        'game-view', 'replayBtn', 'pauseBtn' // コントロールボタンも取得リストに追加
+    ];
+    
     ids.forEach(id => {
-        domElements[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
+        const key = id.replace(/-(\w)/g, (_, c) => c.toUpperCase());
+        domElements[key] = document.getElementById(id);
     });
     domElements.progressBarWrapper = document.querySelector('.progress-bar-wrapper');
 
-    domElements.loadingOverlay.style.display = 'flex';
+    // 取得した要素が存在する場合のみイベントリスナーを設定
+    if (domElements.loadingOverlay) {
+        domElements.loadingOverlay.style.display = 'flex';
+    }
+
     loadGameData();
 
-    document.getElementById('replayBtn').onclick = () => {
-        if (player && player.seekTo && !gameState.answerChecked) {
-            player.seekTo(0);
-            player.playVideo();
-        }
-    };
+    if (domElements.replayBtn) {
+        domElements.replayBtn.onclick = () => {
+            if (player && player.seekTo && !gameState.answerChecked) {
+                player.seekTo(0);
+                player.playVideo();
+            }
+        };
+    }
 
-    document.getElementById('pauseBtn').onclick = () => {
-        if (!player || typeof player.getPlayerState !== 'function') return;
-        const state = player.getPlayerState();
-        (state === YT.PlayerState.PLAYING) ? player.pauseVideo() : player.playVideo();
-    };
-
-    domElements.volumeSlider.addEventListener('input', (e) => {
-        const volume = parseInt(e.target.value);
-        if (player && player.setVolume) player.setVolume(volume);
-        if (introPlayer && introPlayer.setVolume) introPlayer.setVolume(volume);
-    });
+    if (domElements.pauseBtn) {
+        domElements.pauseBtn.onclick = () => {
+            if (!player || typeof player.getPlayerState !== 'function') return;
+            const state = player.getPlayerState();
+            (state === YT.PlayerState.PLAYING) ? player.pauseVideo() : player.playVideo();
+        };
+    }
+    
+    if (domElements.volumeSlider) {
+        domElements.volumeSlider.addEventListener('input', (e) => {
+            const volume = parseInt(e.target.value);
+            if (player && player.setVolume) player.setVolume(volume);
+            if (introPlayer && introPlayer.setVolume) introPlayer.setVolume(volume);
+        });
+    }
 });
 
 function onYouTubeIframeAPIReady() {
     initGame();
-    domElements.loadingOverlay.style.display = 'none';
+    if (domElements.loadingOverlay) {
+        domElements.loadingOverlay.style.display = 'none';
+    }
 }
