@@ -98,29 +98,25 @@ function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(screen => {
         screen.style.display = 'none';
     });
+    
+    if (domElements.startPrompt) domElements.startPrompt.style.display = 'none';
 
-    domElements.mainMenu.style.display = 'none';
-    domElements.gameView.style.display = 'none';
-    domElements.encyclopedia.style.display = 'none';
-    domElements.settingsScreen.style.display = 'none';
-    domElements.statsScreen.style.display = 'none';
-    domElements.startPrompt.style.display = 'none';
 
     switch(screenId) {
         case 'main-menu':
-            domElements.mainMenu.style.display = 'flex';
+            if (domElements.mainMenu) domElements.mainMenu.style.display = 'flex';
             break;
         case 'game-view':
-            domElements.gameView.style.display = 'flex';
+            if (domElements.gameView) domElements.gameView.style.display = 'flex';
             break;
         case 'encyclopedia':
-            domElements.encyclopedia.style.display = 'block';
+            if (domElements.encyclopedia) domElements.encyclopedia.style.display = 'block';
             break;
         case 'settings-screen':
-            domElements.settingsScreen.style.display = 'block';
+            if (domElements.settingsScreen) domElements.settingsScreen.style.display = 'block';
             break;
         case 'stats-screen':
-            domElements.statsScreen.style.display = 'block';
+            if (domElements.statsScreen) domElements.statsScreen.style.display = 'block';
             break;
     }
 }
@@ -150,7 +146,9 @@ function initGame() {
 function playIntroMusic() {
     if (introPlayed) return;
 
-    domElements.startPrompt.style.display = 'none';
+    if (domElements.startPrompt) { 
+        domElements.startPrompt.style.display = 'none';
+    }
     introPlayed = true;
 
     showScreen('main-menu');
@@ -180,12 +178,18 @@ function playIntroMusic() {
 
 function showStartPrompt() {
     showScreen('main-menu');
-    domElements.startPrompt.style.display = 'flex';
-    domElements.startPromptBtn.textContent = 'Are you ready?';
-    domElements.startPromptBtn.onclick = playIntroMusic;
+    if (domElements.startPrompt) { 
+        domElements.startPrompt.style.display = 'flex';
+    }
+    if (domElements.startPromptBtn) { 
+        domElements.startPromptBtn.textContent = 'Are you ready?';
+        domElements.startPromptBtn.onclick = playIntroMusic;
+    }
 }
 
 function createMainMenuButtons() {
+    if (!domElements.mainMenu) return; 
+    
     domElements.mainMenu.innerHTML = '';
     
     const modes = [
@@ -215,6 +219,8 @@ function createMainMenuButtons() {
 function showSettings(mode) {
     gameState.mode = mode;
     showScreen('settings-screen');
+    if (!domElements.settingsScreen) return; 
+    
     domElements.settingsScreen.innerHTML = `
         <h2>${mode === GAME_MODES.NORMAL ? 'ノーマルモード設定' : mode === GAME_MODES.TIMED ? 'タイムアタック設定' : 'エンドレスモード設定'}</h2>
     `;
@@ -230,7 +236,8 @@ function showSettings(mode) {
                 </select>
             </div>
         `;
-        document.getElementById('normalQuestions').value = gameData.settings.normalQuestions;
+        const normalQuestions = document.getElementById('normalQuestions');
+        if (normalQuestions) normalQuestions.value = gameData.settings.normalQuestions;
     } else if (mode === GAME_MODES.TIMED) {
          domElements.settingsScreen.innerHTML += `
             <div class="setting-item">
@@ -242,10 +249,11 @@ function showSettings(mode) {
                 </select>
             </div>
         `;
-        document.getElementById('timedDuration').value = gameData.settings.timedDuration;
+        const timedDuration = document.getElementById('timedDuration');
+        if (timedDuration) timedDuration.value = gameData.settings.timedDuration;
     }
 
-    const composers = ['All', ...new Set(playlist.map(s => s.composer).filter(c => c && c !== 'Unknown').sort())];
+    const composers = ['All', ...(typeof playlist !== 'undefined' ? new Set(playlist.map(s => s.composer).filter(c => c && c !== 'Unknown').sort()) : [])];
     let composerOptions = composers.map(c => `<option value="${c}">${c}</option>`).join('');
 
     domElements.settingsScreen.innerHTML += `
@@ -261,16 +269,23 @@ function showSettings(mode) {
         </div>
     `;
     
-    document.getElementById('composerFilter').value = gameData.settings.composerFilter;
+    const composerFilter = document.getElementById('composerFilter');
+    if (composerFilter) composerFilter.value = gameData.settings.composerFilter;
 }
 
 function saveSettingsAndStart() {
-    if (gameState.mode === GAME_MODES.NORMAL) {
-        gameData.settings.normalQuestions = parseInt(document.getElementById('normalQuestions').value);
-    } else if (gameState.mode === GAME_MODES.TIMED) {
-        gameData.settings.timedDuration = parseInt(document.getElementById('timedDuration').value);
+    const normalQuestions = document.getElementById('normalQuestions');
+    const timedDuration = document.getElementById('timedDuration');
+    const composerFilter = document.getElementById('composerFilter');
+
+    if (gameState.mode === GAME_MODES.NORMAL && normalQuestions) {
+        gameData.settings.normalQuestions = parseInt(normalQuestions.value);
+    } else if (gameState.mode === GAME_MODES.TIMED && timedDuration) {
+        gameData.settings.timedDuration = parseInt(timedDuration.value);
     }
-    gameData.settings.composerFilter = document.getElementById('composerFilter').value;
+    if (composerFilter) {
+        gameData.settings.composerFilter = composerFilter.value;
+    }
     saveGameData();
     launchQuiz();
 }
@@ -287,7 +302,12 @@ function launchQuiz() {
     gameState.answerChecked = false;
     answeredVideos = [];
     
-    const quizPlaylist = playlist.filter(song => song.quiz !== false);
+    const quizPlaylist = typeof playlist !== 'undefined' ? playlist.filter(song => song.quiz !== false) : [];
+    if (quizPlaylist.length === 0) {
+        alert('楽曲リストが読み込まれていません。');
+        initGame();
+        return;
+    }
     
     const filter = gameData.settings.composerFilter;
     currentPlaylist = (gameState.mode === GAME_MODES.NORMAL && filter !== 'All') 
@@ -301,7 +321,6 @@ function launchQuiz() {
     } 
     
     showScreen('game-view');
-    // domElements.gameControlsContainer が存在しない場合があるためチェック
     if (domElements.gameControlsContainer) {
         domElements.gameControlsContainer.style.display = 'block';
     }
@@ -319,7 +338,6 @@ function launchQuiz() {
         }, 10);
     }
     
-    // プレイヤーが未定義の場合、クイズ用に初期化します
     if (!player) {
          player = new YT.Player('player', {
             height: '0', 
@@ -340,7 +358,6 @@ function launchQuiz() {
             }
         });
     } else {
-        // プレイヤーが既に存在する場合は次のクイズをロード
         loadNextQuiz();
     }
 }
@@ -348,6 +365,12 @@ function launchQuiz() {
 function loadNextQuiz() {
     if (gameTimer) clearInterval(gameTimer);
     
+    if (!domElements.choices || !domElements.result || !domElements.answerDetails || !domElements.score || !domElements.progressContainer) {
+        console.error("Critical DOM element missing. Cannot load quiz.");
+        initGame();
+        return;
+    }
+
     if (gameState.mode === GAME_MODES.NORMAL && gameState.totalQuestions >= gameData.settings.normalQuestions) {
         endGame();
         return;
@@ -363,7 +386,7 @@ function loadNextQuiz() {
     domElements.result.style.display = 'none';
     domElements.answerDetails.style.display = 'none';
     domElements.score.textContent = `正解数: ${gameState.score} / ${gameState.totalQuestions}`;
-    domElements.answerChecked = false;
+    gameState.answerChecked = false;
 
     let availableSongs = currentPlaylist.filter(song => !answeredVideos.includes(song.videoId));
     if (availableSongs.length === 0) {
@@ -406,7 +429,9 @@ function loadNextQuiz() {
     });
 
     if (gameState.mode === GAME_MODES.NORMAL || gameState.mode === GAME_MODES.ENDLESS) {
-        domElements.progressText.textContent = `第 ${gameState.totalQuestions + 1} 問`;
+        if (domElements.progressText) { 
+            domElements.progressText.textContent = `第 ${gameState.totalQuestions + 1} 問`;
+        }
         const progress = gameState.mode === GAME_MODES.NORMAL ? ((gameState.totalQuestions) / gameData.settings.normalQuestions) * 100 : 0;
         if (domElements.progressBarFill) {
             domElements.progressBarFill.style.width = `${progress}%`;
@@ -417,7 +442,9 @@ function loadNextQuiz() {
         }
     } else {
         domElements.progressContainer.style.display = 'none';
-        domElements.timeDisplay.style.display = 'block';
+        if (domElements.timeDisplay) {
+            domElements.timeDisplay.style.display = 'block';
+        }
         if (gameTimer) { 
             gameTimer = setInterval(() => {
                 gameState.timeLeftMs -= 10;
@@ -478,6 +505,8 @@ function checkAnswer(button, selectedAnswer) {
 
     gameState.answerChecked = true;
     gameState.totalQuestions++;
+
+    if (!domElements.choices || !domElements.result || !domElements.answerDetails || !domElements.score) return; 
     
     domElements.choices.querySelectorAll('button').forEach(btn => {
         btn.disabled = true;
@@ -537,6 +566,8 @@ function checkAnswer(button, selectedAnswer) {
 function endGame() {
     if (gameTimer) clearInterval(gameTimer);
     
+    if (!domElements.result || !domElements.answerDetails || !domElements.choices) return; 
+
     const finalScore = gameState.score;
     const finalTotal = gameState.totalQuestions;
     const modeName = gameState.mode === GAME_MODES.NORMAL ? 'ノーマル' : gameState.mode === GAME_MODES.TIMED ? 'タイムアタック' : 'エンドレス';
@@ -562,7 +593,9 @@ function endGame() {
     if (domElements.timeDisplay) {
         domElements.timeDisplay.style.display = 'none';
     }
-    domElements.progressContainer.style.display = 'none';
+    if (domElements.progressContainer) {
+        domElements.progressContainer.style.display = 'none';
+    }
     if (domElements.gameControlsContainer) {
         domElements.gameControlsContainer.style.display = 'none';
     }
@@ -576,6 +609,7 @@ function endGame() {
 }
 
 function updateTimeDisplay(ms) {
+    if (!domElements.timeDisplay) return; 
     const totalSeconds = Math.max(0, Math.floor(ms / 1000));
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -593,6 +627,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function showEncyclopedia() {
     showScreen('encyclopedia');
+    if (!domElements.encyclopedia) return; 
+
     domElements.encyclopedia.innerHTML = `
         <h2>曲の事典</h2>
         <div id="encyclopedia-controls">
@@ -610,12 +646,14 @@ function showEncyclopedia() {
         </div>
     `;
 
-    currentEncyclopediaPlaylist = [...playlist].sort((a, b) => a.title.localeCompare(b.title, 'ja'));
+    currentEncyclopediaPlaylist = typeof playlist !== 'undefined' ? [...playlist].sort((a, b) => a.title.localeCompare(b.title, 'ja')) : [];
     renderSongList(currentEncyclopediaPlaylist);
 }
 
 function renderSongList(list) {
     const songList = document.getElementById('song-list');
+    if (!songList) return; 
+    
     songList.innerHTML = '';
 
     list.forEach(song => {
@@ -638,12 +676,12 @@ function filterSongList(query) {
     const filterText = query.toLowerCase();
     const songList = document.getElementById('song-list');
     
-    if (!songList) return;
+    if (!songList) return; 
 
     const cards = songList.querySelectorAll('.song-card');
     cards.forEach(card => {
-        const title = card.querySelector('.song-card-title').textContent.toLowerCase();
-        const composer = card.querySelector('.song-card-composer').textContent.toLowerCase();
+        const title = card.querySelector('.song-card-title')?.textContent.toLowerCase() || '';
+        const composer = card.querySelector('.song-card-composer')?.textContent.toLowerCase() || '';
 
         if (title.includes(filterText) || composer.includes(filterText)) {
             card.style.display = '';
@@ -655,13 +693,14 @@ function filterSongList(query) {
 
 function showSongDetails(song) {
     document.querySelectorAll('.song-card').forEach(card => card.classList.remove('selected'));
-    // 安全な要素取得のため、nullチェックを強化
     const selected_card = document.querySelector(`.song-card[data-videoid="${song.videoId}"]`);
     if (selected_card) {
         selected_card.classList.add('selected');
     }
     
     const detailsDiv = document.getElementById('encyclopedia-details');
+    if (!detailsDiv) return; 
+
     detailsDiv.innerHTML = `
         <h3>${song.title}</h3>
         <div id="encyclopedia-details-content">
@@ -698,6 +737,8 @@ function renderSongStats(song) {
 
 function showStatsScreen() {
     showScreen('stats-screen');
+    if (!domElements.statsScreen) return; 
+    
     domElements.statsScreen.innerHTML = `
         <h2>成績・設定</h2>
         <div class="stats-grid">
@@ -721,13 +762,12 @@ function showStatsScreen() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 修正: 存在が必須の要素のみをリストアップし、安全に取得
     const ids = [
         'loading-overlay', 'main-menu', 'choices', 'result', 'answer-details', 
         'score', 'time-display', 'progress-container', 'progress-text', 
         'progress-bar-fill', 'game-controls-container', 'volumeSlider', 
         'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia', 
-        'game-view', 'replayBtn', 'pauseBtn' // コントロールボタンも取得リストに追加
+        'game-view', 'replayBtn', 'pauseBtn', 'player', 'stats-screen'
     ];
     
     ids.forEach(id => {
@@ -736,7 +776,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     domElements.progressBarWrapper = document.querySelector('.progress-bar-wrapper');
 
-    // 取得した要素が存在する場合のみイベントリスナーを設定
     if (domElements.loadingOverlay) {
         domElements.loadingOverlay.style.display = 'flex';
     }
@@ -751,7 +790,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
     }
-
+    
     if (domElements.pauseBtn) {
         domElements.pauseBtn.onclick = () => {
             if (!player || typeof player.getPlayerState !== 'function') return;
