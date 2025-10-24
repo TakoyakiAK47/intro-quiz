@@ -260,9 +260,11 @@ const playlist = [
   { title: "OST 294", videoId: "XXZ_TcOHXaY", composer: "Unknown", context: "OST 294", quiz: false, imageUrl: "https://i.ytimg.com/vi/XXZ_TcOHXaY/hqdefault.jpg" },
   { title: "OST 295", videoId: "u_id-29xj60", composer: "EmoCosine", context: "OST 295", quiz: false, imageUrl: "https://i.ytimg.com/vi/u_id-29xj60/hqdefault.jpg" },
   { title: "Wachawacha Rush", videoId: "6yAw5Uxjj8c", composer: "Mitsukiyo", context: "OST 296", imageUrl: "https://i.ytimg.com/vi/6yAw5Uxjj8c/hqdefault.jpg" },
+  { title: "OST 297", videoId: "f_3DNZtlGZU", composer: "Unknown", context: "OST 297", quiz: false, imageUrl: "https://i.ytimg.com/vi/f_3DNZtlGZU/hqdefault.jpg" },
   { title: "You’re My Princess", videoId: "SFETQKiqPu4", composer: "EmoCosine", context: "OST 298\nメモロビ:ミカ(水着)", imageUrl: "https://i.ytimg.com/vi/SFETQKiqPu4/hqdefault.jpg" },
   { title: "OST 299", videoId: "JJr054EMO4U", composer: "KARUT", context: "OST 299\nメモロビ:セイア(水着)", quiz: false, imageUrl: "https://i.ytimg.com/vi/JJr054EMO4U/hqdefault.jpg" },
   { title: "OST 300", videoId: "oDIazvE-kzQ", composer: "Unknown", context: "OST 300\nメモロビ:ナギサ(水着)", quiz: false, imageUrl: "https://i.ytimg.com/vi/oDIazvE-kzQ/hqdefault.jpg" },
+  { title: "OST 302", videoId: "IxInQQu8B1M", composer: "KARUT", context: "OST 297", quiz: false, imageUrl: "https://i.ytimg.com/vi/IxInQQu8B1M/hqdefault.jpg" },
 ];
 
 const characterSongPlaylist = [
