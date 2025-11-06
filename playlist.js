@@ -133,7 +133,7 @@ const playlist = [
   { title: "Kyrie Eleison", videoId: "90gEXwoPS9U", composer: "Mitsukiyo", similarGroup: 3, context: "OST 136", imageUrl: "https://i.ytimg.com/vi/90gEXwoPS9U/hqdefault.jpg" },
   { title: "OST 137", videoId: "7aYKI6yaQpE", composer: "Unknown", context: "OST 137", quiz: false, imageUrl: "https://i.ytimg.com/vi/7aYKI6yaQpE/hqdefault.jpg" },
   { title: "Utaha No Uta", videoId: "iu_WbNBDnZg", composer: "KARUT", context: "OST 138", imageUrl: "https://i.ytimg.com/vi/iu_WbNBDnZg/hqdefault.jpg" },
-  { title: "Cherry Merry Berry", videoId: "HwuRvtu6HlQ", composer: "Mitsukiyo", context: "OST 139\nメモロビ:セリナ(クリスマス)", imageUrl: "https://i.ytimg.com/vi/HwuRvtu6HlQ/hqdefault.jpg" },
+  { title: "Cherry Berry Merry", videoId: "HwuRvtu6HlQ", composer: "Mitsukiyo", context: "OST 139\nメモロビ:セリナ(クリスマス)", imageUrl: "https://i.ytimg.com/vi/HwuRvtu6HlQ/hqdefault.jpg" },
   { title: "Defective Pixel", videoId: "j0lhxnFX7uo", composer: "Mitsukiyo", context: "OST 140", imageUrl: "https://i.ytimg.com/vi/j0lhxnFX7uo/hqdefault.jpg" },
   { title: "Tasty New Year", videoId: "mCTFH5Ih0Dk", composer: "Nor", context: "OST 141\nメモロビ:ジュンコ(正月)、イズミ(正月)", imageUrl: "https://i.ytimg.com/vi/mCTFH5Ih0Dk/hqdefault.jpg" },
   { title: "Encroached Sky", videoId: "eKHjTWzN4Y8", composer: "KARUT", context: "OST 142", imageUrl: "https://i.ytimg.com/vi/eKHjTWzN4Y8/hqdefault.jpg" },
@@ -264,7 +264,10 @@ const playlist = [
   { title: "You’re My Princess", videoId: "SFETQKiqPu4", composer: "EmoCosine", context: "OST 298\nメモロビ:ミカ(水着)", imageUrl: "https://i.ytimg.com/vi/SFETQKiqPu4/hqdefault.jpg" },
   { title: "OST 299", videoId: "JJr054EMO4U", composer: "KARUT", context: "OST 299\nメモロビ:セイア(水着)", quiz: false, imageUrl: "https://i.ytimg.com/vi/JJr054EMO4U/hqdefault.jpg" },
   { title: "OST 300", videoId: "oDIazvE-kzQ", composer: "Unknown", context: "OST 300\nメモロビ:ナギサ(水着)", quiz: false, imageUrl: "https://i.ytimg.com/vi/oDIazvE-kzQ/hqdefault.jpg" },
-  { title: "OST 302", videoId: "IxInQQu8B1M", composer: "KARUT", context: "OST 297", quiz: false, imageUrl: "https://i.ytimg.com/vi/IxInQQu8B1M/hqdefault.jpg" },
+  { title: "Someday Certainly inst arrange", videoId: "IxInQQu8B1M", composer: "KARUT", context: "OST 302", imageUrl: "https://i.ytimg.com/vi/IxInQQu8B1M/hqdefault.jpg" },
+  { title: "OST 303", videoId: "8Slkc86yD5E", composer: "Unknown", context: "OST 303", quiz: false, imageUrl: "https://i.ytimg.com/vi/8Slkc86yD5E/hqdefault.jpg" },
+  { title: "OST 332", videoId: "01iivO2xRaM", composer: "Unknown", context: "OST 332\n総力戦イェソド/前半", quiz: false, imageUrl: "https://i.ytimg.com/vi/01iivO2xRaM/hqdefault.jpg" },
+  { title: "OST 333", videoId: "2wSqxOFSr6I", composer: "Unknown", context: "OST 333\n総力戦イェソド/後半", quiz: false, imageUrl: "https://i.ytimg.com/vi/2wSqxOFSr6I/hqdefault.jpg" },
 ];
 
 const characterSongPlaylist = [
