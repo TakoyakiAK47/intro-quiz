@@ -850,16 +850,16 @@ document.addEventListener('DOMContentLoaded', () => {
             let keyIndex = -1;
 
             switch(event.key.toLowerCase()) {
-                case '5':
+                case '1':
                     keyIndex = 0;
                     break;
-                case '5':
+                case '2':
                     keyIndex = 1;
                     break;
-                case '5':
+                case '3':
                     keyIndex = 2;
                     break;
-                case '5':
+                case '4':
                     keyIndex = 3;
                     break;
             }
