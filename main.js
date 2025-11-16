@@ -817,7 +817,7 @@ function filterSongs() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    const ids = ['loading-overlay', 'main-menu', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia'];
+    const ids = ['loading-overlay', 'main-menu', 'game-view', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia'];
     ids.forEach(id => {
         domElements[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
     });
@@ -869,7 +869,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const selectedButton = choices[keyIndex];
                 
-                const selectedChoice = selectedButton.querySelector('span').textContent.trim();
+                const selectedChoice = selectedButton.textContent.trim();
                 checkAnswer(selectedChoice);
             }
         }
