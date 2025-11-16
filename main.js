@@ -843,4 +843,35 @@ document.addEventListener('DOMContentLoaded', () => {
     domElements.volumeSlider.addEventListener('input', (e) => {
         if (player && player.setVolume) player.setVolume(parseInt(e.target.value, 10));
     });
+    
+    document.addEventListener('keydown', (event) => {
+        if (gameState.mode !== GAME_MODES.MENU && gameState.mode !== GAME_MODES.ENCYCLOPEDIA && !gameState.answerChecked && domElements.gameView.style.display !== 'none') {
+            const choices = document.querySelectorAll('#choices button');
+            let keyIndex = -1;
+
+            switch(event.key) {
+                case '1':
+                    keyIndex = 0;
+                    break;
+                case '2':
+                    keyIndex = 1;
+                    break;
+                case '3':
+                    keyIndex = 2;
+                    break;
+                case '4':
+                    keyIndex = 3;
+                    break;
+            }
+
+            if (keyIndex !== -1 && choices.length > keyIndex) {
+                event.preventDefault(); 
+                
+                const selectedButton = choices[keyIndex];
+                
+                const selectedChoice = selectedButton.querySelector('span').textContent.trim();
+                checkAnswer(selectedChoice);
+            }
+        }
+    });
 });
