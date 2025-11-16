@@ -849,17 +849,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const choices = document.querySelectorAll('#choices button');
             let keyIndex = -1;
 
-            switch(event.key) {
-                case '1':
+            switch(event.key.toLowerCase()) {
+                case 'w':
                     keyIndex = 0;
                     break;
-                case '2':
+                case 'a':
                     keyIndex = 1;
                     break;
-                case '3':
+                case 's':
                     keyIndex = 2;
                     break;
-                case '4':
+                case 'd':
                     keyIndex = 3;
                     break;
             }
