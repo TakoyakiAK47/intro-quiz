@@ -271,7 +271,7 @@ const playlist = [
   { title: "OST 300", videoId: "oDIazvE-kzQ", composer: "Unknown", context: "OST 300\nメモロビ:ナギサ(水着)", quiz: false, imageUrl: "https://i.ytimg.com/vi/oDIazvE-kzQ/hqdefault.jpg" },
   { title: "Someday Certainly (inst arrange)", videoId: "IxInQQu8B1M", composer: "KARUT", context: "OST 302", imageUrl: "https://i.ytimg.com/vi/IxInQQu8B1M/hqdefault.jpg" },
   { title: "OST 303", videoId: "8Slkc86yD5E", composer: "Unknown", context: "OST 303", quiz: false, imageUrl: "https://i.ytimg.com/vi/8Slkc86yD5E/hqdefault.jpg" },
-  { title: "OST 317", videoId: "Ji1Sr7KCNt0", composer: "Unknown", context: "OST 317", quiz: false, imageUrl: "https://i.ytimg.com/vi/Ji1Sr7KCNt0/hqdefault.jpg" },
+  { title: "OST 317", videoId: "Ji1Sr7KCNt0", composer: "KARUT", context: "OST 317", quiz: false, imageUrl: "https://i.ytimg.com/vi/Ji1Sr7KCNt0/hqdefault.jpg" },
   { title: "OST 332", videoId: "01iivO2xRaM", composer: "Unknown", context: "OST 332\n総力戦イェソド/前半", quiz: false, imageUrl: "https://i.ytimg.com/vi/01iivO2xRaM/hqdefault.jpg" },
   { title: "OST 333", videoId: "2wSqxOFSr6I", composer: "Unknown", context: "OST 333\n総力戦イェソド/後半", quiz: false, imageUrl: "https://i.ytimg.com/vi/2wSqxOFSr6I/hqdefault.jpg" },
 ];
