@@ -19,7 +19,7 @@ const playlist = [
   { title: "Mechanical JUNGLE", videoId: "JhWiVeXf2JM", composer: "KARUT", context: "OST 18", imageUrl: "https://i.ytimg.com/vi/JhWiVeXf2JM/hqdefault.jpg" },
   { title: "Virtual Storm", videoId: "vCvjZB8PqMQ", composer: "KARUT", context: "OST 19", imageUrl: "https://i.ytimg.com/vi/vCvjZB8PqMQ/hqdefault.jpg" },
   { title: "Tech N Tech", videoId: "bg0GKgxO9lo", composer: "KARUT", context: "OST 20", imageUrl: "https://i.ytimg.com/vi/bg0GKgxO9lo/hqdefault.jpg" },
-  { title: "Midnight Trip", videoId: "KopFUu0F4gk", composer: "Nor", context: "OST 21\nメモロビ:ヒナ、ヒナ(水着)、セナ、チナツ(温泉)、カリン、ヒビキ、トモエ、スズミ、モエ、ミモリ(水着)、メル、アル(ドレス)、サオリ(ドレス)", imageUrl: "https://i.ytimg.com/vi/KopFUu0F4gk/hqdefault.jpg" },
+  { title: "Midnight Trip", videoId: "KopFUu0F4gk", composer: "Nor", context: "OST 21\nメモロビ:ヒナ、ヒナ(水着)、セナ、チナツ(温泉)、アツコ、カリン、ヒビキ、トモエ、スズミ、モエ、ミモリ(水着)、メル、アル(ドレス)、サオリ(ドレス)", imageUrl: "https://i.ytimg.com/vi/KopFUu0F4gk/hqdefault.jpg" },
   { title: "Daily Routine 24/7", videoId: "fTW7D5u0HfE", composer: "Nor", context: "OST 22\nメモロビ:ミカ", imageUrl: "https://i.ytimg.com/vi/fTW7D5u0HfE/hqdefault.jpg" },
   { title: "Party Time", videoId: "XC0UwqE13U8", composer: "Mitsukiyo", context: "OST 23", imageUrl: "https://i.ytimg.com/vi/XC0UwqE13U8/hqdefault.jpg" },
   { title: "Endless Carnival", videoId: "eOUzJN-W-rE", composer: "Mitsukiyo", context: "OST 24\n総力戦ビナー", imageUrl: "https://i.ytimg.com/vi/eOUzJN-W-rE/hqdefault.jpg" },
