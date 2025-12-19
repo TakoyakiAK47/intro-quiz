@@ -9,6 +9,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+  font-family: 'ShinMGoUpr';
+  src: url('U-OTF-ShinMGoUpr-Medium.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
     :root {
       --blue-primary: #007bff;
       --blue-secondary: #00AEEF;
@@ -28,7 +34,9 @@
     }
 
     body {
-      font-family: 'Noto Sans JP', sans-serif;
+  font-family: 'ShinMGoUpr', 'Noto Sans JP', sans-serif;
+  ...
+}
       text-align: center;
       background: #f4f8ff;
       color: var(--text-dark);
@@ -115,8 +123,10 @@
         0 5px 0 rgba(0, 0, 0, 0.1);
     }
 
-    button, .yt-button { 
-      font-family: 'Noto Sans JP', sans-serif; 
+      button, .yt-button { 
+  font-family: 'ShinMGoUpr', 'Noto Sans JP', sans-serif;
+  ...
+}
       font-size: 1.6em; 
       font-weight: 600; 
       cursor: pointer; 
