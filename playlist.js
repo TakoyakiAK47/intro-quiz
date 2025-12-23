@@ -252,7 +252,7 @@ const playlist = [
   { title: "Lonely Flower", videoId: "lVng5d2A_Mk", composer: "EmoCosine", context: "OST 280", imageUrl: "https://i.ytimg.com/vi/lVng5d2A_Mk/hqdefault.jpg" },
   { title: "Laboratorium Occultum", videoId: "q8rm35Lw1YY", composer: "KARUT", context: "OST 281", imageUrl: "https://i.ytimg.com/vi/q8rm35Lw1YY/hqdefault.jpg" },
   { title: "OST 282", videoId: "ptY-yPZPMwk", composer: "Unknown", context: "OST 282", quiz: false, imageUrl: "https://i.ytimg.com/vi/ptY-yPZPMwk/hqdefault.jpg" },
-  { title: "OST 283", videoId: "Vwpp-OpajG4", composer: "Unknown", context: "OST 283", quiz: false, imageUrl: "https://i.ytimg.com/vi/Vwpp-OpajG4/hqdefault.jpg" },
+  { title: "4You Harmonica Arrange", videoId: "Vwpp-OpajG4", composer: "Mitsukiyo", context: "OST 283", imageUrl: "https://i.ytimg.com/vi/Vwpp-OpajG4/hqdefault.jpg" },
   { title: "OST 284", videoId: "ilZwgvn3Pdo", composer: "Unknown", context: "OST 284", quiz: false, imageUrl: "https://i.ytimg.com/vi/ilZwgvn3Pdo/hqdefault.jpg" },
   { title: "OST 285", videoId: "EAs7I5MEMrE", composer: "Unknown", context: "OST 285", quiz: false, imageUrl: "https://i.ytimg.com/vi/EAs7I5MEMrE/hqdefault.jpg" },
   { title: "OST 286", videoId: "IYWROacuFbc", composer: "Unknown", context: "OST 286", quiz: false, imageUrl: "https://i.ytimg.com/vi/IYWROacuFbc/hqdefault.jpg" },
@@ -271,7 +271,7 @@ const playlist = [
   { title: "OST 300", videoId: "oDIazvE-kzQ", composer: "Unknown", context: "OST 300\nメモロビ:ナギサ(水着)", quiz: false, imageUrl: "https://i.ytimg.com/vi/oDIazvE-kzQ/hqdefault.jpg" },
   { title: "Someday Certainly (inst arrange)", videoId: "IxInQQu8B1M", composer: "KARUT", context: "OST 302", imageUrl: "https://i.ytimg.com/vi/IxInQQu8B1M/hqdefault.jpg" },
   { title: "OST 303", videoId: "8Slkc86yD5E", composer: "Unknown", context: "OST 303", quiz: false, imageUrl: "https://i.ytimg.com/vi/8Slkc86yD5E/hqdefault.jpg" },
-  { title: "OTKMARCHING!", videoId: "Ji1Sr7KCNt0", composer: "KARUT", context: "OST 317", quiz: false, imageUrl: "https://i.ytimg.com/vi/Ji1Sr7KCNt0/hqdefault.jpg" },
+  { title: "OTKMARCHING!", videoId: "Ji1Sr7KCNt0", composer: "KARUT", context: "OST 317", imageUrl: "https://i.ytimg.com/vi/Ji1Sr7KCNt0/hqdefault.jpg" },
   { title: "OST 332", videoId: "01iivO2xRaM", composer: "Unknown", context: "OST 332\n総力戦イェソド/前半", quiz: false, imageUrl: "https://i.ytimg.com/vi/01iivO2xRaM/hqdefault.jpg" },
   { title: "OST 333", videoId: "2wSqxOFSr6I", composer: "Unknown", context: "OST 333\n総力戦イェソド/後半", quiz: false, imageUrl: "https://i.ytimg.com/vi/2wSqxOFSr6I/hqdefault.jpg" },
 ];
