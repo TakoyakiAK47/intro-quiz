@@ -105,9 +105,24 @@ function onPlayerReady(event) {
     initGame();
 }
 
-function onPlayerStateChange(event) {
-    if (gameState.mode === GAME_MODES.MENU && event.data === YT.PlayerState.ENDED) {
-         if (player && typeof player.seekTo === 'function') {
+function onPlayerReady(event) {
+    // 追加: 最初にミュートを強制してブラウザの制限を回避する
+    event.target.mute(); 
+    
+    event.target.setVolume(domElements.volumeSlider.value);
+    
+    if (player && typeof player.loadVideoById === 'function') {
+        player.loadVideoById({ 
+            videoId: TITLE_SCREEN_VIDEO_ID, 
+            startSeconds: 0, 
+            playerVars: { 'playsinline': 1, 'autoplay': 0 } 
+        });
+        // 修正: 初期ロード時はミュートのままにする
+        player.mute(); 
+    }
+    
+    initGame();
+}
              player.seekTo(0); 
              player.playVideo();
          }
