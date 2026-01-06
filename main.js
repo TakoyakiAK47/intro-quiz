@@ -393,20 +393,21 @@ function checkAnswer(selectedChoice) {
         processIncorrectAnswer();
     }
 
-    // ヒントや詳細表示
+    // --- ヒントおよび詳細表示の修正箇所 ---
     const correctSongObject = playlist.find(song => song.videoId === currentVideoId);
-    if (correctSongObject && correctSongObject.context) {
-        domElements.answerDetails.innerText = `💡 ヒント: ${correctSongObject.context.replace(/メモロビ:\s*「準備中」/g, '').trim()}`;
+    if (correctSongObject) {
+        // context（OST番号等）がある場合はそれを含め、ない場合は曲名のみを表示
+        const contextInfo = correctSongObject.context ? `${correctSongObject.context.replace(/メモロビ:\s*「準備中」/g, '').trim()} ` : '';
+        domElements.answerDetails.innerText = `💡 ヒント: ${contextInfo}「${correctSongObject.title}」`;
         domElements.answerDetails.style.display = 'block';
     }
+    // ------------------------------------
     
     if (domElements.footer) domElements.footer.style.display = 'block'; 
     
     gameState.totalQuestions++;
     
-    // 曲名当てクイズの場合のみ統計を更新（作曲者当ては曲の認識とは少し違うため、または別統計にする）
-    // ここではシンプルにするため、作曲者モードでもその曲に対して正解した扱いにするか、スキップするか。
-    // 今回は全モードで統計を取ります。
+    // 全モードで統計を更新
     updateSongStats(currentVideoId, isCorrect);
     
     updateChoiceButtonsUI(selectedChoice); 
