@@ -1,5 +1,5 @@
 /* ============================================================
-   Blue Archive イントロクイズ - main.js (Loop & Auto-play Version)
+   Blue Archive イントロクイズ - main.js (UI & Loop Enhanced)
    ============================================================ */
 
 const NEXT_QUESTION_DELAY = 1000;
@@ -113,11 +113,7 @@ function onPlayerReady(event) {
     initGame();
 }
 
-/**
- * 修正箇所: 楽曲ループ再生ロジックの実装
- */
 function onPlayerStateChange(event) {
-    // 1. メニュー画面でのタイトル曲ループ
     if (gameState.mode === GAME_MODES.MENU && event.data === YT.PlayerState.ENDED) {
          if (player && typeof player.seekTo === 'function') {
              player.seekTo(0); 
@@ -125,7 +121,6 @@ function onPlayerStateChange(event) {
          }
     }
     
-    // 2. クイズ中の楽曲ループ (回答前かつ再生終了時に実行)
     if (gameState.mode !== GAME_MODES.MENU && !gameState.answerChecked && event.data === YT.PlayerState.ENDED) {
         if (player && typeof player.seekTo === 'function') {
             console.log("Song ended. Auto-looping for current quiz...");
@@ -148,6 +143,12 @@ function initGame() {
     gameState.mode = GAME_MODES.MENU;
     if (gameTimer) clearInterval(gameTimer);
     
+    // 修正箇所: 初期化時に曲名表示をクリア
+    if (domElements.currentSongName) {
+        domElements.currentSongName.style.display = 'none';
+        domElements.currentSongName.innerText = '';
+    }
+
     if (player && typeof player.loadVideoById === 'function') {
         player.loadVideoById({ 
             videoId: TITLE_SCREEN_VIDEO_ID, 
@@ -304,7 +305,6 @@ function loadNextQuiz() {
         domElements.answerDetails.style.display = 'none';
     }
     if (domElements.footer) domElements.footer.style.display = 'none'; 
-    updateUIState();
     
     let available = currentPlaylist.filter(p => !answeredVideos.includes(p.videoId));
     if (available.length < 1) {
@@ -322,17 +322,23 @@ function loadNextQuiz() {
     currentSongTitle = random.title;
     answeredVideos.push(currentVideoId);
 
+    // 修正箇所: 曲名を表示
+    if (domElements.currentSongName) {
+        domElements.currentSongName.innerText = `🎵 ${currentSongTitle}`;
+        domElements.currentSongName.style.display = 'block';
+    }
+
     if (gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
         correctAnswer = random.composer;
     } else {
         correctAnswer = random.title;
     }
 
-    // 修正箇所: 既存のビデオを確実に止める
     if (player && typeof player.stopVideo === 'function') {
         player.stopVideo();
     }
     
+    updateUIState();
     playIntroClip();
     displayChoices(generateChoices(random));
 }
@@ -375,9 +381,6 @@ function displayChoices(choices) {
     });
 }
 
-/**
- * 修正箇所: 自動再生（playVideo）を確実に実行
- */
 function playIntroClip() {
     if (!player || typeof player.loadVideoById !== 'function') return;
     player.loadVideoById({ 
@@ -385,7 +388,6 @@ function playIntroClip() {
         startSeconds: 0,
         playerVars: { 'playsinline': 1 } 
     });
-    // ロード直後に再生開始（ブラウザのポリシーにより開始ボタンが必要）
     player.playVideo();
 }
 
@@ -393,7 +395,6 @@ function checkAnswer(selectedChoice) {
     if (gameState.answerChecked) return;
     gameState.answerChecked = true;
     
-    // 回答後はループを止めるため停止
     if (player && typeof player.stopVideo === 'function') {
         player.stopVideo();
     }
@@ -533,6 +534,11 @@ function endGame() {
     gameTimer = null;
     gameState.answerChecked = true;
     
+    // 修正箇所: 終了時に曲名表示をクリア
+    if (domElements.currentSongName) {
+        domElements.currentSongName.style.display = 'none';
+    }
+
     if (domElements.progressContainer) domElements.progressContainer.style.display = 'none';
     if (domElements.timeDisplay) domElements.timeDisplay.style.display = 'none';
     if (domElements.gameControlsContainer) domElements.gameControlsContainer.style.display = 'none';
@@ -704,7 +710,8 @@ function updateEndlessAchievements() {
 
 // --- イベントリスナー ---
 document.addEventListener('DOMContentLoaded', () => {
-    const ids = ['loading-overlay', 'main-menu', 'game-view', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia'];
+    // 修正箇所: currentSongName をIDリストに追加
+    const ids = ['loading-overlay', 'main-menu', 'game-view', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia', 'current-song-name'];
     ids.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
