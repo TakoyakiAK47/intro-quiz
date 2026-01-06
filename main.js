@@ -399,18 +399,18 @@ function checkAnswer(selectedChoice) {
         let displayHint = "💡 ヒント: ";
         
         if (correctSongObject.context) {
-            // contextを改行で分割 (0: OST情報など, 1: メモロビ情報など)
             const contextParts = correctSongObject.context.split('\n');
             const ostInfo = contextParts[0] ? contextParts[0].trim() : "";
             const detailInfo = contextParts[1] ? contextParts[1].replace(/メモロビ:\s*「準備中」/g, '').trim() : "";
 
-            // 順番: OST情報 + 曲名 + 詳細(メモロビ)
+            // 順番: OST番号 「曲名」 メモロビ:キャラ名...
             displayHint += `${ostInfo} 「${correctSongObject.title}」`;
+            
             if (detailInfo) {
-                displayHint += ` (${detailInfo})`;
+                // カッコを外し、手前にスペースを入れて結合
+                displayHint += ` ${detailInfo}`;
             }
         } else {
-            // contextがない場合は曲名のみ
             displayHint += `「${correctSongObject.title}」`;
         }
 
