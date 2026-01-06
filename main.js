@@ -1,3 +1,7 @@
+/* ============================================================
+   Blue Archive イントロクイズ - script.js
+   ============================================================ */
+
 const NEXT_QUESTION_DELAY = 1000;
 const GAME_OVER_DELAY = 1000;
 const EXTENDED_RESULT_DELAY = 2000; // 結果を少し長く表示（曲名を確認するため）
@@ -35,7 +39,7 @@ const TARGET_COMPOSERS = ['Mitsukiyo', 'Nor', 'KARUT', 'EmoCosine'];
 let player;
 let correctAnswer = '';
 let currentVideoId = '';
-let currentSongTitle = ''; // 作曲者クイズ用に曲名を保持
+let currentSongTitle = ''; 
 let gameTimer = null;
 let gameData = {};
 let currentPlaylist = [];
@@ -50,10 +54,9 @@ let gameState = {
     answerChecked: false,
 };
 
-
 const domElements = {};
 
-
+// --- データの保存と読み込み ---
 function saveGameData() {
     try {
         localStorage.setItem('blueArchiveQuizDataV2', JSON.stringify(gameData));
@@ -70,7 +73,6 @@ function loadGameData() {
         gameData.stats = { ...defaultGameData.stats, ...(gameData.stats || {}) };
         gameData.achievements = { ...defaultGameData.achievements, ...(gameData.achievements || {}) };
         
-        // 新しいモード用のハイスコア初期化
         if (gameData.stats.highScores.composer_quiz === undefined) {
             gameData.stats.highScores.composer_quiz = 0;
         }
@@ -80,7 +82,7 @@ function loadGameData() {
     }
 }
 
-
+// --- YouTube API 制御 ---
 function onYouTubeIframeAPIReady() {
     domElements.loadingOverlay.style.display = 'none';
     player = new YT.Player('player', {
@@ -91,24 +93,8 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerReady(event) {
-    event.target.setVolume(domElements.volumeSlider.value);
-    
-    if (player && typeof player.loadVideoById === 'function') {
-        player.loadVideoById({ 
-            videoId: TITLE_SCREEN_VIDEO_ID, 
-            startSeconds: 0, 
-            playerVars: { 'playsinline': 1, 'autoplay': 0 } 
-        });
-        player.mute();
-    }
-    
-    initGame();
-}
-
-function onPlayerReady(event) {
-    // 追加: 最初にミュートを強制してブラウザの制限を回避する
+    // コンソールエラー対策: 最初にミュートを強制
     event.target.mute(); 
-    
     event.target.setVolume(domElements.volumeSlider.value);
     
     if (player && typeof player.loadVideoById === 'function') {
@@ -117,16 +103,22 @@ function onPlayerReady(event) {
             startSeconds: 0, 
             playerVars: { 'playsinline': 1, 'autoplay': 0 } 
         });
-        // 修正: 初期ロード時はミュートのままにする
         player.mute(); 
     }
-    
     initGame();
 }
+
+function onPlayerStateChange(event) {
+    // メニュー画面で動画が終わったらループ
+    if (gameState.mode === GAME_MODES.MENU && event.data === YT.PlayerState.ENDED) {
+         if (player && typeof player.seekTo === 'function') {
              player.seekTo(0); 
              player.playVideo();
+         }
+    }
+}
 
-
+// --- 画面遷移 ---
 function showScreen(screenId) {
     document.querySelectorAll('.screen, #main-menu, #game-view').forEach(el => el.style.display = 'none');
     const target = document.getElementById(screenId);
@@ -134,7 +126,6 @@ function showScreen(screenId) {
         target.style.display = (screenId === 'game-view' || screenId === 'main-menu') ? 'flex' : 'block';
     }
 }
-
 
 function initGame() {
     gameState.mode = GAME_MODES.MENU;
@@ -160,7 +151,6 @@ function initGame() {
         { id: GAME_MODES.NORMAL, label: 'ノーマルモード', action: () => selectMode(GAME_MODES.NORMAL) },
         { id: GAME_MODES.TIMED, label: 'タイムアタックモード', action: () => selectMode(GAME_MODES.TIMED) },
         { id: GAME_MODES.ENDLESS, label: 'エンドレスモード', action: () => selectMode(GAME_MODES.ENDLESS) },
-        // サウンドアーカイブを置き換え
         { id: GAME_MODES.COMPOSER_QUIZ, label: '作曲者当てクイズ', action: () => selectMode(GAME_MODES.COMPOSER_QUIZ) },
         { id: 'stats', label: '実績・統計', action: showStatsScreen }
     ];
@@ -174,29 +164,24 @@ function initGame() {
     });
 }
 
-
 function showStartPrompt() {
     domElements.startPrompt.style.display = 'flex';
     domElements.startPromptBtn.onclick = () => {
         domElements.startPrompt.style.display = 'none';
-        
         if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) {
              player.unMute();
              player.playVideo();
         }
-        
         launchQuiz();
     };
 }
 
 function selectMode(selectedMode) {
     gameState.mode = selectedMode;
-    
     if (gameState.mode === GAME_MODES.NORMAL || gameState.mode === GAME_MODES.TIMED) {
         showScreen('settings-screen');
         setupModeSettings();
     } else { 
-        // エンドレスモードと作曲者クイズは即スタート
         showStartPrompt();
     }
 }
@@ -231,12 +216,12 @@ function setupModeSettings() {
             gameData.settings.timedDuration = parseInt(document.getElementById('timed-duration').value, 10) * 1000;
         }
         saveGameData();
-        
         showStartPrompt();
     };
     document.getElementById('settings-back-btn').onclick = initGame;
 }
 
+// --- クイズロジック ---
 function launchQuiz() {
     gameState.score = 0;
     gameState.totalQuestions = 0;
@@ -250,9 +235,7 @@ function launchQuiz() {
     
     const quizPlaylist = playlist.filter(song => song.quiz !== false);
     
-    // プレイリストの構築
     if (gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
-        // 作曲者クイズの場合は指定の4名のみにフィルタリング
         currentPlaylist = quizPlaylist.filter(song => TARGET_COMPOSERS.includes(song.composer));
     } else {
         const filter = gameData.settings.composerFilter;
@@ -261,7 +244,7 @@ function launchQuiz() {
             : [...quizPlaylist];
     }
     
-    if (currentPlaylist.length < 4) {
+    if (currentPlaylist.length < 4 && gameState.mode !== GAME_MODES.COMPOSER_QUIZ) {
         alert('選択した条件に該当する楽曲が少なすぎるため、クイズを開始できません。');
         initGame();
         return;
@@ -287,7 +270,6 @@ function launchQuiz() {
 }
 
 function loadNextQuiz() {
-    // 終了判定
     const isTimeUp = gameState.mode === GAME_MODES.TIMED && gameState.timeLeftMs <= 0;
     const isNormalFinished = gameState.mode === GAME_MODES.NORMAL && gameState.totalQuestions >= gameData.settings.normalQuestions;
 
@@ -303,36 +285,30 @@ function loadNextQuiz() {
     if (domElements.footer) domElements.footer.style.display = 'none'; 
     updateUIState();
     
-    // 未回答の曲から選択（エンドレス・作曲者クイズで曲が尽きた場合はリセット）
     let available = currentPlaylist.filter(p => !answeredVideos.includes(p.videoId));
-    if (available.length < 1) { // 選択肢生成には4曲必要だが、作曲者クイズの場合は固定選択肢なので1曲あればOK
+    if (available.length < 1) {
         if (gameState.mode === GAME_MODES.ENDLESS || gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
-             // 既出リストをリセットして継続
             answeredVideos = [];
             available = currentPlaylist;
         } else {
-            // ここには来ないはずだが念のため
             available = currentPlaylist; 
         }
     }
 
     const random = available[Math.floor(Math.random() * available.length)];
-    
     if (!random) {
-        console.error("No songs available in the playlist. Ending game.");
         endGame();
         return;
     }
 
     currentVideoId = random.videoId;
-    currentSongTitle = random.title; // 曲名を保存
+    currentSongTitle = random.title;
     answeredVideos.push(currentVideoId);
 
-    // モードによって正解データを設定
     if (gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
-        correctAnswer = random.composer; // 正解は作曲者名
+        correctAnswer = random.composer;
     } else {
-        correctAnswer = random.title; // 正解は曲名
+        correctAnswer = random.title;
     }
 
     if (player && player.getPlayerState() === YT.PlayerState.PLAYING) {
@@ -344,12 +320,10 @@ function loadNextQuiz() {
 }
 
 function generateChoices(correctSongObject) {
-    // 作曲者クイズの場合、固定の4択をシャッフルして返す
     if (gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
         return [...TARGET_COMPOSERS].sort(() => 0.5 - Math.random());
     }
 
-    // 通常の曲名当てクイズ
     const correctTitle = correctSongObject.title;
     const choices = new Set([correctTitle]);
 
@@ -363,7 +337,6 @@ function generateChoices(correctSongObject) {
     }
     
     const distractors = currentPlaylist.filter(p => !choices.has(p.title)).map(p => p.title);
-    
     while (choices.size < 4 && distractors.length > 0) {
         const randomIndex = Math.floor(Math.random() * distractors.length);
         choices.add(distractors.splice(randomIndex, 1)[0]);
@@ -405,45 +378,34 @@ function checkAnswer(selectedChoice) {
         processIncorrectAnswer();
     }
 
-    // --- ヒントおよび詳細表示の修正箇所 ---
+    // ヒントおよび詳細表示
     const correctSongObject = playlist.find(song => song.videoId === currentVideoId);
     if (correctSongObject) {
         let displayHint = "💡 ヒント: ";
-        
         if (correctSongObject.context) {
             const contextParts = correctSongObject.context.split('\n');
             const ostInfo = contextParts[0] ? contextParts[0].trim() : "";
             const detailInfo = contextParts[1] ? contextParts[1].replace(/メモロビ:\s*「準備中」/g, '').trim() : "";
-
-            // 順番: OST番号 「曲名」 メモロビ:キャラ名...
             displayHint += `${ostInfo} 「${correctSongObject.title}」`;
-            
             if (detailInfo) {
-                // カッコを外し、手前にスペースを入れて結合
                 displayHint += ` ${detailInfo}`;
             }
         } else {
             displayHint += `「${correctSongObject.title}」`;
         }
-
         domElements.answerDetails.innerText = displayHint;
         domElements.answerDetails.style.display = 'block';
     }
-    // ------------------------------------
     
     if (domElements.footer) domElements.footer.style.display = 'block'; 
     
     gameState.totalQuestions++;
-    
-    // 全モードで統計を更新
     updateSongStats(currentVideoId, isCorrect);
-    
     updateChoiceButtonsUI(selectedChoice); 
     updateUIState();
     saveGameData();
     scheduleNextStep(isCorrect);
 }
-
 
 function updateChoiceButtonsUI(selectedChoice) {
     document.querySelectorAll('#choices button').forEach(btn => {
@@ -454,16 +416,12 @@ function updateChoiceButtonsUI(selectedChoice) {
         } else if (choiceText === selectedChoice) {
             btn.classList.add('incorrect'); 
         }
-        
         btn.style.pointerEvents = 'none'; 
     });
 }
 
-
 function processCorrectAnswer() {
     gameState.score++;
-    
-    // 作曲者クイズの場合は、正解の曲名も表示する
     if (gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
         domElements.result.innerText = `✅ 正解！ (曲: ${currentSongTitle})`;
     } else {
@@ -475,7 +433,6 @@ function processCorrectAnswer() {
         if (gameState.mode === GAME_MODES.ENDLESS) {
             updateEndlessAchievements();
         } else {
-            // 作曲者クイズ用のハイスコア更新
             if (gameState.endlessStreak > (gameData.stats.highScores.composer_quiz || 0)) {
                 gameData.stats.highScores.composer_quiz = gameState.endlessStreak;
             }
@@ -484,7 +441,6 @@ function processCorrectAnswer() {
 }
 
 function processIncorrectAnswer() {
-    // 作曲者クイズの場合は、正解の曲名も含める
     if (gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
         domElements.result.innerText = `❌ 不正解... (正解: ${correctAnswer} / 曲: ${currentSongTitle})`;
     } else {
@@ -495,8 +451,6 @@ function processIncorrectAnswer() {
 function scheduleNextStep(isCorrect) {
     const isNormalGameOver = gameState.mode === GAME_MODES.NORMAL && gameState.totalQuestions >= gameData.settings.normalQuestions;
     const isTimedGameOver = gameState.mode === GAME_MODES.TIMED && gameState.timeLeftMs <= 0;
-    
-    // エンドレスモードまたは作曲者クイズモードで不正解なら終了
     const isEndlessGameOver = (gameState.mode === GAME_MODES.ENDLESS || gameState.mode === GAME_MODES.COMPOSER_QUIZ) && !isCorrect;
 
     const isGameOver = isNormalGameOver || isTimedGameOver || isEndlessGameOver;
@@ -505,15 +459,7 @@ function scheduleNextStep(isCorrect) {
         domElements.progressBarFill.style.width = '100%';
     }
     
-    let delay;
-    if (isGameOver) {
-        delay = GAME_OVER_DELAY; 
-    } else if (gameState.mode === GAME_MODES.TIMED) {
-        delay = NEXT_QUESTION_DELAY; 
-    } else {
-        // 曲名を確認できるよう少し長めに待つ
-        delay = EXTENDED_RESULT_DELAY; 
-    }
+    const delay = isGameOver ? GAME_OVER_DELAY : (gameState.mode === GAME_MODES.TIMED ? NEXT_QUESTION_DELAY : EXTENDED_RESULT_DELAY);
 
     setTimeout(() => {
         if (isGameOver) {
@@ -523,7 +469,6 @@ function scheduleNextStep(isCorrect) {
         }
     }, delay);
 }
-
 
 function shareResult() {
     const title = "Blue Archive BGMイントロクイズ";
@@ -621,14 +566,14 @@ function showStatsScreen() {
     const unlockedCount = Object.values(gameData.achievements).filter(Boolean).length;
     
     const achievementTiers = [
-        { key: 'normal',   label: 'NORMAL',   desc: 'エンドレスモードで10問連続正解' },
-        { key: 'hard',     label: 'HARD',     desc: 'エンドレスモードで20問連続正解' },
-        { key: 'veryhard', label: 'VERYHARD', desc: 'エンドレスモードで50問連続正解' },
-        { key: 'hardcore', label: 'HARDCORE', desc: 'エンドレスモードで100問連続正解' },
-        { key: 'extreme',  label: 'EXTREME',  desc: 'エンドレスモードで150問連続正解' },
-        { key: 'insane',   label: 'INSANE',   desc: 'エンドレスモードで250問連続正解' },
-        { key: 'torment',  label: 'TORMENT',  desc: 'エンドレスモードで500問連続正解' },
-        { key: 'lunatic',  label: 'LUNATIC',  desc: 'エンドレスモードで1000問連続正解' }
+        { key: 'normal',   label: 'NORMAL',   desc: '10問連続正解' },
+        { key: 'hard',     label: 'HARD',     desc: '20問連続正解' },
+        { key: 'veryhard', label: 'VERYHARD', desc: '50問連続正解' },
+        { key: 'hardcore', label: 'HARDCORE', desc: '100問連続正解' },
+        { key: 'extreme',  label: 'EXTREME',  desc: '150問連続正解' },
+        { key: 'insane',   label: 'INSANE',   desc: '250問連続正解' },
+        { key: 'torment',  label: 'TORMENT',  desc: '500問連続正解' },
+        { key: 'lunatic',  label: 'LUNATIC',  desc: '1000問連続正解' }
     ];
     
     const achievementsHTML = achievementTiers.map(tier => `
@@ -662,8 +607,7 @@ function showStatsScreen() {
     };
 }
 
-
-
+// --- UI更新 ---
 function updateUIState() {
     updateScore();
     updateProgressIndicator();
@@ -674,10 +618,9 @@ function updateScore() {
     let scoreText = '';
     if (gameState.mode === GAME_MODES.NORMAL || gameState.mode === GAME_MODES.TIMED) {
         scoreText = `Score: ${gameState.score}`;
-    } else if (gameState.mode === GAME_MODES.ENDLESS) {
-        scoreText = `High Score: ${gameData.stats.highScores.endless || 0} | Current: ${gameState.endlessStreak}`;
-    } else if (gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
-        scoreText = `High Score: ${gameData.stats.highScores.composer_quiz || 0} | Current: ${gameState.endlessStreak}`;
+    } else {
+        const highScore = (gameState.mode === GAME_MODES.COMPOSER_QUIZ) ? gameData.stats.highScores.composer_quiz : gameData.stats.highScores.endless;
+        scoreText = `High Score: ${highScore || 0} | Current: ${gameState.endlessStreak}`;
     }
     domElements.score.innerText = scoreText;
 }
@@ -708,19 +651,12 @@ function updateTimeDisplay(ms) {
     }
 }
 
-
 function updateSongStats(videoId, isCorrect) {
-    const song = playlist.find(s => s.videoId === videoId) || 
-                 (typeof characterSongPlaylist !== 'undefined' ? characterSongPlaylist.find(s => s.videoId === videoId) : null);
-    
-    if (song && song.quiz === false) return; 
-
     if (!gameData.stats.songStats[videoId]) {
         gameData.stats.songStats[videoId] = { correct: 0, incorrect: 0 };
     }
     isCorrect ? gameData.stats.songStats[videoId].correct++ : gameData.stats.songStats[videoId].incorrect++;
 }
-
 
 function updateEndlessAchievements() {
     if (gameState.endlessStreak > (gameData.stats.highScores.endless || 0)) {
@@ -732,8 +668,8 @@ function updateEndlessAchievements() {
     }
 }
 
+// --- イベントリスナー ---
 document.addEventListener('DOMContentLoaded', () => {
-    // encylopedia IDはHTMLから削除されていない前提ですが、不要なIDは無視されます
     const ids = ['loading-overlay', 'main-menu', 'game-view', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia'];
     ids.forEach(id => {
         domElements[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
@@ -765,28 +701,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (gameState.mode !== GAME_MODES.MENU && !gameState.answerChecked && domElements.gameView.style.display !== 'none') {
             const choices = document.querySelectorAll('#choices button');
             let keyIndex = -1;
-
-            switch(event.key.toLowerCase()) {
-                case '1':
-                    keyIndex = 0;
-                    break;
-                case '2':
-                    keyIndex = 1;
-                    break;
-                case '3':
-                    keyIndex = 2;
-                    break;
-                case '4':
-                    keyIndex = 3;
-                    break;
+            switch(event.key) {
+                case '1': keyIndex = 0; break;
+                case '2': keyIndex = 1; break;
+                case '3': keyIndex = 2; break;
+                case '4': keyIndex = 3; break;
             }
-
             if (keyIndex !== -1 && choices.length > keyIndex) {
                 event.preventDefault(); 
-                
-                const selectedButton = choices[keyIndex];
-                const selectedChoice = selectedButton.textContent.trim();
-                checkAnswer(selectedChoice);
+                checkAnswer(choices[keyIndex].textContent.trim());
             }
         }
     });
