@@ -1,5 +1,5 @@
 /* ============================================================
-   Blue Archive イントロクイズ - main.js (Bug Fixed Version)
+   Blue Archive イントロクイズ - main.js (Loop & Auto-play Version)
    ============================================================ */
 
 const NEXT_QUESTION_DELAY = 1000;
@@ -82,7 +82,6 @@ function loadGameData() {
 
 // --- YouTube API 制御 ---
 function onYouTubeIframeAPIReady() {
-    // コンソールバグ対策: 確実にDOM要素があるか確認してからPlayerを生成
     const playerTarget = document.getElementById('player');
     if (!playerTarget) return;
 
@@ -96,13 +95,11 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerReady(event) {
-    // コンソールエラー対策: 最初にミュートを強制し、安全に操作
     if (!player || typeof player.mute !== 'function') return;
     
     player.mute(); 
     if (domElements.volumeSlider) player.setVolume(parseInt(domElements.volumeSlider.value, 10));
     
-    // 初期動画の読み込みを安全に行う
     try {
         player.loadVideoById({ 
             videoId: TITLE_SCREEN_VIDEO_ID, 
@@ -110,19 +107,31 @@ function onPlayerReady(event) {
         });
         player.pauseVideo();
     } catch (e) {
-        console.warn("Initial video load failed, retrying on interaction.");
+        console.warn("Initial video load failed.");
     }
     
     initGame();
 }
 
+/**
+ * 修正箇所: 楽曲ループ再生ロジックの実装
+ */
 function onPlayerStateChange(event) {
-    // メニュー画面でのループ処理
+    // 1. メニュー画面でのタイトル曲ループ
     if (gameState.mode === GAME_MODES.MENU && event.data === YT.PlayerState.ENDED) {
          if (player && typeof player.seekTo === 'function') {
              player.seekTo(0); 
              player.playVideo();
          }
+    }
+    
+    // 2. クイズ中の楽曲ループ (回答前かつ再生終了時に実行)
+    if (gameState.mode !== GAME_MODES.MENU && !gameState.answerChecked && event.data === YT.PlayerState.ENDED) {
+        if (player && typeof player.seekTo === 'function') {
+            console.log("Song ended. Auto-looping for current quiz...");
+            player.seekTo(0);
+            player.playVideo();
+        }
     }
 }
 
@@ -139,7 +148,6 @@ function initGame() {
     gameState.mode = GAME_MODES.MENU;
     if (gameTimer) clearInterval(gameTimer);
     
-    // 修正箇所: playerが準備できているか確認してから操作
     if (player && typeof player.loadVideoById === 'function') {
         player.loadVideoById({ 
             videoId: TITLE_SCREEN_VIDEO_ID, 
@@ -179,10 +187,8 @@ function showStartPrompt() {
     domElements.startPrompt.style.display = 'flex';
     domElements.startPromptBtn.onclick = () => {
         domElements.startPrompt.style.display = 'none';
-        // ユーザーアクションをきっかけにアンミュート
         if (player && typeof player.unMute === 'function') {
              player.unMute();
-             player.playVideo();
         }
         launchQuiz();
     };
@@ -242,7 +248,6 @@ function launchQuiz() {
     gameState.answerChecked = false;
     answeredVideos = [];
     
-    // 修正箇所: プレーヤー操作時のエラーガードを徹底
     if (player && typeof player.stopVideo === 'function') {
         player.stopVideo(); 
     }
@@ -323,8 +328,9 @@ function loadNextQuiz() {
         correctAnswer = random.title;
     }
 
-    if (player && typeof player.pauseVideo === 'function') {
-        player.pauseVideo();
+    // 修正箇所: 既存のビデオを確実に止める
+    if (player && typeof player.stopVideo === 'function') {
+        player.stopVideo();
     }
     
     playIntroClip();
@@ -369,20 +375,25 @@ function displayChoices(choices) {
     });
 }
 
+/**
+ * 修正箇所: 自動再生（playVideo）を確実に実行
+ */
 function playIntroClip() {
-    // 修正箇所: メソッドの存在チェックを追加
     if (!player || typeof player.loadVideoById !== 'function') return;
     player.loadVideoById({ 
         videoId: currentVideoId, 
         startSeconds: 0,
         playerVars: { 'playsinline': 1 } 
     });
+    // ロード直後に再生開始（ブラウザのポリシーにより開始ボタンが必要）
+    player.playVideo();
 }
 
 function checkAnswer(selectedChoice) {
     if (gameState.answerChecked) return;
     gameState.answerChecked = true;
     
+    // 回答後はループを止めるため停止
     if (player && typeof player.stopVideo === 'function') {
         player.stopVideo();
     }
@@ -526,7 +537,6 @@ function endGame() {
     if (domElements.timeDisplay) domElements.timeDisplay.style.display = 'none';
     if (domElements.gameControlsContainer) domElements.gameControlsContainer.style.display = 'none';
 
-    // 修正箇所: 終了画面のBGM再生を安全に
     if (player && typeof player.loadVideoById === 'function') {
         player.loadVideoById({ 
             videoId: SUB_SCREEN_VIDEO_ID, 
@@ -694,7 +704,6 @@ function updateEndlessAchievements() {
 
 // --- イベントリスナー ---
 document.addEventListener('DOMContentLoaded', () => {
-    // 修正箇所: DOM要素の取得をより安全に行う
     const ids = ['loading-overlay', 'main-menu', 'game-view', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia'];
     ids.forEach(id => {
         const el = document.getElementById(id);
@@ -708,7 +717,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (domElements.loadingOverlay) domElements.loadingOverlay.style.display = 'flex';
     loadGameData();
 
-    // 修正箇所: ボタンの存在チェックを追加
     const replayBtn = document.getElementById('replayBtn');
     if (replayBtn) {
         replayBtn.onclick = () => {
