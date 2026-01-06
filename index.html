@@ -1,250 +1,350 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blue Archive BGM Intro Quiz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --blue-primary: #00ADEF;
-            --blue-light: #E1F5FE;
-            --text-main: #333;
-            --glass-white: rgba(255, 255, 255, 0.9); /* 視認性向上のため少し不透明度アップ */
-        }
+  <meta charset="UTF-8" />
+  <title>Blue Archive イントロクイズ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="icon" href="https://bluearchive.jp/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue-primary: #007bff;
+      --blue-secondary: #00AEEF;
+      --blue-dark: #0056b3;
+      --red-primary: #dc3545;
+      --red-dark: #c82333;
+      --green-primary: #28a745;
+      --green-dark: #218838;
+      --grey-light: #f8f9fa;
+      --grey-mid: #6c757d;
+      --grey-dark: #343a40;
+      --text-light: #fff;
+      --text-dark: #212529;
+      --border-color: #dee2e6;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+      --shadow-hover: 0 8px 12px rgba(0, 0, 0, 0.12);
+    }
 
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      text-align: center;
+      background: #f4f8ff;
+      color: var(--text-dark);
+      margin: 0;
+      padding: 1.5em;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1200px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: clamp(2.5em, 5vw, 3em); 
+      font-weight: 700;
+      color: var(--blue-secondary);
+      margin-bottom: 0.5em; 
+      text-shadow: 
+        -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, 
+        -2px 2px 0 #ffffff, 2px 2px 0 #ffffff,
+        0 8px 0 rgba(255, 230, 150, 0.75), 
+        0 10px 0 rgba(0, 0, 0, 0.1); 
+      line-height: 1.2;
+    }
+
+    #game-view { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 800px; gap: 0.5em; }
+    #progress-container { width: 95%; max-width: 600px; margin: 0.5em 0; }
+    #progress-text { font-size: 1.8em; font-weight: 500; color: var(--grey-mid); display: block; margin-bottom: 0.5em; }
+    .progress-bar-wrapper { width: 100%; background-color: #e9ecef; border-radius: 8px; height: 12px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); }
+    #progress-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--blue-primary), var(--blue-secondary)); transition: width 0.4s ease-in-out; }
+    
+    /* 修正箇所: 現在の曲名表示用スタイル */
+    #current-song-name {
+      display: none; 
+      font-size: clamp(1.8em, 6vw, 2.8em); /* 曲名を大きく表示 */
+      font-weight: 900;
+      color: var(--blue-secondary);
+      margin: 0.2em 0;
+      text-shadow: 
+        -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, 
+        -2px 2px 0 #ffffff, 2px 2px 0 #ffffff,
+        0 6px 0 rgba(255, 230, 150, 0.75), 
+        0 8px 0 rgba(0, 0, 0, 0.1);
+      word-break: break-all;
+      line-height: 1.2;
+      animation: pop-in 0.4s ease-out;
+    }
+
+    p#score { 
+      font-size: 2.2em; 
+      font-weight: 700; 
+      color: var(--grey-dark); 
+      text-shadow: 
+        -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, 
+        -1px 1px 0 #ffffff, 1px 1px 0 #ffffff,
+        0 4px 0 rgba(255, 230, 150, 0.75),
+        0 5px 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    p#result { 
+      font-size: 2.5em; 
+      font-weight: 900; 
+      margin: 0.5em 0; 
+      min-height: 1.5em; 
+      animation: pop-in 0.3s ease-out; 
+      background-color: transparent; 
+      padding: 0;
+      border-radius: 5px;
+      border: none;
+      text-shadow: 
+        -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, 
+        -2px 2px 0 #ffffff, 2px 2px 0 #ffffff,
+        0 6px 0 rgba(255, 230, 150, 0.75), 
+        0 8px 0 rgba(0, 0, 0, 0.1);
+      color: var(--blue-dark);
+      display: none; 
+      align-items: center;
+      justify-content: center;
+    }
+    
+    #answer-details { display: none; font-size: 1em; color: var(--grey-dark); background-color: #e9f5ff; border-left: 5px solid var(--blue-secondary); padding: 1em; border-radius: 8px; margin: 0.75em 0; width: 90%; max-width: 580px; text-align: left; line-height: 1.6; animation: fadeIn 0.5s ease-out; }
+    
+    p#time-display { 
+      font-size: 2.2em; 
+      margin: 0; 
+      color: var(--red-primary); 
+      font-weight: 700; 
+      text-shadow: 
+        -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, 
+        -1px 1px 0 #ffffff, 1px 1px 0 #ffffff,
+        0 4px 0 rgba(255, 230, 150, 0.75),
+        0 5px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    button, .yt-button { 
+      font-family: 'Noto Sans JP', sans-serif; 
+      font-size: 1.6em; 
+      font-weight: 600; 
+      cursor: pointer; 
+      border-radius: 12px; 
+      border: 1px solid rgba(0, 0, 0, 0.1); 
+      padding: 0.8em 1.5em; 
+      margin: 0.4em; 
+      transition: all 0.2s ease-in-out; 
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); 
+      display: inline-flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 0.5em; 
+      white-space: normal; 
+      line-height: 1.4; 
+      background-color: rgba(255, 255, 255, 0.92); 
+      color: var(--text-dark); 
+      text-decoration: none; 
+    }
+    
+    button:hover, .yt-button:hover { transform: translateY(-3px); box-shadow: 0 8px 12px rgba(0, 0, 0, 0.12); filter: brightness(1.02); }
+    button:active, .yt-button:active { transform: translateY(-1px) scale(0.98); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08); }
+    
+    #choices, #main-menu { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; gap: 0.5em; }
+    #main-menu { margin-top: 3em; } 
+    #choices button, #main-menu button { width: 95%; max-width: 600px; }
+    button.correct { background-color: var(--green-primary) !important; color: var(--text-light) !important; border-color: var(--green-dark) !important; transform: scale(1.05); }
+    button.incorrect { background-color: var(--red-primary) !important; color: var(--text-light) !important; border-color: var(--red-dark) !important; animation: shake 0.4s; }
+    #control-buttons { display: flex; flex-wrap: wrap; gap: 0.75em; justify-content: center; margin-top: 1em; }
+    #control-buttons button { background-color: var(--grey-mid); color: var(--text-light); border: none; }
+
+    .screen { 
+      display: none; 
+      width: 100%; 
+      max-width: 800px; 
+      padding: 2em; 
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 16px; 
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); 
+      backdrop-filter: blur(4px); 
+      -webkit-backdrop-filter: blur(4px);
+      animation: fadeIn 0.4s ease-in-out; 
+    }
+    .screen h2 { margin-top: 0; text-align: center; color: var(--blue-primary); }
+    
+    .setting-item { margin: 1.5em 0; font-size: 1.1em; }
+    .setting-item label { margin-right: 0.5em; font-weight: 500; }
+    .setting-item input, .setting-item select { padding: 0.5em; font-size: 1em; border-radius: 8px; border: 1px solid var(--border-color); }
+
+    #encyclopedia { max-width: 1200px; }
+    .encyclopedia-menu { display: flex; flex-direction: column; align-items: center; gap: 1em; }
+    .encyclopedia-menu button { width: 80%; max-width: 400px; padding: 1em; }
+    .encyclopedia-view { display: none; }
+    #encyclopedia-controls { display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 1em; align-items: center; }
+    #encyclopedia-search { flex-grow: 1; padding: 0.8em; font-size: 1em; border-radius: 8px; border: 1px solid var(--border-color); min-width: 200px; }
+    
+    #encyclopedia-layout { display: flex; gap: 1.5em; width: 100%; margin-top: 1em; }
+    #song-list-container { flex: 3; max-height: 65dvh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.5em; }
+    #song-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1em; width: 100%; }
+    #encyclopedia-details { flex: 2; text-align: left; padding: 1.5em; background: var(--grey-light); border-radius: 8px; border: 1px solid var(--border-color); }
+    #encyclopedia-details-content { display: flex; flex-direction: column; align-items: center; gap: 1em; }
+    #encyclopedia-details-content h4 { margin: 0.5em 0 0.2em 0; font-size: 1.4em; color: var(--blue-primary); }
+    #encyclopedia-details-content p { margin: 0; }
+    #encyclopedia-context { white-space: pre-wrap; background-color: #fff; padding: 1em; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 1em; width: 100%; box-sizing: border-box; }
+    .yt-button { background-color: var(--red-primary); color: white; border: none; }
+
+    .song-card { cursor: pointer; background: white; border-radius: 12px; box-shadow: var(--shadow); transition: all 0.2s ease-in-out; overflow: hidden; text-align: left; border: 2px solid transparent; }
+    .song-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+    .song-card.selected { border-color: var(--blue-secondary); box-shadow: 0 0 15px rgba(0, 174, 239, 0.5); transform: translateY(-2px); }
+    
+    .song-card-image {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      background-color: #eee;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .song-card-info { padding: 0.8em; }
+    .song-card-title { font-weight: 700; font-size: 1em; margin: 0 0 0.25em 0; }
+    .song-card-composer { font-size: 0.85em; color: var(--grey-mid); margin: 0; }
+
+    #loading-overlay, #start-prompt { 
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+      background: rgba(0, 0, 0, 0.7); 
+      color: white; display: flex; justify-content: center; 
+      align-items: center; flex-direction: column; z-index: 1000; 
+      animation: fadeIn 0.3s; 
+    }
+    #start-prompt button { 
+      padding: 1.5em 3em; 
+      font-size: clamp(1.2em, 5vw, 2em); 
+      background-color: var(--blue-primary); 
+      color: white; 
+      border: none; 
+      font-weight: 700;
+    }
+
+    #stats-screen .stats-grid { display: grid; grid-template-columns: 1fr; gap: 2em; text-align: left; }
+    
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    button:active:not(.correct):not(.incorrect), .yt-button:active {
+        transform: translateY(-1px) scale(0.98);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+        filter: brightness(0.95); 
+    }
+
+    @media (hover: none) {
+      button:hover, .yt-button:hover {
+        transform: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+        filter: none;
+      }
+    }
+
+    footer { 
+      margin-top: auto; 
+      padding-top: 1em; 
+      font-size: 0.9em; 
+      color: var(--grey-mid); 
+      display: none; 
+    }
+    a.footer-link { text-decoration: none; color: var(--blue-primary); font-weight: 500; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pop-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } }
+    
+    @media (min-width: 768px) { #stats-screen .stats-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 900px) {
+        #encyclopedia-layout { flex-direction: column; }
+        #song-list-container { max-height: 45vh; }
+    }
+    
+    .large-display-text {
+      font-size: clamp(4em, 12vw, 5em); 
+      font-weight: 900; 
+      color: var(--blue-secondary); 
+      text-shadow: 
+        -3px -3px 0 #ffffff, 3px -3px 0 #ffffff, 
+        -3px 3px 0 #ffffff, 3px 3px 0 #ffffff,
+        0 12px 0 rgba(255, 230, 150, 0.75), 
+        0 15px 0 rgba(0, 0, 0, 0.15); 
+    }
+
+    body {
+        background-size: cover;
+        background-position: center center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        background-color: #f4f8ff; 
+        background-image: url('bg_sp.png');
+    }
+
+    @media (min-aspect-ratio: 16/9) {
         body {
-            font-family: 'Noto Sans JP', sans-serif;
-            margin: 0;
-            padding: 0;
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            background-color: #f0f8ff;
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-size: cover;
             background-image: url('bg_pc.png');
         }
-
-        @media (max-width: 768px) {
-            body { background-image: url('bg_sp.png'); }
-        }
-
-        /* メインパネル：サイズ感の調整 */
-        .screen, #main-menu, #game-view, .container {
-            background: var(--glass-white);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            width: 95%;
-            max-width: 800px; /* ワイド化 */
-            min-height: 350px;
-            padding: 2rem;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        /* タイトルセクション */
-        .title-logo { margin-bottom: 2.5rem; }
-        .title-en {
-            font-size: 2.2rem;
-            color: var(--blue-primary);
-            font-weight: bold;
-            display: block;
-            text-shadow: 2px 2px 0px white;
-        }
-        .title-jp {
-            font-size: 1.2rem;
-            color: #555;
-            letter-spacing: 0.3em;
-            font-weight: bold;
-        }
-
-        /* メニューボタンのグリッド化 */
-        #main-menu-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            width: 100%;
-        }
-
-        /* ボタンデザインのブラッシュアップ */
-        button {
-            background: white;
-            color: var(--blue-primary);
-            border: 2px solid #e0f2ff;
-            padding: 16px 20px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.2;
-        }
-
-        button:hover {
-            background: #fdfdfd;
-            border-color: var(--blue-primary);
-            box-shadow: 0 5px 15px rgba(0, 173, 239, 0.2);
-            transform: translateY(-2px);
-        }
-
-        /* クイズ選択肢：2列レイアウト */
-        #choices {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        @media (max-width: 600px) {
-            #choices { grid-template-columns: 1fr; }
-            .screen { padding: 1.5rem; }
-        }
-
-        /* ステータス表示の整理 */
-        .game-status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .score-box { text-align: left; }
-        .score-box div { font-size: 0.8rem; color: #888; }
-        .score-box strong { font-size: 1.2rem; color: var(--blue-primary); }
-
-        /* リプレイ・一時停止ボタンをアイコン風に */
-        .control-btns {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        .control-btns button {
-            width: auto;
-            min-width: 100px;
-            padding: 10px;
-            font-size: 0.9rem;
-            background: #f8fbff;
-        }
-
-        /* 進行バーをパネル上部に固定 */
-        #progress-container {
-            position: absolute;
-            top: 0; left: 0; width: 100%;
-        }
-        .progress-bar-wrapper {
-            height: 4px;
-            background: rgba(0,0,0,0.05);
-            border-radius: 0;
-        }
-
-        /* 回答後のヒント表示を整理 */
-        #answer-details {
-            background: #f0f7ff;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 10px;
-            border-left: 4px solid var(--blue-primary);
-        }
-
-        footer {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.7);
-            padding: 8px 15px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-    </style>
+    }
+  </style>
 </head>
 <body>
+  <div id="loading-overlay"><p>Now loading...</p></div>
+  <main>
+    <h1>Blue Archive<br>イントロクイズ</h1>
 
-    <div id="loading-overlay">
-        <h2 style="color: var(--blue-primary);">Connecting to SHALE...</h2>
-    </div>
-
-    <div id="start-prompt" style="display:none;">
-        <div class="container">
-            <div class="title-logo">
-                <span class="title-en">Blue Archive</span>
-                <span class="title-jp">INTRO QUIZ</span>
-            </div>
-            <button id="start-prompt-btn" style="width:200px; margin:0 auto;">START</button>
-        </div>
-    </div>
-
-    <div id="main-menu" class="screen">
-        <div class="title-logo">
-            <span class="title-en">Blue Archive</span>
-            <span class="title-jp">イントロクイズ</span>
-        </div>
-        <div id="main-menu-buttons"></div>
-    </div>
-
-    <div id="game-view" class="screen" style="display:none; position: relative;">
+    <div id="main-menu"></div>
+    
+    <div id="game-view">
         <div id="progress-container">
-            <div class="progress-bar-wrapper">
-                <div id="progress-bar-fill"></div>
-            </div>
+            <span id="progress-text"></span>
+            <div class="progress-bar-wrapper"><div id="progress-bar-fill"></div></div>
         </div>
+        
+        <p id="current-song-name"></p>
 
-        <div class="game-status-bar">
-            <div class="score-box">
-                <div id="progress-text">Question</div>
-                <strong id="score">0</strong>
-            </div>
-            <div id="time-display" style="font-weight:bold; color:var(--red-accent);"></div>
-            <div id="current-song-name" style="display:none; color:var(--blue-primary); font-weight:bold;"></div>
-        </div>
-
+        <p id="score"></p>
+        <p id="time-display"></p>
+        <div id="player"></div>
         <div id="choices"></div>
-
-        <div id="result" style="font-size: 1.1rem; min-height: 1.5rem;"></div>
-        <div id="answer-details" style="display: none;"></div>
-
-        <div class="control-btns">
-            <button id="replayBtn">🔄 リプレイ</button>
-            <button id="pauseBtn">⏯️ 停止/再生</button>
+        <p id="result"></p>
+        <div id="answer-details"></div>
+        <div id="game-controls-container">
+          <div style="margin: 0.5em 0;">音量: <input type="range" id="volumeSlider" min="0" max="100" value="25" /></div>
+          <div id="control-buttons">
+            <button id="replayBtn">もう一度聞く</button>
+            <button id="pauseBtn">再生</button>
+            <button onclick="initGame()" style="background-color: var(--grey-dark);">ホームに戻る</button>
+          </div>
         </div>
     </div>
+    
+    <div id="encyclopedia" class="screen"></div>
+    <div id="settings-screen" class="screen"></div>
+    <div id="stats-screen" class="screen"></div>
+    <div id="start-prompt" style="display: none;"><button id="start-prompt-btn">タップして開始</button></div>
+  </main>
 
-    <div id="settings-screen" class="screen" style="display:none;"></div>
-    <div id="stats-screen" class="screen" style="display:none; overflow-y: auto; max-height: 80vh;"></div>
+  <footer>
+    <div style="border: 1px solid var(--border-color); padding: 1em; background-color: #fff; border-radius: 12px; box-shadow: var(--shadow);">
+      問い合わせは <a class="footer-link" href="https://x.com/TakoyakiAK47" target="_blank">たこやき</a> までDMお願いします。
+    </div>
+  </footer>
 
-    <div id="player"></div>
-
-    <footer>
-        <span style="font-size: 0.7rem; color: var(--blue-primary); font-weight: bold;">VOL</span>
-        <input type="range" id="volumeSlider" min="0" max="100" value="50" style="width:100px;">
-    </footer>
-
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="playlist.js"></script>
-    <script src="main.js"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="playlist.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
