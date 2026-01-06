@@ -438,9 +438,9 @@ function checkAnswer(selectedChoice) {
         // 作者は correctSongObject.composer から取得
         const composerInfo = correctSongObject.composer || "Unknown";
         
-        let displayHint = `💡 ${ostInfo} - 「${correctSongObject.title}」 - 作者: ${composerInfo}`;
+        let displayHint = `💡 ${ostInfo} 「${correctSongObject.title}」作者: ${composerInfo}`;
         if (memoInfo) {
-            displayHint += ` - メモロビ: ${memoInfo}`;
+            displayHint += `メモロビ: ${memoInfo}`;
         }
         
         domElements.answerDetails.innerText = displayHint;
