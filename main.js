@@ -82,7 +82,6 @@ function loadGameData() {
 
 // --- YouTube API 制御 ---
 function onYouTubeIframeAPIReady() {
-    // [FIX] domElementsが初期化される前に呼ばれる可能性があるため、直接IDで取得を試みる
     const loadingOverlay = document.getElementById('loading-overlay');
     if (loadingOverlay) loadingOverlay.style.display = 'none';
     
@@ -92,7 +91,7 @@ function onYouTubeIframeAPIReady() {
         events: { 
             'onReady': onPlayerReady, 
             'onStateChange': onPlayerStateChange,
-            'onError': (e) => console.warn("YouTube Player Error:", e.data) // [FIX] エラーハンドリング追加
+            'onError': (e) => console.warn("YouTube Player Error:", e.data)
         }
     });
 }
@@ -101,7 +100,6 @@ function onPlayerReady(event) {
     if (!player || typeof player.mute !== 'function') return;
     
     player.mute(); 
-    // [FIX] domElementsの存在確認を追加
     if (domElements.volumeSlider) {
         player.setVolume(parseInt(domElements.volumeSlider.value, 10));
     }
@@ -120,7 +118,6 @@ function onPlayerReady(event) {
 }
 
 function onPlayerStateChange(event) {
-    // [FIX] プレイヤーが存在し、かつ関数が使用可能な場合のみ実行
     if (!player || typeof player.seekTo !== 'function') return;
 
     if (gameState.mode === GAME_MODES.MENU && event.data === YT.PlayerState.ENDED) {
@@ -153,7 +150,6 @@ function initGame() {
         domElements.currentSongName.innerText = '';
     }
 
-    // [FIX] プレイヤーの生存確認を強化
     if (player && typeof player.loadVideoById === 'function') {
         try {
             player.loadVideoById({ 
@@ -335,7 +331,6 @@ function loadNextQuiz() {
     currentSongTitle = random.title;
     answeredVideos.push(currentVideoId);
 
-    // [FIX] 作曲者当てモードの場合のみ回答前に曲名を表示
     if (domElements.currentSongName) {
         if (gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
             domElements.currentSongName.innerText = `🎵 ${currentSongTitle}`;
@@ -411,6 +406,7 @@ function playIntroClip() {
     } catch (e) { console.warn("Video playback failed", e); }
 }
 
+// --- 修正箇所: checkAnswer 関数内ヒント表示ロジック ---
 function checkAnswer(selectedChoice) {
     if (gameState.answerChecked) return;
     gameState.answerChecked = true;
@@ -421,7 +417,6 @@ function checkAnswer(selectedChoice) {
 
     const isCorrect = (selectedChoice === correctAnswer);
     
-    // [FIX] 回答後は全モードで曲名を表示
     if (domElements.currentSongName) {
         domElements.currentSongName.innerText = `🎵 ${currentSongTitle}`;
         domElements.currentSongName.style.display = 'block';
@@ -435,16 +430,19 @@ function checkAnswer(selectedChoice) {
 
     const correctSongObject = playlist.find(song => song.videoId === currentVideoId);
     if (correctSongObject && domElements.answerDetails) {
-        let displayHint = "💡 ヒント: ";
-        if (correctSongObject.context) {
-            const contextParts = correctSongObject.context.split('\n');
-            const ostInfo = contextParts[0] ? contextParts[0].trim() : "";
-            const detailInfo = contextParts[1] ? contextParts[1].replace(/メモロビ:\s*「準備中」/g, '').trim() : "";
-            displayHint += `${ostInfo} 「${correctSongObject.title}」`;
-            if (detailInfo) displayHint += ` ${detailInfo}`;
-        } else {
-            displayHint += `「${correctSongObject.title}」`;
+        // [修正] OST - 曲名 - 作者 - メモロビ の構成へ変更
+        const contextParts = correctSongObject.context ? correctSongObject.context.split('\n') : ["", ""];
+        const ostInfo = contextParts[0] ? contextParts[0].trim() : "OST不明";
+        const memoInfo = contextParts[1] ? contextParts[1].replace(/メモロビ:\s*/g, '').replace(/「準備中」/g, '').trim() : "";
+        
+        // 作者は correctSongObject.composer から取得
+        const composerInfo = correctSongObject.composer || "Unknown";
+        
+        let displayHint = `💡 ${ostInfo} - 「${correctSongObject.title}」 - 作者: ${composerInfo}`;
+        if (memoInfo) {
+            displayHint += ` - メモロビ: ${memoInfo}`;
         }
+        
         domElements.answerDetails.innerText = displayHint;
         domElements.answerDetails.style.display = 'block';
     }
@@ -635,7 +633,7 @@ function showStatsScreen() {
     
     const achievementTiers = [
         { key: 'normal',   label: 'NORMAL',   desc: '10問連続正解' },
-        { key: 'hard',     label: 'HARD',     desc: '20問連続正解' },
+        { key: 'hard',      label: 'HARD',      desc: '20問連続正解' },
         { key: 'veryhard', label: 'VERYHARD', desc: '50問連続正解' },
         { key: 'hardcore', label: 'HARDCORE', desc: '100問連続正解' },
         { key: 'extreme',  label: 'EXTREME',  desc: '150問連続正解' },
