@@ -1,17 +1,17 @@
 /* ============================================================
-   Blue Archive イントロクイズ - script.js
+   Blue Archive イントロクイズ - main.js (Bug Fixed Version)
    ============================================================ */
 
 const NEXT_QUESTION_DELAY = 1000;
 const GAME_OVER_DELAY = 1000;
-const EXTENDED_RESULT_DELAY = 2000; // 結果を少し長く表示（曲名を確認するため）
+const EXTENDED_RESULT_DELAY = 2000;
 
 const GAME_MODES = {
     MENU: 'menu',
     NORMAL: 'normal',
     TIMED: 'timed',
     ENDLESS: 'endless',
-    COMPOSER_QUIZ: 'composer_quiz' // 新しいモードを追加
+    COMPOSER_QUIZ: 'composer_quiz'
 };
 
 const defaultGameData = {
@@ -32,8 +32,6 @@ const defaultGameData = {
 
 const TITLE_SCREEN_VIDEO_ID = 'ISZ8lKOVapA';
 const SUB_SCREEN_VIDEO_ID = 'I7A-xuDS-rA';
-
-// 作曲者当てクイズ用の固定選択肢
 const TARGET_COMPOSERS = ['Mitsukiyo', 'Nor', 'KARUT', 'EmoCosine'];
 
 let player;
@@ -84,32 +82,42 @@ function loadGameData() {
 
 // --- YouTube API 制御 ---
 function onYouTubeIframeAPIReady() {
-    domElements.loadingOverlay.style.display = 'none';
+    // コンソールバグ対策: 確実にDOM要素があるか確認してからPlayerを生成
+    const playerTarget = document.getElementById('player');
+    if (!playerTarget) return;
+
+    if (domElements.loadingOverlay) domElements.loadingOverlay.style.display = 'none';
+    
     player = new YT.Player('player', {
         height: '0', width: '0', videoId: '',
-        playerVars: { 'playsinline': 1 },
+        playerVars: { 'playsinline': 1, 'origin': location.protocol + '//' + location.hostname },
         events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
     });
 }
 
 function onPlayerReady(event) {
-    // コンソールエラー対策: 最初にミュートを強制
-    event.target.mute(); 
-    event.target.setVolume(domElements.volumeSlider.value);
+    // コンソールエラー対策: 最初にミュートを強制し、安全に操作
+    if (!player || typeof player.mute !== 'function') return;
     
-    if (player && typeof player.loadVideoById === 'function') {
+    player.mute(); 
+    if (domElements.volumeSlider) player.setVolume(parseInt(domElements.volumeSlider.value, 10));
+    
+    // 初期動画の読み込みを安全に行う
+    try {
         player.loadVideoById({ 
             videoId: TITLE_SCREEN_VIDEO_ID, 
-            startSeconds: 0, 
-            playerVars: { 'playsinline': 1, 'autoplay': 0 } 
+            startSeconds: 0
         });
-        player.mute(); 
+        player.pauseVideo();
+    } catch (e) {
+        console.warn("Initial video load failed, retrying on interaction.");
     }
+    
     initGame();
 }
 
 function onPlayerStateChange(event) {
-    // メニュー画面で動画が終わったらループ
+    // メニュー画面でのループ処理
     if (gameState.mode === GAME_MODES.MENU && event.data === YT.PlayerState.ENDED) {
          if (player && typeof player.seekTo === 'function') {
              player.seekTo(0); 
@@ -131,11 +139,11 @@ function initGame() {
     gameState.mode = GAME_MODES.MENU;
     if (gameTimer) clearInterval(gameTimer);
     
+    // 修正箇所: playerが準備できているか確認してから操作
     if (player && typeof player.loadVideoById === 'function') {
         player.loadVideoById({ 
             videoId: TITLE_SCREEN_VIDEO_ID, 
-            startSeconds: 0, 
-            playerVars: { 'playsinline': 1, 'autoplay': 0 } 
+            startSeconds: 0
         });
         player.mute(); 
         player.playVideo();
@@ -144,7 +152,9 @@ function initGame() {
     
     showScreen('main-menu');
     if (domElements.footer) domElements.footer.style.display = 'none'; 
+    
     const container = domElements.mainMenu;
+    if (!container) return;
     container.innerHTML = '';
 
     const modes = [
@@ -165,10 +175,12 @@ function initGame() {
 }
 
 function showStartPrompt() {
+    if (!domElements.startPrompt) return;
     domElements.startPrompt.style.display = 'flex';
     domElements.startPromptBtn.onclick = () => {
         domElements.startPrompt.style.display = 'none';
-        if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) {
+        // ユーザーアクションをきっかけにアンミュート
+        if (player && typeof player.unMute === 'function') {
              player.unMute();
              player.playVideo();
         }
@@ -188,6 +200,7 @@ function selectMode(selectedMode) {
 
 function setupModeSettings() {
     const container = domElements.settingsScreen;
+    if (!container) return;
     if (domElements.footer) domElements.footer.style.display = 'none';
     let settingsContent = '';
     
@@ -229,6 +242,7 @@ function launchQuiz() {
     gameState.answerChecked = false;
     answeredVideos = [];
     
+    // 修正箇所: プレーヤー操作時のエラーガードを徹底
     if (player && typeof player.stopVideo === 'function') {
         player.stopVideo(); 
     }
@@ -251,7 +265,7 @@ function launchQuiz() {
     }
     
     showScreen('game-view');
-    domElements.gameControlsContainer.style.display = 'block';
+    if (domElements.gameControlsContainer) domElements.gameControlsContainer.style.display = 'block';
 
     if (gameState.mode === GAME_MODES.TIMED) {
         gameState.timeLeftMs = gameData.settings.timedDuration;
@@ -279,20 +293,18 @@ function loadNextQuiz() {
     }
     
     gameState.answerChecked = false;
-    domElements.result.innerText = '';
-    domElements.answerDetails.innerText = '';
-    domElements.answerDetails.style.display = 'none';
+    if (domElements.result) domElements.result.innerText = '';
+    if (domElements.answerDetails) {
+        domElements.answerDetails.innerText = '';
+        domElements.answerDetails.style.display = 'none';
+    }
     if (domElements.footer) domElements.footer.style.display = 'none'; 
     updateUIState();
     
     let available = currentPlaylist.filter(p => !answeredVideos.includes(p.videoId));
     if (available.length < 1) {
-        if (gameState.mode === GAME_MODES.ENDLESS || gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
-            answeredVideos = [];
-            available = currentPlaylist;
-        } else {
-            available = currentPlaylist; 
-        }
+        answeredVideos = [];
+        available = currentPlaylist;
     }
 
     const random = available[Math.floor(Math.random() * available.length)];
@@ -311,7 +323,7 @@ function loadNextQuiz() {
         correctAnswer = random.title;
     }
 
-    if (player && player.getPlayerState() === YT.PlayerState.PLAYING) {
+    if (player && typeof player.pauseVideo === 'function') {
         player.pauseVideo();
     }
     
@@ -347,6 +359,7 @@ function generateChoices(correctSongObject) {
 
 function displayChoices(choices) {
     const container = domElements.choices;
+    if (!container) return;
     container.innerHTML = '';
     choices.forEach(choice => {
         const btn = document.createElement('button');
@@ -357,7 +370,8 @@ function displayChoices(choices) {
 }
 
 function playIntroClip() {
-    if (!player || !player.loadVideoById) return;
+    // 修正箇所: メソッドの存在チェックを追加
+    if (!player || typeof player.loadVideoById !== 'function') return;
     player.loadVideoById({ 
         videoId: currentVideoId, 
         startSeconds: 0,
@@ -368,7 +382,10 @@ function playIntroClip() {
 function checkAnswer(selectedChoice) {
     if (gameState.answerChecked) return;
     gameState.answerChecked = true;
-    player.stopVideo();
+    
+    if (player && typeof player.stopVideo === 'function') {
+        player.stopVideo();
+    }
 
     const isCorrect = (selectedChoice === correctAnswer);
     
@@ -378,18 +395,15 @@ function checkAnswer(selectedChoice) {
         processIncorrectAnswer();
     }
 
-    // ヒントおよび詳細表示
     const correctSongObject = playlist.find(song => song.videoId === currentVideoId);
-    if (correctSongObject) {
+    if (correctSongObject && domElements.answerDetails) {
         let displayHint = "💡 ヒント: ";
         if (correctSongObject.context) {
             const contextParts = correctSongObject.context.split('\n');
             const ostInfo = contextParts[0] ? contextParts[0].trim() : "";
             const detailInfo = contextParts[1] ? contextParts[1].replace(/メモロビ:\s*「準備中」/g, '').trim() : "";
             displayHint += `${ostInfo} 「${correctSongObject.title}」`;
-            if (detailInfo) {
-                displayHint += ` ${detailInfo}`;
-            }
+            if (detailInfo) displayHint += ` ${detailInfo}`;
         } else {
             displayHint += `「${correctSongObject.title}」`;
         }
@@ -422,6 +436,8 @@ function updateChoiceButtonsUI(selectedChoice) {
 
 function processCorrectAnswer() {
     gameState.score++;
+    if (!domElements.result) return;
+    
     if (gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
         domElements.result.innerText = `✅ 正解！ (曲: ${currentSongTitle})`;
     } else {
@@ -441,6 +457,7 @@ function processCorrectAnswer() {
 }
 
 function processIncorrectAnswer() {
+    if (!domElements.result) return;
     if (gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
         domElements.result.innerText = `❌ 不正解... (正解: ${correctAnswer} / 曲: ${currentSongTitle})`;
     } else {
@@ -455,7 +472,7 @@ function scheduleNextStep(isCorrect) {
 
     const isGameOver = isNormalGameOver || isTimedGameOver || isEndlessGameOver;
     
-    if (isNormalGameOver) {
+    if (isNormalGameOver && domElements.progressBarFill) {
         domElements.progressBarFill.style.width = '100%';
     }
     
@@ -505,17 +522,18 @@ function endGame() {
     gameTimer = null;
     gameState.answerChecked = true;
     
-    domElements.progressContainer.style.display = 'none';
-    domElements.timeDisplay.style.display = 'none';
-    domElements.gameControlsContainer.style.display = 'none';
+    if (domElements.progressContainer) domElements.progressContainer.style.display = 'none';
+    if (domElements.timeDisplay) domElements.timeDisplay.style.display = 'none';
+    if (domElements.gameControlsContainer) domElements.gameControlsContainer.style.display = 'none';
 
+    // 修正箇所: 終了画面のBGM再生を安全に
     if (player && typeof player.loadVideoById === 'function') {
         player.loadVideoById({ 
             videoId: SUB_SCREEN_VIDEO_ID, 
-            startSeconds: 0, 
-            playerVars: { 'playsinline': 1, 'autoplay': 1, 'loop': 1, 'playlist': SUB_SCREEN_VIDEO_ID } 
+            startSeconds: 0
         });
         player.unMute(); 
+        player.playVideo();
     }
 
     let resultMessage = '';
@@ -533,20 +551,22 @@ function endGame() {
     }
     saveGameData();
 
-    domElements.result.innerText = resultMessage;
+    if (domElements.result) domElements.result.innerText = resultMessage;
 
     const container = domElements.choices;
-    container.innerHTML = `
-      <div>
-        <button id="share-btn">結果をXでシェア</button>
-        <button id="again-btn">もう一度あそぶ</button>
-        <button id="home-btn">ホームに戻る</button>
-      </div>
-    `; 
-    
-    document.getElementById('share-btn').onclick = shareResult;
-    document.getElementById('again-btn').onclick = () => selectMode(gameState.mode);
-    document.getElementById('home-btn').onclick = initGame;
+    if (container) {
+        container.innerHTML = `
+          <div>
+            <button id="share-btn">結果をXでシェア</button>
+            <button id="again-btn">もう一度あそぶ</button>
+            <button id="home-btn">ホームに戻る</button>
+          </div>
+        `; 
+        
+        document.getElementById('share-btn').onclick = shareResult;
+        document.getElementById('again-btn').onclick = () => selectMode(gameState.mode);
+        document.getElementById('home-btn').onclick = initGame;
+    }
 }
 
 function showStatsScreen() {
@@ -556,13 +576,14 @@ function showStatsScreen() {
     if (player && typeof player.loadVideoById === 'function') {
         player.loadVideoById({ 
             videoId: SUB_SCREEN_VIDEO_ID, 
-            startSeconds: 0, 
-            playerVars: { 'playsinline': 1, 'autoplay': 1, 'loop': 1, 'playlist': SUB_SCREEN_VIDEO_ID } 
+            startSeconds: 0
         });
         player.unMute(); 
+        player.playVideo();
     }
 
     const container = document.getElementById('stats-screen');
+    if (!container) return;
     const unlockedCount = Object.values(gameData.achievements).filter(Boolean).length;
     
     const achievementTiers = [
@@ -615,6 +636,7 @@ function updateUIState() {
 }
 
 function updateScore() {
+    if (!domElements.score) return;
     let scoreText = '';
     if (gameState.mode === GAME_MODES.NORMAL || gameState.mode === GAME_MODES.TIMED) {
         scoreText = `Score: ${gameState.score}`;
@@ -627,22 +649,24 @@ function updateScore() {
 
 function updateProgressIndicator() {
     const container = domElements.progressContainer;
+    if (!container) return;
     container.style.display = 'none'; 
     
     if (gameState.mode === GAME_MODES.NORMAL) {
         const maxQ = gameData.settings.normalQuestions;
-        domElements.progressText.textContent = `Question ${gameState.totalQuestions + 1} / ${maxQ}`;
-        domElements.progressBarFill.style.width = `${(gameState.totalQuestions / maxQ) * 100}%`;
+        if (domElements.progressText) domElements.progressText.textContent = `Question ${gameState.totalQuestions + 1} / ${maxQ}`;
+        if (domElements.progressBarFill) domElements.progressBarFill.style.width = `${(gameState.totalQuestions / maxQ) * 100}%`;
         container.style.display = 'block';
-        domElements.progressBarWrapper.style.display = 'block';
+        if (domElements.progressBarWrapper) domElements.progressBarWrapper.style.display = 'block';
     } else if (gameState.mode === GAME_MODES.ENDLESS || gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
-        domElements.progressText.textContent = `連続正解数: ${gameState.endlessStreak}`;
+        if (domElements.progressText) domElements.progressText.textContent = `連続正解数: ${gameState.endlessStreak}`;
         container.style.display = 'block';
-        domElements.progressBarWrapper.style.display = 'none';
+        if (domElements.progressBarWrapper) domElements.progressBarWrapper.style.display = 'none';
     }
 }
 
 function updateTimeDisplay(ms) {
+    if (!domElements.timeDisplay) return;
     if (ms != null && gameState.mode === GAME_MODES.TIMED) {
         domElements.timeDisplay.style.display = 'block';
         domElements.timeDisplay.innerText = `残り時間: ${(ms / 1000).toFixed(2)} 秒`;
@@ -664,41 +688,56 @@ function updateEndlessAchievements() {
     }
     const achievements = {10: 'normal', 20: 'hard', 50: 'veryhard', 100: 'hardcore', 150: 'extreme', 250: 'insane', 500: 'torment', 1000: 'lunatic'};
     for (const [streak, achievement] of Object.entries(achievements)) {
-        if (gameState.endlessStreak >= streak) gameData.achievements[achievement] = true;
+        if (gameState.endlessStreak >= parseInt(streak, 10)) gameData.achievements[achievement] = true;
     }
 }
 
 // --- イベントリスナー ---
 document.addEventListener('DOMContentLoaded', () => {
+    // 修正箇所: DOM要素の取得をより安全に行う
     const ids = ['loading-overlay', 'main-menu', 'game-view', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia'];
     ids.forEach(id => {
-        domElements[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
+        const el = document.getElementById(id);
+        if (el) {
+            domElements[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = el;
+        }
     });
     domElements.progressBarWrapper = document.querySelector('.progress-bar-wrapper');
     domElements.footer = document.querySelector('footer'); 
 
-    domElements.loadingOverlay.style.display = 'flex';
+    if (domElements.loadingOverlay) domElements.loadingOverlay.style.display = 'flex';
     loadGameData();
 
-    document.getElementById('replayBtn').onclick = () => {
-        if (player && player.seekTo && !gameState.answerChecked) {
-            player.seekTo(0);
-            player.playVideo();
-        }
-    };
+    // 修正箇所: ボタンの存在チェックを追加
+    const replayBtn = document.getElementById('replayBtn');
+    if (replayBtn) {
+        replayBtn.onclick = () => {
+            if (player && typeof player.seekTo === 'function' && !gameState.answerChecked) {
+                player.seekTo(0);
+                player.playVideo();
+            }
+        };
+    }
 
-    document.getElementById('pauseBtn').onclick = () => {
-        if (!player || typeof player.getPlayerState !== 'function') return;
-        const state = player.getPlayerState();
-        (state === YT.PlayerState.PLAYING) ? player.pauseVideo() : player.playVideo();
-    };
+    const pauseBtn = document.getElementById('pauseBtn');
+    if (pauseBtn) {
+        pauseBtn.onclick = () => {
+            if (!player || typeof player.getPlayerState !== 'function') return;
+            const state = player.getPlayerState();
+            (state === YT.PlayerState.PLAYING) ? player.pauseVideo() : player.playVideo();
+        };
+    }
 
-    domElements.volumeSlider.addEventListener('input', (e) => {
-        if (player && player.setVolume) player.setVolume(parseInt(e.target.value, 10));
-    });
+    if (domElements.volumeSlider) {
+        domElements.volumeSlider.addEventListener('input', (e) => {
+            if (player && typeof player.setVolume === 'function') {
+                player.setVolume(parseInt(e.target.value, 10));
+            }
+        });
+    }
     
     document.addEventListener('keydown', (event) => {
-        if (gameState.mode !== GAME_MODES.MENU && !gameState.answerChecked && domElements.gameView.style.display !== 'none') {
+        if (gameState.mode !== GAME_MODES.MENU && !gameState.answerChecked && domElements.gameView && domElements.gameView.style.display !== 'none') {
             const choices = document.querySelectorAll('#choices button');
             let keyIndex = -1;
             switch(event.key) {
