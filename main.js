@@ -1,5 +1,5 @@
 /* ============================================================
-   Blue Archive イントロクイズ - main.js (UI & Loop Enhanced)
+   Blue Archive イントロクイズ - main.js (Mode-specific visibility fix)
    ============================================================ */
 
 const NEXT_QUESTION_DELAY = 1000;
@@ -143,7 +143,6 @@ function initGame() {
     gameState.mode = GAME_MODES.MENU;
     if (gameTimer) clearInterval(gameTimer);
     
-    // 修正箇所: 初期化時に曲名表示をクリア
     if (domElements.currentSongName) {
         domElements.currentSongName.style.display = 'none';
         domElements.currentSongName.innerText = '';
@@ -299,6 +298,7 @@ function loadNextQuiz() {
     }
     
     gameState.answerChecked = false;
+
     if (domElements.result) domElements.result.innerText = '';
     if (domElements.answerDetails) {
         domElements.answerDetails.innerText = '';
@@ -322,10 +322,15 @@ function loadNextQuiz() {
     currentSongTitle = random.title;
     answeredVideos.push(currentVideoId);
 
-    // 修正箇所: 曲名を表示
+    // 改良箇所: 作曲者当てモードの場合のみ、回答前に曲名を表示する
     if (domElements.currentSongName) {
-        domElements.currentSongName.innerText = `🎵 ${currentSongTitle}`;
-        domElements.currentSongName.style.display = 'block';
+        if (gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
+            domElements.currentSongName.innerText = `🎵 ${currentSongTitle}`;
+            domElements.currentSongName.style.display = 'block';
+        } else {
+            domElements.currentSongName.style.display = 'none';
+            domElements.currentSongName.innerText = '';
+        }
     }
 
     if (gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
@@ -401,6 +406,12 @@ function checkAnswer(selectedChoice) {
 
     const isCorrect = (selectedChoice === correctAnswer);
     
+    // 改良箇所: 回答後は全モード共通で曲名を表示（正解発表）
+    if (domElements.currentSongName) {
+        domElements.currentSongName.innerText = `🎵 ${currentSongTitle}`;
+        domElements.currentSongName.style.display = 'block';
+    }
+
     if (isCorrect) {
         processCorrectAnswer();
     } else {
@@ -534,7 +545,6 @@ function endGame() {
     gameTimer = null;
     gameState.answerChecked = true;
     
-    // 修正箇所: 終了時に曲名表示をクリア
     if (domElements.currentSongName) {
         domElements.currentSongName.style.display = 'none';
     }
@@ -710,7 +720,6 @@ function updateEndlessAchievements() {
 
 // --- イベントリスナー ---
 document.addEventListener('DOMContentLoaded', () => {
-    // 修正箇所: currentSongName をIDリストに追加
     const ids = ['loading-overlay', 'main-menu', 'game-view', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia', 'current-song-name'];
     ids.forEach(id => {
         const el = document.getElementById(id);
