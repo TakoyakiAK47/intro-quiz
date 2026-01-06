@@ -396,9 +396,25 @@ function checkAnswer(selectedChoice) {
     // --- ヒントおよび詳細表示の修正箇所 ---
     const correctSongObject = playlist.find(song => song.videoId === currentVideoId);
     if (correctSongObject) {
-        // context（OST番号等）がある場合はそれを含め、ない場合は曲名のみを表示
-        const contextInfo = correctSongObject.context ? `${correctSongObject.context.replace(/メモロビ:\s*「準備中」/g, '').trim()} ` : '';
-        domElements.answerDetails.innerText = `💡 ヒント: ${contextInfo}「${correctSongObject.title}」`;
+        let displayHint = "💡 ヒント: ";
+        
+        if (correctSongObject.context) {
+            // contextを改行で分割 (0: OST情報など, 1: メモロビ情報など)
+            const contextParts = correctSongObject.context.split('\n');
+            const ostInfo = contextParts[0] ? contextParts[0].trim() : "";
+            const detailInfo = contextParts[1] ? contextParts[1].replace(/メモロビ:\s*「準備中」/g, '').trim() : "";
+
+            // 順番: OST情報 + 曲名 + 詳細(メモロビ)
+            displayHint += `${ostInfo} 「${correctSongObject.title}」`;
+            if (detailInfo) {
+                displayHint += ` (${detailInfo})`;
+            }
+        } else {
+            // contextがない場合は曲名のみ
+            displayHint += `「${correctSongObject.title}」`;
+        }
+
+        domElements.answerDetails.innerText = displayHint;
         domElements.answerDetails.style.display = 'block';
     }
     // ------------------------------------
