@@ -125,7 +125,6 @@ function onPlayerReady(event) {
 }
              player.seekTo(0); 
              player.playVideo();
-    }
 }
 
 
