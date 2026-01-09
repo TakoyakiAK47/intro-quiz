@@ -548,7 +548,7 @@ function shareResult() {
             resultText = `連続正解記録: ${gameData.stats.highScores.composer_quiz}問`;
             break;
     }
-    const fullText = `${title}\n${modeText}でプレイしました！\n${resultText}\n${https://takoyakiak47.github.io/intro-quiz/}`;
+    const fullText = `${title}\n${modeText}でプレイしました！\n${resultText}\n$https://takoyakiak47.github.io/intro-quiz/`;
     const url = `https://x.com/intent/tweet?text=${encodeURIComponent(fullText)}&hashtags=${encodeURIComponent(hashtag)}`;
     window.open(url, '_blank');
 }
