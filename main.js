@@ -1,5 +1,5 @@
 /* ============================================================
-   Blue Archive イントロクイズ - main.js (Stability & Mode-specific fix)
+   Blue Archive イントロクイズ - main.js (Added Special Rounds)
    ============================================================ */
 
 const NEXT_QUESTION_DELAY = 1000;
@@ -11,7 +11,8 @@ const GAME_MODES = {
     NORMAL: 'normal',
     TIMED: 'timed',
     ENDLESS: 'endless',
-    COMPOSER_QUIZ: 'composer_quiz'
+    COMPOSER_QUIZ: 'composer_quiz',
+    ARCHIVE: 'archive'
 };
 
 const defaultGameData = {
@@ -34,7 +35,7 @@ const TITLE_SCREEN_VIDEO_ID = 'ISZ8lKOVapA';
 const SUB_SCREEN_VIDEO_ID = 'I7A-xuDS-rA';
 const TARGET_COMPOSERS = ['Mitsukiyo', 'Nor', 'KARUT', 'EmoCosine'];
 
-let player = null; // [FIX] 初期値を明示的にnullに
+let player = null; 
 let correctAnswer = '';
 let currentVideoId = '';
 let currentSongTitle = ''; 
@@ -125,7 +126,7 @@ function onPlayerStateChange(event) {
          player.playVideo();
     }
     
-    if (gameState.mode !== GAME_MODES.MENU && !gameState.answerChecked && event.data === YT.PlayerState.ENDED) {
+    if (gameState.mode !== GAME_MODES.MENU && gameState.mode !== GAME_MODES.ARCHIVE && !gameState.answerChecked && event.data === YT.PlayerState.ENDED) {
         console.log("Song ended. Auto-looping for current quiz...");
         player.seekTo(0);
         player.playVideo();
@@ -174,7 +175,8 @@ function initGame() {
         { id: GAME_MODES.TIMED, label: 'タイムアタックモード', action: () => selectMode(GAME_MODES.TIMED) },
         { id: GAME_MODES.ENDLESS, label: 'エンドレスモード', action: () => selectMode(GAME_MODES.ENDLESS) },
         { id: GAME_MODES.COMPOSER_QUIZ, label: '作曲者当てクイズ', action: () => selectMode(GAME_MODES.COMPOSER_QUIZ) },
-        { id: 'stats', label: '実績・統計', action: showStatsScreen }
+        { id: 'stats', label: '実績・統計', action: showStatsScreen },
+        { id: GAME_MODES.ARCHIVE, label: 'サウンドアーカイブ', action: showSoundArchive }
     ];
 
     modes.forEach(({ id, label, action }) => {
@@ -249,6 +251,74 @@ function setupModeSettings() {
     if(backBtn) backBtn.onclick = initGame;
 }
 
+// --- Sound Archive Logic ---
+function showSoundArchive() {
+    gameState.mode = GAME_MODES.ARCHIVE;
+    showScreen('sound-archive-screen');
+    if (domElements.footer) domElements.footer.style.display = 'none';
+
+    if (player && typeof player.stopVideo === 'function') {
+        player.stopVideo();
+    }
+
+    const grid = document.getElementById('archive-grid');
+    const searchInput = document.getElementById('archive-search');
+    const backBtn = document.getElementById('archive-back-btn');
+
+    if (!grid || !searchInput || !backBtn) return;
+
+    backBtn.onclick = initGame;
+    searchInput.value = '';
+    
+    const allSongs = [...playlist, ...characterSongPlaylist];
+
+    const renderArchiveItems = (filterText = '') => {
+        grid.innerHTML = '';
+        const lowerFilter = filterText.toLowerCase();
+
+        const filteredSongs = allSongs.filter(song => {
+            const title = (song.title || '').toLowerCase();
+            const composer = (song.composer || '').toLowerCase();
+            const context = (song.context || '').toLowerCase();
+            return title.includes(lowerFilter) || composer.includes(lowerFilter) || context.includes(lowerFilter);
+        });
+
+        if (filteredSongs.length === 0) {
+            grid.innerHTML = '<p style="grid-column: 1 / -1; color: var(--grey-mid);">該当する楽曲が見つかりませんでした。</p>';
+            return;
+        }
+
+        filteredSongs.forEach(song => {
+            const card = document.createElement('div');
+            card.className = 'archive-card';
+            
+            const contextDisplay = song.context ? song.context.replace(/\n/g, ' ') : '';
+
+            card.innerHTML = `
+                <img class="archive-card-thumb" src="${song.imageUrl}" alt="${song.title}" loading="lazy">
+                <div class="archive-card-content">
+                    <div class="archive-card-title">${song.title}</div>
+                    <div class="archive-card-composer">${song.composer || 'Unknown'}</div>
+                    ${contextDisplay ? `<div class="archive-card-meta">${contextDisplay}</div>` : ''}
+                </div>
+            `;
+            
+            card.onclick = () => {
+                window.open(`https://www.youtube.com/watch?v=${song.videoId}`, '_blank');
+            };
+
+            grid.appendChild(card);
+        });
+    };
+
+    renderArchiveItems();
+
+    searchInput.oninput = (e) => {
+        renderArchiveItems(e.target.value);
+    };
+}
+
+
 // --- クイズロジック ---
 function launchQuiz() {
     gameState.score = 0;
@@ -315,10 +385,25 @@ function loadNextQuiz() {
     }
     if (domElements.footer) domElements.footer.style.display = 'none'; 
     
-    let available = currentPlaylist.filter(p => !answeredVideos.includes(p.videoId));
+    // --- [修正] スペシャルラウンド（キャラソン）判定ロジック ---
+    const isSpecialRound = (gameState.totalQuestions + 1) % 5 === 0 &&
+                           [GAME_MODES.NORMAL, GAME_MODES.TIMED, GAME_MODES.ENDLESS].includes(gameState.mode);
+
+    // スペシャルラウンドなら characterSongPlaylist、それ以外は currentPlaylist を使用
+    let targetPlaylist = isSpecialRound ? characterSongPlaylist : currentPlaylist;
+
+    // もし characterSongPlaylist が空の場合の安全策
+    if (isSpecialRound && targetPlaylist.length === 0) {
+        targetPlaylist = currentPlaylist;
+    }
+    
+    let available = targetPlaylist.filter(p => !answeredVideos.includes(p.videoId));
     if (available.length < 1) {
+        // 曲が一巡した場合はリセット（既存ロジックを踏襲）
+        // ※全体のリセットになるため、厳密には「キャラソンだけリセット」ではないが、
+        // 既存の answeredVideos 配列が全曲共通のため、この実装でループを実現する。
         answeredVideos = [];
-        available = currentPlaylist;
+        available = targetPlaylist;
     }
 
     const random = available[Math.floor(Math.random() * available.length)];
@@ -364,8 +449,14 @@ function generateChoices(correctSongObject) {
     const correctTitle = correctSongObject.title;
     const choices = new Set([correctTitle]);
 
+    // --- [修正] 選択肢生成のプール決定ロジック ---
+    // 正解の曲が characterSongPlaylist に含まれている場合は、
+    // ダミーの選択肢も characterSongPlaylist から選ぶ。
+    const isCharacterSong = characterSongPlaylist.some(s => s.videoId === correctSongObject.videoId);
+    const sourcePlaylist = isCharacterSong ? characterSongPlaylist : currentPlaylist;
+
     if (correctSongObject && correctSongObject.similarGroup) {
-        const similarSongs = currentPlaylist.filter(song => 
+        const similarSongs = sourcePlaylist.filter(song => 
             song.similarGroup === correctSongObject.similarGroup && song.title !== correctTitle
         );
         if (similarSongs.length > 0) {
@@ -373,7 +464,7 @@ function generateChoices(correctSongObject) {
         }
     }
     
-    const distractors = currentPlaylist.filter(p => !choices.has(p.title)).map(p => p.title);
+    const distractors = sourcePlaylist.filter(p => !choices.has(p.title)).map(p => p.title);
     while (choices.size < 4 && distractors.length > 0) {
         const randomIndex = Math.floor(Math.random() * distractors.length);
         choices.add(distractors.splice(randomIndex, 1)[0]);
@@ -406,7 +497,6 @@ function playIntroClip() {
     } catch (e) { console.warn("Video playback failed", e); }
 }
 
-// --- 修正箇所: checkAnswer 関数内ヒント表示ロジック ---
 function checkAnswer(selectedChoice) {
     if (gameState.answerChecked) return;
     gameState.answerChecked = true;
@@ -428,14 +518,18 @@ function checkAnswer(selectedChoice) {
         processIncorrectAnswer();
     }
 
-    const correctSongObject = playlist.find(song => song.videoId === currentVideoId);
+    // --- [修正] 検索対象を拡張 ---
+    // 正解曲の情報を探す際、playlist と characterSongPlaylist の両方を検索する
+    let correctSongObject = playlist.find(song => song.videoId === currentVideoId);
+    if (!correctSongObject) {
+        correctSongObject = characterSongPlaylist.find(song => song.videoId === currentVideoId);
+    }
+
     if (correctSongObject && domElements.answerDetails) {
-        // [修正] OST - 曲名 - 作者 - メモロビ の構成へ変更
         const contextParts = correctSongObject.context ? correctSongObject.context.split('\n') : ["", ""];
         const ostInfo = contextParts[0] ? contextParts[0].trim() : "OST不明";
         const memoInfo = contextParts[1] ? contextParts[1].replace(/メモロビ:\s*/g, '').replace(/「準備中」/g, '').trim() : "";
         
-        // 作者は correctSongObject.composer から取得
         const composerInfo = correctSongObject.composer || "Unknown";
         
         let displayHint = `💡 ${ostInfo} 「${correctSongObject.title}」作者: ${composerInfo}`;
@@ -739,7 +833,8 @@ function updateEndlessAchievements() {
 
 // --- イベントリスナー ---
 document.addEventListener('DOMContentLoaded', () => {
-    const ids = ['loading-overlay', 'main-menu', 'game-view', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia', 'current-song-name'];
+    // Added 'sound-archive-screen' to the ID list
+    const ids = ['loading-overlay', 'main-menu', 'game-view', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia', 'current-song-name', 'sound-archive-screen'];
     ids.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
