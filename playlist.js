@@ -131,7 +131,7 @@ const playlist = [
   { title: "Gestalt Angst", videoId: "UOJ9tLpCykU", composer: "Mitsukiyo", context: "OST 134", imageUrl: "https://i.ytimg.com/vi/UOJ9tLpCykU/hqdefault.jpg" },
   { title: "Fruitful Blossom", videoId: "N_cE1mmkxjQ", composer: "Mitsukiyo", context: "OST 135\nメモロビ:シグレ、シグレ(温泉)、カヨコ(ドレス)、キサキ、イチカ(水着)", imageUrl: "https://i.ytimg.com/vi/N_cE1mmkxjQ/hqdefault.jpg" },
   { title: "Kyrie Eleison", videoId: "OsUPK7wSYRE", composer: "Mitsukiyo", similarGroup: 3, context: "OST 136", imageUrl: "https://i.ytimg.com/vi/OsUPK7wSYRE/hqdefault.jpg" },
-  { title: "OST 137", videoId: "7aYKI6yaQpE", composer: "Unknown", context: "OST 137", quiz: false, imageUrl: "https://i.ytimg.com/vi/7aYKI6yaQpE/hqdefault.jpg" },
+  { title: "OST 137", videoId: "7aYKI6yaQpE", composer: "Nor", context: "OST 137", quiz: false, imageUrl: "https://i.ytimg.com/vi/7aYKI6yaQpE/hqdefault.jpg" },
   { title: "Utaha No Uta", videoId: "--aG2j6iZCA", composer: "KARUT", context: "OST 138", imageUrl: "https://i.ytimg.com/vi/--aG2j6iZCA/hqdefault.jpg" },
   { title: "Cherry Berry Merry", videoId: "QSLrOjnh61o", composer: "Mitsukiyo", similarGroup: 21,context: "OST 139\nメモロビ:セリナ(クリスマス)", imageUrl: "https://i.ytimg.com/vi/QSLrOjnh61o/hqdefault.jpg" },
   { title: "Defective Pixel", videoId: "j0lhxnFX7uo", composer: "Mitsukiyo", context: "OST 140", imageUrl: "https://i.ytimg.com/vi/j0lhxnFX7uo/hqdefault.jpg" },
