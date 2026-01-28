@@ -148,7 +148,7 @@ const playlist = [
   { title: "Responsibility", videoId: "cjTGkUmB5aQ", composer: "Nor", context: "OST 155", imageUrl: "https://i.ytimg.com/vi/cjTGkUmB5aQ/hqdefault.jpg" },
   { title: "Final Destination of Ark", videoId: "ggZG9BCC2E4", composer: "KARUT", context: "OST 156", imageUrl: "https://i.ytimg.com/vi/ggZG9BCC2E4/hqdefault.jpg" },
   { title: "Step of Terror", videoId: "HoTNq1kTVgg", composer: "KARUT", context: "OST 157", imageUrl: "https://i.ytimg.com/vi/HoTNq1kTVgg/hqdefault.jpg" },
-  { title: "Gregorius | Symphony", videoId: "Lq3Ko0aYlHQ", composer: "Mitsukiyo", context: "OST 158\n総力戦グレゴリオ", imageUrl: "https://i.ytimg.com/vi/Lq3Ko0aYlHQ/hqdefault.jpg" },
+  { title: "Gregorius Symphony", videoId: "Lq3Ko0aYlHQ", composer: "Mitsukiyo", context: "OST 158\n総力戦グレゴリオ", imageUrl: "https://i.ytimg.com/vi/Lq3Ko0aYlHQ/hqdefault.jpg" },
   { title: "Operation☆DOTABATA!", videoId: "EaLpGmbTmzI", composer: "Mitsukiyo", context: "OST 159", imageUrl: "https://i.ytimg.com/vi/EaLpGmbTmzI/hqdefault.jpg" },
   { title: "Noble Hallway", videoId: "log2lLv_xIo", composer: "Nor", context: "OST 160", imageUrl: "https://i.ytimg.com/vi/log2lLv_xIo/hqdefault.jpg" },
   { title: "Oriental Bounce", videoId: "BpP3Z0QD2yI", composer: "KARUT", similarGroup: 20,context: "OST 161", imageUrl: "https://i.ytimg.com/vi/BpP3Z0QD2yI/hqdefault.jpg" },
