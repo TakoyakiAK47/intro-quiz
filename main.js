@@ -618,7 +618,7 @@ function scheduleNextStep(isCorrect) {
 }
 
 function shareResult() {
-    const title = "Blue Archive BGMイントロクイズ";
+    const title = "ブルアカイントロクイズ";
     const hashtag = "ブルアカイントロクイズ";
     let modeText = '', resultText = '';
 
