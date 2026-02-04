@@ -617,33 +617,34 @@ function scheduleNextStep(isCorrect) {
     }, delay);
 }
 
-// ツイートボタンの処理部分を以下に書き換えてください
-function shareOnTwitter() {
-    const title = "Blue Archive イントロクイズ";
+function shareResult() {
+    const title = "Blue Archive BGMイントロクイズ";
     const hashtag = "ブルアカイントロクイズ";
-    const url = "https://takoyakiak47.github.io/intro-quiz/";
-    
-    let modeText = "";
-    let resultText = "";
+    let modeText = '', resultText = '';
 
-    // モードに応じたテキスト設定
-    if (gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
-        modeText = "作曲者当てクイズ";
-        resultText = `連続正解記録: ${gameState.score}問`;
-    } else {
-        // 通常のイントロクイズなどの場合
-        modeText = "イントロクイズ";
-        resultText = `正解数: ${gameState.score}問`;
+    switch (gameState.mode) {
+        case GAME_MODES.NORMAL:
+            const accuracy = gameState.totalQuestions > 0 ? ((gameState.score / gameState.totalQuestions) * 100).toFixed(1) : 0;
+            modeText = "ノーマルモード";
+            resultText = `結果: ${gameState.score}/${gameState.totalQuestions}問正解 (正答率: ${accuracy}%)`;
+            break;
+        case GAME_MODES.TIMED:
+            const duration = gameData.settings.timedDuration / 1000;
+            modeText = `タイムアタックモード(${duration}秒)`;
+            resultText = `スコア: ${gameState.score}問`;
+            break;
+        case GAME_MODES.ENDLESS:
+            modeText = "エンドレスモード";
+            resultText = `連続正解記録: ${gameData.stats.highScores.endless}問`;
+            break;
+        case GAME_MODES.COMPOSER_QUIZ:
+            modeText = "作曲者当てクイズ";
+            resultText = `連続正解記録: ${gameData.stats.highScores.composer_quiz}問`;
+            break;
     }
-
-    // 【重要】ご希望通りの改行レイアウトを作成
-    // タイトルの後で改行(\n)を入れています
-    const fullText = `${title}\n${modeText}でプレイしました！\n${resultText}\n${url}`;
-
-    // URLの組み立て。ハッシュタグはパラメータとして渡すと末尾に綺麗に配置されます
-    const twitterUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(fullText)}&hashtags=${encodeURIComponent(hashtag)}`;
-
-    window.open(twitterUrl, '_blank');
+    const fullText = `${title}\n${modeText}でプレイしました！\n${resultText}\nhttps://takoyakiak47.github.io/intro-quiz/`;
+    const url = `https://x.com/intent/tweet?text=${encodeURIComponent(fullText)}&hashtags=${encodeURIComponent(hashtag)}`;
+    window.open(url, '_blank');
 }
 
 function endGame() {
