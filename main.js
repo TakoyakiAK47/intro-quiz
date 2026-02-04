@@ -619,7 +619,7 @@ function scheduleNextStep(isCorrect) {
 
 // ツイートボタンの処理部分を以下に書き換えてください
 function shareOnTwitter() {
-    const title = "Blue Archive BGMイントロクイズ";
+    const title = "Blue Archive イントロクイズ";
     const hashtag = "ブルアカイントロクイズ";
     const url = "https://takoyakiak47.github.io/intro-quiz/";
     
