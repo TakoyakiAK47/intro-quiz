@@ -287,7 +287,7 @@ const playlist = [
 ];
 
 const characterSongPlaylist = [
-  { title: "エブリディいっしょ♪", videoId: "SuzVTya-tnA", composer: "アロナ / 夕野ヨシミ(IOSYS) / Mitsukiyo", context: "", imageUrl: "https://i.ytimg.com/vi/SuzVTya-tnA/hqdefault.jpg" },
+  { title: "エブリディいっしょ♪", videoId: "-VIZ_cbfxcE", composer: "アロナ / 夕野ヨシミ(IOSYS) / Mitsukiyo", context: "", imageUrl: "https://i.ytimg.com/vi/-VIZ_cbfxcE/hqdefault.jpg" },
   { title: "Get Over the World", videoId: "tlR2YunPNjA", composer: "Veritas / 夕野ヨシミ(IOSYS) / Nor", context: "", imageUrl: "https://i.ytimg.com/vi/tlR2YunPNjA/hqdefault.jpg" },
   { title: "一日一惡★レッツゴー！", videoId: "nLAtkP-SiEY", composer: "便利屋68 / 夕野ヨシミ(IOSYS) / KARUT", context: "", imageUrl: "https://i.ytimg.com/vi/nLAtkP-SiEY/hqdefault.jpg" },
   { title: "忍術研究部！只今参上！の巻。", videoId: "MIFGEBmJGeY", composer: "忍術研究部 / 夕野ヨシミ(IOSYS) / KARUT", context: "", imageUrl: "https://i.ytimg.com/vi/MIFGEBmJGeY/hqdefault.jpg" },
