@@ -276,10 +276,14 @@ const playlist = [
   { title: "OST 303", videoId: "8Slkc86yD5E", composer: "Unknown", context: "OST 303", quiz: false, imageUrl: "https://i.ytimg.com/vi/8Slkc86yD5E/hqdefault.jpg" },
   { title: "OTKMARCHING!", videoId: "Ji1Sr7KCNt0", composer: "KARUT", context: "OST 317", imageUrl: "https://i.ytimg.com/vi/Ji1Sr7KCNt0/hqdefault.jpg" },
   { title: "Run Way My Way", videoId: "nOjIwYsKEG0", composer: "EmoCosine", context: "OST 318", imageUrl: "https://i.ytimg.com/vi/nOjIwYsKEG0/hqdefault.jpg" },
-  { title: "OST 330", videoId: "LTajh-MEEPw", composer: "Unknown", context: "OST 330", quiz: false, imageUrl: "https://i.ytimg.com/vi/LTajh-MEEPw/hqdefault.jpg" },
+  { title: "OST 329", videoId: "0HbYZE_TJhY", composer: "Unknown", context: "OST 329", quiz: false, imageUrl: "https://i.ytimg.com/vi/0HbYZE_TJhY/hqdefault.jpg" },
+  { title: "Steel Horizon", videoId: "LTajh-MEEPw", composer: "Mitsukiyo", context: "OST 330", imageUrl: "https://i.ytimg.com/vi/LTajh-MEEPw/hqdefault.jpg" },
   { title: "OST 331", videoId: "oRvaoiqXQqE", composer: "Unknown", context: "OST 331", quiz: false, imageUrl: "https://i.ytimg.com/vi/oRvaoiqXQqE/hqdefault.jpg" },
   { title: "OST 332", videoId: "01iivO2xRaM", composer: "Mitsukiyo", context: "OST 332\n総力戦イェソド/前半", quiz: false, imageUrl: "https://i.ytimg.com/vi/01iivO2xRaM/hqdefault.jpg" },
   { title: "OST 333", videoId: "2wSqxOFSr6I", composer: "Mitsukiyo", context: "OST 333\n総力戦イェソド/後半", quiz: false, imageUrl: "https://i.ytimg.com/vi/2wSqxOFSr6I/hqdefault.jpg" },
+  { title: "OST 340", videoId: "C8MpBkjjPTs", composer: "Unknown", context: "OST 340\nメモロビ:リオ(臨戦)", quiz: false, imageUrl: "https://i.ytimg.com/vi/C8MpBkjjPTs/hqdefault.jpg" },
+  { title: "OST 341", videoId: "mP_dEztTzyI", composer: "Unknown", context: "OST 341\nメモロビ:ヒマリ(臨戦)", quiz: false, imageUrl: "https://i.ytimg.com/vi/mP_dEztTzyI/hqdefault.jpg" },
+  { title: "OST 342", videoId: "QsruZz8Xjb4", composer: "Unknown", context: "OST 342\nメモロビ:トキ(臨戦)", quiz: false, imageUrl: "https://i.ytimg.com/vi/QsruZz8Xjb4/hqdefault.jpg" },
 ];
 
 const characterSongPlaylist = [
