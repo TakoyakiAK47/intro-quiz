@@ -1,7 +1,3 @@
-/* ============================================================
-   Blue Archive イントロクイズ - main.js (Added Special Rounds)
-   ============================================================ */
-
 const NEXT_QUESTION_DELAY = 1000;
 const GAME_OVER_DELAY = 1000;
 const EXTENDED_RESULT_DELAY = 2000;
@@ -31,7 +27,6 @@ const defaultGameData = {
     },
 };
 
-const TITLE_SCREEN_VIDEO_ID = 'ISZ8lKOVapA';
 const SUB_SCREEN_VIDEO_ID = 'I7A-xuDS-rA';
 const TARGET_COMPOSERS = ['Mitsukiyo', 'Nor', 'KARUT', 'EmoCosine'];
 
@@ -55,7 +50,6 @@ let gameState = {
 
 const domElements = {};
 
-// --- データの保存と読み込み ---
 function saveGameData() {
     try {
         localStorage.setItem('blueArchiveQuizDataV2', JSON.stringify(gameData));
@@ -81,7 +75,6 @@ function loadGameData() {
     }
 }
 
-// --- YouTube API 制御 ---
 function onYouTubeIframeAPIReady() {
     const loadingOverlay = document.getElementById('loading-overlay');
     if (loadingOverlay) loadingOverlay.style.display = 'none';
@@ -133,7 +126,6 @@ function onPlayerStateChange(event) {
     }
 }
 
-// --- 画面遷移 ---
 function showScreen(screenId) {
     document.querySelectorAll('.screen, #main-menu, #game-view').forEach(el => el.style.display = 'none');
     const target = document.getElementById(screenId);
@@ -251,7 +243,6 @@ function setupModeSettings() {
     if(backBtn) backBtn.onclick = initGame;
 }
 
-// --- Sound Archive Logic ---
 function showSoundArchive() {
     gameState.mode = GAME_MODES.ARCHIVE;
     showScreen('sound-archive-screen');
@@ -318,8 +309,6 @@ function showSoundArchive() {
     };
 }
 
-
-// --- クイズロジック ---
 function launchQuiz() {
     gameState.score = 0;
     gameState.totalQuestions = 0;
@@ -385,23 +374,21 @@ function loadNextQuiz() {
     }
     if (domElements.footer) domElements.footer.style.display = 'none'; 
     
-    // --- [修正] スペシャルラウンド（キャラソン）判定ロジック ---
+
     const isSpecialRound = (gameState.totalQuestions + 1) % 5 === 0 &&
                            [GAME_MODES.NORMAL, GAME_MODES.TIMED, GAME_MODES.ENDLESS].includes(gameState.mode);
 
-    // スペシャルラウンドなら characterSongPlaylist、それ以外は currentPlaylist を使用
+
     let targetPlaylist = isSpecialRound ? characterSongPlaylist : currentPlaylist;
 
-    // もし characterSongPlaylist が空の場合の安全策
+
     if (isSpecialRound && targetPlaylist.length === 0) {
         targetPlaylist = currentPlaylist;
     }
     
     let available = targetPlaylist.filter(p => !answeredVideos.includes(p.videoId));
     if (available.length < 1) {
-        // 曲が一巡した場合はリセット（既存ロジックを踏襲）
-        // ※全体のリセットになるため、厳密には「キャラソンだけリセット」ではないが、
-        // 既存の answeredVideos 配列が全曲共通のため、この実装でループを実現する。
+
         answeredVideos = [];
         available = targetPlaylist;
     }
@@ -449,9 +436,6 @@ function generateChoices(correctSongObject) {
     const correctTitle = correctSongObject.title;
     const choices = new Set([correctTitle]);
 
-    // --- [修正] 選択肢生成のプール決定ロジック ---
-    // 正解の曲が characterSongPlaylist に含まれている場合は、
-    // ダミーの選択肢も characterSongPlaylist から選ぶ。
     const isCharacterSong = characterSongPlaylist.some(s => s.videoId === correctSongObject.videoId);
     const sourcePlaylist = isCharacterSong ? characterSongPlaylist : currentPlaylist;
 
@@ -518,8 +502,6 @@ function checkAnswer(selectedChoice) {
         processIncorrectAnswer();
     }
 
-    // --- [修正] 検索対象を拡張 ---
-    // 正解曲の情報を探す際、playlist と characterSongPlaylist の両方を検索する
     let correctSongObject = playlist.find(song => song.videoId === currentVideoId);
     if (!correctSongObject) {
         correctSongObject = characterSongPlaylist.find(song => song.videoId === currentVideoId);
@@ -767,7 +749,6 @@ function showStatsScreen() {
     };
 }
 
-// --- UI更新 ---
 function updateUIState() {
     updateScore();
     updateProgressIndicator();
@@ -831,9 +812,9 @@ function updateEndlessAchievements() {
     }
 }
 
-// --- イベントリスナー ---
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Added 'sound-archive-screen' to the ID list
+
     const ids = ['loading-overlay', 'main-menu', 'game-view', 'choices', 'result', 'answer-details', 'score', 'time-display', 'progress-container', 'progress-text', 'progress-bar-fill', 'game-controls-container', 'volumeSlider', 'settings-screen', 'start-prompt', 'start-prompt-btn', 'encyclopedia', 'current-song-name', 'sound-archive-screen'];
     ids.forEach(id => {
         const el = document.getElementById(id);
