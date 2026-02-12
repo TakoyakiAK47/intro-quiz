@@ -20,7 +20,7 @@ const playlist = [
   { title: "Virtual Storm", videoId: "8nmt3PnIu-k", composer: "KARUT", similarGroup: 9,similarGroup: 14,context: "OST 19", imageUrl: "https://i.ytimg.com/vi/8nmt3PnIu-k/hqdefault.jpg" },
   { title: "Tech N Tech", videoId: "0-0nuC2w2kY", composer: "KARUT", similarGroup: 6,similarGroup: 22,context: "OST 20", imageUrl: "https://i.ytimg.com/vi/0-0nuC2w2kY/hqdefault.jpg" },
   { title: "Midnight Trip", videoId: "g4neQ08dcBI", composer: "Nor", similarGroup: 10,context: "OST 21\nメモロビ:ヒナ、ヒナ(水着)、セナ、チナツ(温泉)、アツコ、カリン、ヒビキ、トモエ、スズミ、モエ、ミモリ(水着)、メル、アル(ドレス)、サオリ(ドレス)", imageUrl: "https://i.ytimg.com/vi/g4neQ08dcBI/hqdefault.jpg" },
-  { title: "Daily Routine 24/7", videoId: "Tm3eYmGg594", composer: "Nor", context: "OST 22\nメモロビ:ミカ", imageUrl: "https://i.ytimg.com/vi/Tm3eYmGg594/hqdefault.jpg" },
+  { title: "Daily Routine 247", videoId: "Tm3eYmGg594", composer: "Nor", context: "OST 22\nメモロビ:ミカ", imageUrl: "https://i.ytimg.com/vi/Tm3eYmGg594/hqdefault.jpg" },
   { title: "Party Time", videoId: "Z8CPxQ6P8G8", composer: "Mitsukiyo", context: "OST 23", imageUrl: "https://i.ytimg.com/vi/Z8CPxQ6P8G8/hqdefault.jpg" },
   { title: "Endless Carnival", videoId: "DQbyXNZynX4", composer: "Mitsukiyo", context: "OST 24\n総力戦ビナー", imageUrl: "https://i.ytimg.com/vi/DQbyXNZynX4/hqdefault.jpg" },
   { title: "Future Bossa", videoId: "pGAD5rq4218", composer: "Mitsukiyo", similarGroup: 17,context: "OST 25", imageUrl: "https://i.ytimg.com/vi/pGAD5rq4218/hqdefault.jpg" },
