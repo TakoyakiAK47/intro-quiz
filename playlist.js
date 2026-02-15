@@ -324,7 +324,7 @@ const characterSongPlaylist = [
   { title: "コントロールできない感情という変数", videoId: "KWAb5UwPH6E", composer: "ユウカ(CV:春花らん) / 夕野ヨシミ(IOSYS) / Mitsukiyo", context: "", imageUrl: "https://i.ytimg.com/vi/KWAb5UwPH6E/hqdefault.jpg" },
   { title: "勇者アリスの大冒険！", videoId: "q03EvQNBv-0", composer: "アリス(CV:田中美海) / 夕野ヨシミ(IOSYS) / Nor", context: "", imageUrl: "https://i.ytimg.com/vi/q03EvQNBv-0/hqdefault.jpg" },
   { title: "夜明けのコーヒーの香り", videoId: "i0PeHvBuNng", composer: "カンナ(CV:松岡美里) / 夕野ヨシミ(IOSYS) / KARUT", context: "", imageUrl: "https://i.ytimg.com/vi/i0PeHvBuNng/hqdefault.jpg" },
-  { title: "Victory Sky", videoId: "K94lbxi6fXc", composer: "ネル(CV:小清水亜美) / 夕野ヨシミ(IOSYS) / Mitsukiyo", context: "", imageUrl: "https://i.ytimg.com/vi/K94lbxi6fXc/hqdefault.jpg" },
+  { title: "Victory Sky", videoId: "SMLalI0H1GM", composer: "ネル(CV:小清水亜美) / 夕野ヨシミ(IOSYS) / Mitsukiyo", context: "", imageUrl: "https://i.ytimg.com/vi/SMLalI0H1GM/hqdefault.jpg" },
   { title: "Walking Night", videoId: "EKRCB8rgAN8", composer: "サオリ(CV:石上静香) / john=hive(IOSYS) / 夕野ヨシミ(IOSYS) / Nor", context: "", imageUrl: "https://i.ytimg.com/vi/EKRCB8rgAN8/hqdefault.jpg" },
   { title: "イマハカラメル ―Sweeten Up Later", videoId: "H8bPSnOYeOA", composer: "ヨシミ(CV:真野あゆみ) / 夕野ヨシミ(IOSYS) / KARUT", context: "", imageUrl: "https://i.ytimg.com/vi/H8bPSnOYeOA/hqdefault.jpg" },
   { title: "憧れの日々", videoId: "kDJ60PreH-s", composer: "フウカ(CV:ファイルーズあい) / john=hive(IOSYS) / EmoCosine", context: "", imageUrl: "https://i.ytimg.com/vi/kDJ60PreH-s/hqdefault.jpg" },
