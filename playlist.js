@@ -212,7 +212,7 @@ const playlist = [
   { title: "Flip Flap Festival!", videoId: "cvd7yimrR0Y", composer: "Synthion", context: "OST 224", imageUrl: "https://i.ytimg.com/vi/cvd7yimrR0Y/hqdefault.jpg" },
   { title: "Prophets", videoId: "efCyTDuEvP8", composer: "KARUT", context: "OST 225", imageUrl: "https://i.ytimg.com/vi/efCyTDuEvP8/hqdefault.jpg" },
   { title: "Tremendous Celebration", videoId: "7MEDBImjFL4", composer: "7mai", context: "OST 226\nメモロビ:サクラコ(アイドル)", imageUrl: "https://i.ytimg.com/vi/7MEDBImjFL4/hqdefault.jpg" },
-  { title: "OST 227", videoId: "uKPPwdRtN9A", composer: "KARUT", context: "OST 227", quiz: false, imageUrl: "https://i.ytimg.com/vi/uKPPwdRtN9A/hqdefault.jpg" },
+  { title: "Encountered", videoId: "uKPPwdRtN9A", composer: "KARUT", context: "OST 227\n6th PV", imageUrl: "https://i.ytimg.com/vi/uKPPwdRtN9A/hqdefault.jpg" },
   { title: "0k@eri", videoId: "x5ZVxUi16AQ", composer: "Mitsukiyo", context: "OST 228\nメモロビ:シロコ＊テラー、レイサ(マジカル)", imageUrl: "https://i.ytimg.com/vi/x5ZVxUi16AQ/hqdefault.jpg" },
   { title: "Sudden Onset Disaster", videoId: "qQEoE25eCoU", composer: "KARUT", context: "OST 229", imageUrl: "https://i.ytimg.com/vi/qQEoE25eCoU/hqdefault.jpg" },
   { title: "Succession", videoId: "IQXbaw6XfXY", composer: "EmoCosine", context: "OST 230", imageUrl: "https://i.ytimg.com/vi/IQXbaw6XfXY/hqdefault.jpg" },
