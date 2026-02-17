@@ -283,7 +283,7 @@ function showSoundArchive() {
             const card = document.createElement('div');
             card.className = 'archive-card';
             
-            const contextDisplay = song.context ? song.context.replace(/\n/g, ' ') : '';
+            const contextDisplay = song.context ? song.context.replace(/\n/g, '<br>') : '';
 
             card.innerHTML = `
                 <img class="archive-card-thumb" src="${song.imageUrl}" alt="${song.title}" loading="lazy">
@@ -519,7 +519,7 @@ function checkAnswer(selectedChoice) {
             displayHint += ` メモロビ: ${memoInfo}`;
         }
         
-        domElements.answerDetails.innerText = displayHint;
+        domElements.answerDetails.innerHTML = displayHint.replace(/\n/g, '<br>');
         domElements.answerDetails.style.display = 'block';
     }
     
