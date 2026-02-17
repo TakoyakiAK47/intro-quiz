@@ -1,4 +1,3 @@
-const htmlText = text.replaceAll('\n', '<br>');
 const playlist = [
   { title: "Constant Moderato", videoId: "S3x9xVTaST8", composer: "Mitsukiyo", context: "OST 1", imageUrl: "https://i.ytimg.com/vi/S3x9xVTaST8/hqdefault.jpg" },
   { title: "Luminous Memory", videoId: "X6-HDdn79zQ", composer: "Mitsukiyo", context: "OST 2\nメモロビ:イオリ、ウタハ、ハスミ、アズサ(水着)、ミネ", imageUrl: "https://i.ytimg.com/vi/X6-HDdn79zQ/hqdefault.jpg" },
