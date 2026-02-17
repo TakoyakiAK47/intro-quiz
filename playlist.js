@@ -317,7 +317,7 @@ const characterSongPlaylist = [
   { title: "うららか☆SYUGYOU", videoId: "AMVWT1qgcw8", composer: "修行部 / 夕野ヨシミ(IOSYS) / Nor", context: "", imageUrl: "https://i.ytimg.com/vi/AMVWT1qgcw8/hqdefault.jpg" },
   { title: "パトランプハーモニー！", videoId: "tbxZ5naf-jI", composer: "ヴァルキューレ / 夕野ヨシミ(IOSYS) / Nor", context: "", imageUrl: "https://i.ytimg.com/vi/tbxZ5naf-jI/hqdefault.jpg" },
   { title: "笑顔 はなまる Happy Day", videoId: "EmPSCwYxRyA", composer: "梅花園 / 夕野ヨシミ(IOSYS) / john=hive(IOSYS) / EmoCosine", context: "", imageUrl: "https://i.ytimg.com/vi/EmPSCwYxRyA/hqdefault.jpg" },
-  { title: "発明！ロマン！Engineer Dream！！", videoId: "1kjkh0svH4E", composer: "エンジニア部 / 夕野ヨシミ(IOSYS) / KARUT", context: "", imageUrl: "https://i.ytimg.com/vi/1kjkh0svH4E/hqdefault.jpg" },
+  { title: "発明！ロマン！Engineer Dream！！", videoId: "qfQt9fRT56Y", composer: "エンジニア部 / 夕野ヨシミ(IOSYS) / KARUT", context: "", imageUrl: "https://i.ytimg.com/vi/qfQt9fRT56Y/hqdefault.jpg" },
   { title: "黒翼が奏でる正義", videoId: "185srgaUn1M", composer: "正義実現委員会 / 夕野ヨシミ(IOSYS) / Mitsukiyo", context: "", imageUrl: "https://i.ytimg.com/vi/185srgaUn1M/hqdefault.jpg" },
   { title: "出発進行！ハイランダー！！", videoId: "sxPOS_8JYPc", composer: "ハイランダー / 夕野ヨシミ(IOSYS) / KARUT", context: "", imageUrl: "https://i.ytimg.com/vi/sxPOS_8JYPc/hqdefault.jpg" },
   
