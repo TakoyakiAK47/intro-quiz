@@ -280,7 +280,7 @@ const playlist = [
   { title: "OST 304", videoId: "Fd7LFlaoUXQ", composer: "Unknown", context: "OST 304", quiz: false, imageUrl: "https://i.ytimg.com/vi/Fd7LFlaoUXQ/hqdefault.jpg" },
   { title: "OST 305", videoId: "qYxuwKqLFak", composer: "Unknown", context: "OST 305", quiz: false, imageUrl: "https://i.ytimg.com/vi/qYxuwKqLFak/hqdefault.jpg" },
   { title: "OST 306", videoId: "j-lUakhM6Q8", composer: "Unknown", context: "OST 306", quiz: false, imageUrl: "https://i.ytimg.com/vi/j-lUakhM6Q8/hqdefault.jpg" },
-  { title: "OST 308", videoId: "9qrK4aeo9RY", composer: "Unknown", context: "OST 308", quiz: false, imageUrl: "https://i.ytimg.com/vi/9qrK4aeo9RY/hqdefault.jpg" },
+  { title: "Brave Time", videoId: "9qrK4aeo9RY", composer: "Mitsukiyo", context: "OST 308", imageUrl: "https://i.ytimg.com/vi/9qrK4aeo9RY/hqdefault.jpg" },
   { title: "OST 309", videoId: "rWHcVQzZmdo", composer: "EmoCosine", context: "OST 309", quiz: false, imageUrl: "https://i.ytimg.com/vi/rWHcVQzZmdo/hqdefault.jpg" },
   { title: "OST 311", videoId: "TpOZO2gpGF8", composer: "Unknown", context: "OST 311", quiz: false, imageUrl: "https://i.ytimg.com/vi/TpOZO2gpGF8/hqdefault.jpg" },
   { title: "OST 312", videoId: "rVDDdCXaT1M", composer: "Unknown", context: "OST 312", quiz: false, imageUrl: "https://i.ytimg.com/vi/rVDDdCXaT1M/hqdefault.jpg" },
