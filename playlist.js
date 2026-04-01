@@ -297,7 +297,7 @@ const playlist = [
   { title: "OST 331", videoId: "oRvaoiqXQqE", composer: "Unknown", context: "OST 331", quiz: false, imageUrl: "https://i.ytimg.com/vi/oRvaoiqXQqE/hqdefault.jpg" },
   { title: "OST 332", videoId: "01iivO2xRaM", composer: "Mitsukiyo", context: "OST 332\n総力戦イェソド/前半", quiz: false, imageUrl: "https://i.ytimg.com/vi/01iivO2xRaM/hqdefault.jpg" },
   { title: "OST 333", videoId: "2wSqxOFSr6I", composer: "Mitsukiyo", context: "OST 333\n総力戦イェソド/後半", quiz: false, imageUrl: "https://i.ytimg.com/vi/2wSqxOFSr6I/hqdefault.jpg" },
-  { title: "OST 334", videoId: "CIu4PTDqYJw", composer: "KARUT", context: "OST 334", quiz: false, imageUrl: "https://i.ytimg.com/vi/CIu4PTDqYJw/hqdefault.jpg" },
+  { title: "The Tsuchinoko is Out There", videoId: "CIu4PTDqYJw", composer: "KARUT", context: "OST 334", imageUrl: "https://i.ytimg.com/vi/CIu4PTDqYJw/hqdefault.jpg" },
   { title: "OST 339", videoId: "T7QHiq8BoYg", composer: "Unknown", context: "OST 339", quiz: false, imageUrl: "https://i.ytimg.com/vi/T7QHiq8BoYg/hqdefault.jpg" },
   { title: "Otomegokoro", videoId: "C8MpBkjjPTs", composer: "Mitsukiyo", context: "OST 340\nメモロビ:リオ(臨戦)", imageUrl: "https://i.ytimg.com/vi/C8MpBkjjPTs/hqdefault.jpg" },
   { title: "OST 341", videoId: "mP_dEztTzyI", composer: "EmoCosine", context: "OST 341\nメモロビ:ヒマリ(臨戦)", quiz: false, imageUrl: "https://i.ytimg.com/vi/mP_dEztTzyI/hqdefault.jpg" },
