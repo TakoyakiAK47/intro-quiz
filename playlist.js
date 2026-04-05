@@ -222,7 +222,7 @@ const playlist = [
   { title: "U-n.I", videoId: "9GZyOeyx4R0", composer: "Mitsukiyo", context: "OST 234\nメモロビ:ホシノ(臨戦)、マリー(アイドル)", imageUrl: "https://i.ytimg.com/vi/9GZyOeyx4R0/hqdefault.jpg" },
   { title: "Sugary Holiday", videoId: "jrDqi4niR1I", composer: "EmoCosine", context: "OST 235", imageUrl: "https://i.ytimg.com/vi/jrDqi4niR1I/hqdefault.jpg" },
   { title: "P.A.J.A.M.A Sleep Over", videoId: "vzhASCnlfe4", composer: "KARUT", context: "OST 236", imageUrl: "https://i.ytimg.com/vi/vzhASCnlfe4/hqdefault.jpg" },
-  { title: "Peaceful Day", videoId: "4GcZsyY6LZs", composer: "EmoCosine", context: "OST 237\nメモロビ:アツコ(水着)、レイジョ", quiz: false, imageUrl: "https://i.ytimg.com/vi/4GcZsyY6LZs/hqdefault.jpg" },
+  { title: "Peaceful Day", videoId: "4GcZsyY6LZs", composer: "EmoCosine", context: "OST 237\nメモロビ:アツコ(水着)、レイジョ", imageUrl: "https://i.ytimg.com/vi/4GcZsyY6LZs/hqdefault.jpg" },
   { title: "NekoTime", videoId: "cRnwLemk6ng", composer: "Mitsukiyo", context: "OST 239\nメモロビ:ミヨ", imageUrl: "https://i.ytimg.com/vi/cRnwLemk6ng/hqdefault.jpg" },
   { title: "InuTime", videoId: "OCn2MGJfFMg", composer: "Mitsukiyo", context: "OST 240\nメモロビ:チアキ、マキ(キャンプ)、ハスミ(水着)、スズミ(マジカル)", imageUrl: "https://i.ytimg.com/vi/OCn2MGJfFMg/hqdefault.jpg" },
   { title: "DAN! DAN!! INVADER!!!", videoId: "auhPw1NBqgE", composer: "KARUT", context: "OST 241", imageUrl: "https://i.ytimg.com/vi/auhPw1NBqgE/hqdefault.jpg" },
