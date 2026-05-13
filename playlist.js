@@ -328,6 +328,7 @@ const characterSongPlaylist = [
   { title: "発明！ロマン！Engineer Dream！！", videoId: "qfQt9fRT56Y", composer: "エンジニア部 / 夕野ヨシミ(IOSYS) / KARUT", context: "", imageUrl: "https://i.ytimg.com/vi/qfQt9fRT56Y/hqdefault.jpg" },
   { title: "黒翼が奏でる正義", videoId: "185srgaUn1M", composer: "正義実現委員会 / 夕野ヨシミ(IOSYS) / Mitsukiyo", context: "", imageUrl: "https://i.ytimg.com/vi/185srgaUn1M/hqdefault.jpg" },
   { title: "出発進行！ハイランダー！！", videoId: "sxPOS_8JYPc", composer: "ハイランダー / 夕野ヨシミ(IOSYS) / KARUT", context: "", imageUrl: "https://i.ytimg.com/vi/sxPOS_8JYPc/hqdefault.jpg" },
+  { title: "温泉 - ONSEN -", videoId: "AjcfFCy-emA", composer: "温泉開発部 / 夕野ヨシミ(IOSYS) / KARUT", context: "", imageUrl: "https://i.ytimg.com/vi/AjcfFCy-emA/hqdefault.jpg" },
   
   { title: "あゆみ", videoId: "_Dd0HKNakSY", composer: "シロコ(CV:小倉唯) / 夕野ヨシミ(IOSYS) / Nor", context: "", imageUrl: "https://i.ytimg.com/vi/_Dd0HKNakSY/hqdefault.jpg" },
   { title: "これが私のハードボイルド！？", videoId: "D0P7GouqHJ0", composer: "アル(CV:近藤玲奈) / 夕野ヨシミ(IOSYS) / Mitsukiyo", context: "", imageUrl: "https://i.ytimg.com/vi/D0P7GouqHJ0/hqdefault.jpg" },
@@ -350,6 +351,8 @@ const characterSongPlaylist = [
   { title: "Happy×Smiley", videoId: "HiYn6j1amA4", composer: "ハナエ(CV:優木かな) / john=hive(IOSYS) / EmoCosine", context: "", imageUrl: "https://i.ytimg.com/vi/HiYn6j1amA4/hqdefault.jpg" },
   { title: "温もりのそばで、羽を預けて", videoId: "csGoYUHdU2o", composer: "ヒナ(CV:広橋涼) / john=hive(IOSYS) / Nor", context: "", imageUrl: "https://i.ytimg.com/vi/csGoYUHdU2o/hqdefault.jpg" },
   { title: "幸せになるよ", videoId: "VWFe3AzwHmI", composer: "ミカ(CV:東山奈央) / 夕野ヨシミ(IOSYS) / Mitsukiyo", context: "", imageUrl: "https://i.ytimg.com/vi/VWFe3AzwHmI/hqdefault.jpg" },
+  { title: "つかむ希望の空", videoId: "SCH7tS6Hb6U", composer: "サキ(CV:友永朱音) / 夕野ヨシミ(IOSYS) / Nor", context: "", imageUrl: "https://i.ytimg.com/vi/SCH7tS6Hb6U/hqdefault.jpg" },
+  { title: "黒崎コユキはハチャメチャ ALL OK!", videoId: "nR2d0PQ0OD8", composer: "ミカ(CV:東山奈央) / john=hive(IOSYS) / EmoCosine", context: "", imageUrl: "https://i.ytimg.com/vi/nR2d0PQ0OD8/hqdefault.jpg" },
   
   { title: "Clear Morning", videoId: "rFeBMv98X30", composer: "小倉 唯", context: "", imageUrl: "https://i.ytimg.com/vi/rFeBMv98X30/hqdefault.jpg" },
   { title: "わたしたちのクエスト", videoId: "aX5VlSJLDb4", composer: "モモイ(CV.徳井青空) / ミドリ(CV.高田憂希) / ユズ(CV.寺澤百花) / アリス(CV.田中美海) / 夕野ヨシミ(IOSYS) / Mitsukiyo", context: "", imageUrl: "https://i.ytimg.com/vi/aX5VlSJLDb4/hqdefault.jpg" },
@@ -371,4 +374,5 @@ const characterSongPlaylist = [
   { title: "真昼の空の月", videoId: "UOnafB7rF8k", composer: "ホシノ(CV:花守ゆみり) / シロコ(CV:小倉唯) / ノノミ(CV:三浦千幸) / セリカ(CV:大橋彩香) / アヤネ(CV:原田彩楓) / RED", context: "", imageUrl: "https://i.ytimg.com/vi/UOnafB7rF8k/hqdefault.jpg" },
   { title: "ありがとう、そしてこれからも。", videoId: "kyQombmC6Yg", composer: "カズサ(CV:夏吉ゆうこ) / キキョウ(CV:小松未可子) / キサキ(CV:相坂優歌) / コユキ(CV:乾夏寧) / サオリ(CV:石上静香) / シロコ*テラー(CV:小倉唯) / ヒナ(CV:広橋涼) / ホシノ(CV:花守ゆみり) / マリー(CV:小澤亜李) / マリナ(CV:平井祥恵) / ユウカ(CV:春花らん) / Mitsukiyo / ワカツジスバル", context: "", imageUrl: "https://i.ytimg.com/vi/kyQombmC6Yg/hqdefault.jpg" },
   { title: "Let's Go With…", videoId: "PdnDedDp-5A", composer: "アスナ(CV:長谷川育美) / キララ(CV:山下七海) / スバル(CV:天海由梨奈) / ミカ(CV:東山奈央) / ミヨ(CV:花岩香奈) / ユカリ(CV:村上まなつ) / Mitsukiyo / 夕野ヨシミ(IOSYS)", context: "", imageUrl: "https://i.ytimg.com/vi/PdnDedDp-5A/hqdefault.jpg" },
+  { title: "心あったか Happy Liefe", videoId: "yPUvx5DVerQ", composer: "柴大将(CV:市来光弘) / ソラ(CV:林鼓子) / ミディ / 夕野ヨシミ(IOSYS)", context: "", imageUrl: "https://i.ytimg.com/vi/yPUvx5DVerQ/hqdefault.jpg" },
 ];
