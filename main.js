@@ -736,7 +736,7 @@ function showStatsScreen() {
             ${achievementsHTML}
         </div>
         <button id="stats-back-btn">ホームに戻る</button>
-        <button id="reset-data-btn" style="background-color: var(--red-primary); color:white;">データリセット</button>
+        <button id="reset-data-btn">データリセット</button>
     `;
 
     document.getElementById('stats-back-btn').onclick = initGame;
@@ -762,7 +762,7 @@ function updateScore() {
         scoreText = `Score: ${gameState.score}`;
     } else {
         const highScore = (gameState.mode === GAME_MODES.COMPOSER_QUIZ) ? (gameData.stats.highScores.composer_quiz || 0) : (gameData.stats.highScores.endless || 0);
-        scoreText = `High Score: ${highScore} | Current: ${gameState.endlessStreak}`;
+        scoreText = `最高記録 : ${highScore} \n スコア : ${gameState.endlessStreak}`;
     }
     domElements.score.innerText = scoreText;
 }
@@ -778,11 +778,7 @@ function updateProgressIndicator() {
         if (domElements.progressBarFill) domElements.progressBarFill.style.width = `${(gameState.totalQuestions / maxQ) * 100}%`;
         container.style.display = 'block';
         if (domElements.progressBarWrapper) domElements.progressBarWrapper.style.display = 'block';
-    } else if (gameState.mode === GAME_MODES.ENDLESS || gameState.mode === GAME_MODES.COMPOSER_QUIZ) {
-        if (domElements.progressText) domElements.progressText.textContent = `連続正解数: ${gameState.endlessStreak}`;
-        container.style.display = 'block';
-        if (domElements.progressBarWrapper) domElements.progressBarWrapper.style.display = 'none';
-    }
+    } 
 }
 
 function updateTimeDisplay(ms) {
