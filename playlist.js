@@ -56,7 +56,7 @@ const playlist = [
   { title: "Moment", videoId: "ObEgsAbBx6w", composer: "Nor", similarGroup: 8,context: "OST 55", imageUrl: "https://i.ytimg.com/vi/ObEgsAbBx6w/hqdefault.jpg" },
   { title: "Fearful Utopia", videoId: "QWHtNNjRz5I", composer: "Nor", context: "OST 56\n総力戦シロクロ", imageUrl: "https://i.ytimg.com/vi/QWHtNNjRz5I/hqdefault.jpg" },
   { title: "Han-nari", videoId: "hO-F-QnAirI", composer: "Nor", context: "OST 57\nメモロビ:フィーナ、イズナ", imageUrl: "https://i.ytimg.com/vi/hO-F-QnAirI/hqdefault.jpg" },
-  { title: "SAKURA PUNCH", videoId: "H-q250etK5Y", composer: "Nor", similarGroup: 18,context: "OST 58", imageUrl: "https://i.ytimg.com/vi/lvHt8YXv_gc/hqdefault.jpg" },
+  { title: "SAKURA PUNCH", videoId: "H-q250etK5Y", composer: "Nor", similarGroup: 18,context: "OST 58", imageUrl: "https://i.ytimg.com/vi/H-q250etK5Y/hqdefault.jpg" },
   { title: "RE Aoharu", videoId: "Q7ND_1u2mcM", composer: "Nor", context: "OST 59", imageUrl: "https://i.ytimg.com/vi/Q7ND_1u2mcM/hqdefault.jpg" },
   { title: "SAKURA PUNCH Hard Arrange", videoId: "yxu_FJBICaA", composer: "Nor", similarGroup: 18,context: "OST 60", imageUrl: "https://i.ytimg.com/vi/yxu_FJBICaA/hqdefault.jpg" },
   { title: "Rolling Beat", videoId: "HgY9hnV5_tU", composer: "Mitsukiyo", context: "OST 61", imageUrl: "https://i.ytimg.com/vi/HgY9hnV5_tU/hqdefault.jpg" },
