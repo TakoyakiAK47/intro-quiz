@@ -309,8 +309,11 @@ const playlist = [
   { title: "Otomegokoro", videoId: "C8MpBkjjPTs", composer: "Mitsukiyo", context: "OST 340\nメモロビ:リオ(臨戦)", imageUrl: "https://i.ytimg.com/vi/C8MpBkjjPTs/hqdefault.jpg" },
   { title: "OST 341", videoId: "mP_dEztTzyI", composer: "EmoCosine", context: "OST 341\nメモロビ:ヒマリ(臨戦)", quiz: false, imageUrl: "https://i.ytimg.com/vi/mP_dEztTzyI/hqdefault.jpg" },
   { title: "OST 342", videoId: "QsruZz8Xjb4", composer: "Unknown", context: "OST 342\nメモロビ:トキ(臨戦)", quiz: false, imageUrl: "https://i.ytimg.com/vi/QsruZz8Xjb4/hqdefault.jpg" },
-  { title: "OST 352", videoId: "nl0uujg5v2E", composer: "Unknown", context: "OST 352", quiz: false, imageUrl: "https://i.ytimg.com/vi/nl0uujg5v2E/hqdefault.jpg" },
+  { title: "OST 343", videoId: "hkiEcfifvic", composer: "Unknown", context: "OST 343", quiz: false, imageUrl: "https://i.ytimg.com/vi/hkiEcfifvic/hqdefault.jpg" },
+  { title: "OST 353", videoId: "nl0uujg5v2E", composer: "Unknown", context: "OST 353", quiz: false, imageUrl: "https://i.ytimg.com/vi/nl0uujg5v2E/hqdefault.jpg" },
+  { title: "OST 354", videoId: "lXEeRHaUvJA", composer: "Unknown", context: "OST 354", quiz: false, imageUrl: "https://i.ytimg.com/vi/lXEeRHaUvJA/hqdefault.jpg" },
   { title: "Train Showdown", videoId: "xFQ-g_cJDAE", composer: "KARUT", context: "OST -", imageUrl: "https://i.ytimg.com/vi/xFQ-g_cJDAE/hqdefault.jpg" },
+  { title: "STAGE STARTER", videoId: "9-Ylaoa1COY", composer: "KARUT", context: "OST -", imageUrl: "https://i.ytimg.com/vi/9-Ylaoa1COY/hqdefault.jpg" },
 ];
 
 const characterSongPlaylist = [
