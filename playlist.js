@@ -289,7 +289,7 @@ const playlist = [
   { title: "OST 316", videoId: "We-NEz_Yfyk", composer: "Unknown", context: "OST 316", quiz: false, imageUrl: "https://i.ytimg.com/vi/We-NEz_Yfyk/hqdefault.jpg" },
   { title: "OTKMARCHING!", videoId: "Ji1Sr7KCNt0", composer: "KARUT", context: "OST 317", imageUrl: "https://i.ytimg.com/vi/Ji1Sr7KCNt0/hqdefault.jpg" },
   { title: "Run Way My Way", videoId: "nOjIwYsKEG0", composer: "EmoCosine", context: "OST 318", imageUrl: "https://i.ytimg.com/vi/nOjIwYsKEG0/hqdefault.jpg" },
-  { title: "OST 319", videoId: "BOfDro5YxlQ", composer: "Unknown", context: "OST 319", quiz: false, imageUrl: "https://i.ytimg.com/vi/BOfDro5YxlQ/hqdefault.jpg" },
+  { title: "Redacted Rhapsody No.1", videoId: "BOfDro5YxlQ", composer: "KARUT", context: "OST 319", imageUrl: "https://i.ytimg.com/vi/BOfDro5YxlQ/hqdefault.jpg" },
   { title: "OST 320", videoId: "tu2ECdYyt0M", composer: "Unknown", context: "OST 320", quiz: false, imageUrl: "https://i.ytimg.com/vi/tu2ECdYyt0M/hqdefault.jpg" },
   { title: "OST 322", videoId: "UiksbTJWaFk", composer: "Unknown", context: "OST 322", quiz: false, imageUrl: "https://i.ytimg.com/vi/UiksbTJWaFk/hqdefault.jpg" },
   { title: "Megiddo Flame", videoId: "fea8r2sdsz4", composer: "KARUT", context: "OST 323", imageUrl: "https://i.ytimg.com/vi/fea8r2sdsz4/hqdefault.jpg" },
