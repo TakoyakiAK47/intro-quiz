@@ -311,6 +311,7 @@ const playlist = [
   { title: "Toki no Nagare", videoId: "QsruZz8Xjb4", composer: "KARUT", context: "OST 342\nメモロビ:トキ(臨戦)", imageUrl: "https://i.ytimg.com/vi/QsruZz8Xjb4/hqdefault.jpg" },
   { title: "OST 343", videoId: "hkiEcfifvic", composer: "Unknown", context: "OST 343", quiz: false, imageUrl: "https://i.ytimg.com/vi/hkiEcfifvic/hqdefault.jpg" },
   { title: "Oriental Splash", videoId: "vIBcEUF-2NE", composer: "KARUT", context: "OST 347", imageUrl: "https://i.ytimg.com/vi/vIBcEUF-2NE/hqdefault.jpg" },
+  { title: "OST 349", videoId: "09YrwRsIVro", composer: "Mitsukiyo", context: "OST 349", quiz: false, imageUrl: "https://i.ytimg.com/vi/09YrwRsIVro/hqdefault.jpg" },
   { title: "OST 353", videoId: "nl0uujg5v2E", composer: "Unknown", context: "OST 353", quiz: false, imageUrl: "https://i.ytimg.com/vi/nl0uujg5v2E/hqdefault.jpg" },
   { title: "OST 354", videoId: "lXEeRHaUvJA", composer: "Unknown", context: "OST 354", quiz: false, imageUrl: "https://i.ytimg.com/vi/lXEeRHaUvJA/hqdefault.jpg" },
   { title: "Train Showdown", videoId: "xFQ-g_cJDAE", composer: "KARUT", context: "OST -", imageUrl: "https://i.ytimg.com/vi/xFQ-g_cJDAE/hqdefault.jpg" },
