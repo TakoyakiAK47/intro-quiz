@@ -317,7 +317,7 @@ const playlist = [
   { title: "OST 351", videoId: "eqDHuKgM-uU", composer: "Unknown", context: "OST 351", quiz: false, imageUrl: "https://i.ytimg.com/vi/eqDHuKgM-uU/hqdefault.jpg" },
   { title: "OST 353", videoId: "nl0uujg5v2E", composer: "Unknown", context: "OST 353", quiz: false, imageUrl: "https://i.ytimg.com/vi/nl0uujg5v2E/hqdefault.jpg" },
   { title: "OST 354", videoId: "lXEeRHaUvJA", composer: "Unknown", context: "OST 354", quiz: false, imageUrl: "https://i.ytimg.com/vi/lXEeRHaUvJA/hqdefault.jpg" },
-  { title: "OST 358", videoId: "VitO2YQ39xs", composer: "Unknown", context: "OST 358", quiz: false, imageUrl: "https://i.ytimg.com/vi/VitO2YQ39xs/hqdefault.jpg" },
+  { title: "Rosa Plateada", videoId: "VitO2YQ39xs", composer: "KARUT", context: "OST 358", imageUrl: "https://i.ytimg.com/vi/VitO2YQ39xs/hqdefault.jpg" },
   { title: "OST 366", videoId: "RkvGz6SNbEg", composer: "Unknown", context: "OST 366", quiz: false, imageUrl: "https://i.ytimg.com/vi/RkvGz6SNbEg/hqdefault.jpg" },
   { title: "Train Showdown", videoId: "xFQ-g_cJDAE", composer: "KARUT", context: "OST -", imageUrl: "https://i.ytimg.com/vi/xFQ-g_cJDAE/hqdefault.jpg" },
   { title: "STAGE STARTER", videoId: "9-Ylaoa1COY", composer: "KARUT", context: "OST -", imageUrl: "https://i.ytimg.com/vi/9-Ylaoa1COY/hqdefault.jpg" },
